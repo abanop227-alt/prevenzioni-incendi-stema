@@ -42,3 +42,12 @@ describe('scadenziario dei rinnovi', () => {
     expect(nellaFascia({ giorni: -5 }, 'entro12')).toBe(false);
   });
 });
+
+describe('unisciAmministrazioni', () => {
+  it('unisce i nomi scritti in modi diversi', async () => {
+    const { unisciAmministrazioni } = await import('../src/lib/scadenziario');
+    const v = (amministrazione: string) => ({ indirizzo: 'x', amministrazione, attivita: '', scadenza: '2027-01-01', precisa: true, fonte: 'elenco' as const, giorni: 1 });
+    const r = unisciAmministrazioni([v('AMMINISTRAZIONE PASQUALI'), v('PASQUALI'), v('Pasquali S.r.l.'), v('ROSSI')]);
+    expect(r.map((x) => x.amministrazione)).toEqual(['PASQUALI', 'PASQUALI', 'PASQUALI', 'ROSSI']);
+  });
+});

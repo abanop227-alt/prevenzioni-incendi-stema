@@ -145,6 +145,17 @@ export function clienteDa(pressoAmministrazione: string): string {
   return (t.split(' ')[0] ?? '').toUpperCase();
 }
 
+/** Chiave per riconoscere la stessa amministrazione scritta in modi diversi: senza prefissi, forma societaria, accenti e punteggiatura. */
+export function chiaveAmministrazione(nome: string): string {
+  const t = nome
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(PREFISSI_AMM, ' ')
+    .replace(/\b(s\.?r\.?l\.?|s\.?n\.?c\.?|s\.?a\.?s\.?|s\.?p\.?a\.?|srls)\b/gi, ' ')
+    .replace(/[^a-z0-9]+/gi, ' ');
+  return norm(t).toUpperCase();
+}
+
 function daSopralluogo(s: Sopralluogo): Commessa | null {
   const c = s.condominio;
   const numero = numeroDa(c.commessa);

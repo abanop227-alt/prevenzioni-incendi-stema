@@ -1,7 +1,7 @@
 // Scadenziario dei rinnovi periodici: unisce le scadenze scritte negli elenchi stabili (spesso solo l'anno) e quelle calcolate
 // dai rinnovi presentati con l'app (data precisa). Per lo stesso stabile vale la pratica dell'app, che è più recente.
 import { dividiIndirizzo } from './moduliVvf';
-import { clienteDa } from './commesse';
+import { clienteDa, chiaveAmministrazione } from './commesse';
 import { giorniAllaScadenza, praticaDi, scadenzaRinnovo } from './pratiche';
 import type { VoceRinnovo } from './rinnovi';
 import { indirizzoStabile, type Stabile } from './stabili';
@@ -41,6 +41,22 @@ export function nellaFascia(v: Pick<VoceScadenza, 'giorni'>, f: Fascia): boolean
 }
 
 const fineAnno = (anno: string) => `${anno}-12-31`;
+
+/** Le voci della stessa amministrazione scritta in modi diversi ("Amministrazione Pasquali", "PASQUALI srl") prendono il nome più breve. */
+export function unisciAmministrazioni(voci: VoceScadenza[]): VoceScadenza[] {
+  const nomi = new Map<string, string>();
+  for (const v of voci) {
+    const k = chiaveAmministrazione(v.amministrazione);
+    const n = v.amministrazione.trim();
+    if (!k || !n) continue;
+    const cur = nomi.get(k);
+    if (!cur || n.length < cur.length) nomi.set(k, n);
+  }
+  return voci.map((v) => {
+    const n = nomi.get(chiaveAmministrazione(v.amministrazione));
+    return n && n !== v.amministrazione ? { ...v, amministrazione: n } : v;
+  });
+}
 
 export function scadenziario(stabili: Stabile[], sopralluoghi: Sopralluogo[], oggi = oggiISO(), rinnovi: VoceRinnovo[] = []): VoceScadenza[] {
   const voci = new Map<string, VoceScadenza>();
@@ -109,5 +125,5 @@ export function scadenziario(stabili: Stabile[], sopralluoghi: Sopralluogo[], og
       giorni: giorniAllaScadenza(sc, oggi),
     });
   }
-  return [...voci.values()].sort((a, b) => a.giorni - b.giorni || a.indirizzo.localeCompare(b.indirizzo));
+  return unisciAmministrazioni([...voci.values()]).sort((a, b) => a.giorni - b.giorni || a.indirizzo.localeCompare(b.indirizzo));
 }
