@@ -37,8 +37,8 @@ describe('computo metrico', () => {
       'Trasporto materiali di qualsiasi natura all’esterno del fabbricato e conferimento alle P.P.D.D.',
     ]);
     // la lavorazione alternativa "Tinteggiature" è proposta ma non spuntata
-    expect(zone[1].righe).toHaveLength(3);
-    expect(porta.lavorazioni.map((l) => l.inclusa)).toEqual([true, true, false]);
+    expect(zone[1].righe).toHaveLength(4);
+    expect(porta.lavorazioni.map((l) => l.inclusa)).toEqual([true, true, true, false]);
   });
 
   it('prezzi vuoti: importo vuoto; con prezzi: importi, totali e arrotondamenti', () => {

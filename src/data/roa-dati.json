@@ -1159,7 +1159,7 @@
             {
               "id": "77-vs-lma-porta-80",
               "titolo": "Porta e sopraluce locale macchine da sostituire (§ 8.0)",
-              "testo": "La comunicazione con il locale macchine ascensore, così come previsto dal punto § 8.0 della normativa vigente, dovrà avvenire tramite porte e strutture aventi caratteristiche di resistenza al fuoco non inferiori a REI 30. Al momento del sopralluogo la porta ed il sopraluce non rispettavano tali caratteristiche, pertanto, sarà necessario provvedere alla sostituzione della porta con modello avente caratteristiche di resistenza al fuoco almeno pari a EI 30 e provvisto del dispositivo di autochiusura, e la chiusura del sopraluce con materiali aventi caratteristiche di resistenza al fuoco almeno pari a REI 30.",
+              "testo": "La comunicazione con il locale macchine ascensore, così come previsto dal punto § 8.0 della normativa vigente, dovrà avvenire tramite porte e strutture aventi caratteristiche di resistenza al fuoco non inferiori a REI 30. Al momento del sopralluogo la porta ed il sopraluce non rispettavano tali caratteristiche, pertanto, sarà necessario provvedere alla sostituzione della porta con modello avente caratteristiche di resistenza al fuoco almeno pari a REI 30 e provvisto del dispositivo di autochiusura, e la chiusura del sopraluce con materiali aventi caratteristiche di resistenza al fuoco almeno pari a REI 30.",
               "didascalia": "Porta di accesso al locale macchine ascensore.",
               "lavorazioni": [
                 {
@@ -1167,29 +1167,17 @@
                   "um": "cad"
                 },
                 {
-                  "descrizione": "Fornitura e posa porte REI 30, dimensioni [65 cm x 200 cm] filo muro, compresa assistenza muraria e chiusura sopraluce con materiali aventi caratteristiche almeno REI 30.",
-                  "um": "cad"
-                },
-                {
-                  "descrizione": "Tinteggiature aree oggetto d’intervento.",
-                  "um": "a corpo",
-                  "inclusa": false
-                }
-              ]
-            },
-            {
-              "id": "77-vs-lma-porta-80-rei",
-              "titolo": "Porta e sopraluce locale macchine da sostituire (§ 8.0, REI 30)",
-              "testo": "La comunicazione con il locale macchine ascensore, così come previsto dal punto § 8.0 della normativa vigente, dovrà avvenire tramite porte e strutture aventi caratteristiche di resistenza al fuoco non inferiori a REI 30. Al momento del sopralluogo la porta ed il sopraluce non rispettavano tali caratteristiche, pertanto, sarà necessario provvedere alla sostituzione della porta con modello avente caratteristiche di resistenza al fuoco almeno pari a REI 30 e la chiusura del sopraluce con materiali aventi caratteristiche di resistenza al fuoco almeno pari a REI 30.",
-              "didascalia": "Porta di accesso al locale macchine ascensore.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Fornitura e posa di porta REI 30 di accesso al locale macchine ascensore, in sostituzione dell’esistente, completa di dispositivo di auto chiusura.",
+                  "descrizione": "Fornitura e posa porta REI 30 di accesso al locale macchine ascensore, dimensioni [65 cm x 200 cm] filo muro, in sostituzione dell’esistente, completa di dispositivo di autochiusura e assistenza muraria.",
                   "um": "cad"
                 },
                 {
                   "descrizione": "Chiusura del sopraluce del locale macchine ascensore con materiali aventi caratteristiche di resistenza al fuoco REI 30.",
                   "um": "a corpo"
+                },
+                {
+                  "descrizione": "Tinteggiature aree oggetto d’intervento.",
+                  "um": "a corpo",
+                  "inclusa": false
                 }
               ]
             },
