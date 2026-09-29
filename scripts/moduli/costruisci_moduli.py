@@ -116,6 +116,13 @@ class Modulo:
         assert ctext(cand[0]) in ('', '_'), f'etichetta {etichetta!r} #{n}: riquadro non vuoto ({ctext(cand[0])!r})'
         self._token(p, chiave)
 
+    def campo_uno_di(self, etichette, n, chiave):
+        """Come campo(), per etichette che nei vari moduli hanno scritte leggermente diverse."""
+        for e in etichette:
+            if len(self.etichette(e)) > n:
+                return self.campo(e, n, chiave)
+        raise AssertionError(f'nessuna delle etichette {etichette!r} trovata')
+
     def codice_fiscale(self, etichetta='codice fiscale della persona fisica', n=0):
         ets = self.etichette(etichetta)
         cand = [c for c in self.sopra(ets[n].getparent()) if ctext(c) != 'C.F.']
@@ -265,7 +272,7 @@ def blocco_titolare(m):
     m.campo('provincia', 0, 'tProv')
     m.campo('telefono', 0, 'tTel')
     m.codice_fiscale()
-    m.campo('qualifica rivestita (titolare, legale rappresentante, amministratore, etc.)', 0, 'qualifica')
+    m.campo_uno_di(['qualifica rivestita (titolare, legale rappresentante, amministratore, etc.)', 'qualifica rivestita (titolare, legale rappresentante,amministratore,etc.)'], 0, 'qualifica')
     m.campo('ragione sociale ditta, impresa, ente, società, associazione, etc.', 0, 'ragione')
     m.campo('indirizzo', 1, 'sIndirizzo')
     m.campo('n. civico', 1, 'sCivico')
@@ -453,7 +460,146 @@ def pin21(src):
     return m, 'pin21-asseverazione-scia.docx'
 
 
-COSTRUTTORI = {'pin3': pin3, 'pin31': pin31, 'pin2': pin2, 'pin21': pin21}
+# ---------------------------------------------------------------------------------------------
+# moduli aggiunti: PIN 1, 7 (titolare) e 2.2, 2.3, 2.5, 2.6 (professionista)
+
+def blocco_professionista(m, con_cf=False):
+    """Professionista come in PIN 2.2 / 2.3: titolo, nome, ordine, iscrizione."""
+    m.campo('Titolo professionale' if m.etichette('Titolo professionale') else 'titolo professionale', 0, 'pTitolo')
+    m.campo('Cognome' if m.etichette('Cognome') else 'cognome', 0, 'pCognome')
+    m.campo('Nome' if m.etichette('Nome') else 'nome', 0, 'pNome')
+    m.campo('ordine / collegio professionale', 0, 'pCollegio')
+    m.campo('n° codice iscrizione M.I.', 0, 'pCodiceMI')
+    if con_cf:
+        m.campo('Codice fiscale', 0, 'pCodiceFiscale')
+
+
+def blocco_ufficio(m, pec='indirizzo di posta elettronica certificata', email=True):
+    m.campo('via - piazza', 0, 'pIndirizzo')
+    m.campo('n. civico', 0, 'pCivico')
+    m.campo('c.a.p.', 0, 'pCap')
+    m.campo('comune', 0, 'pComune')
+    m.campo('provincia', 0, 'pProv')
+    m.campo('telefono', 0, 'pTel')
+    if email:
+        m.campo('indirizzo di posta elettronica', 0, 'pEmail')
+    m.campo(pec, 0, 'pPec')
+
+
+def blocco_edificio(m):
+    """Edificio oggetto della dichiarazione: solo il recapito (n. civico, c.a.p., comune, provincia, telefono)."""
+    m.campo('n. civico', 1, 'aCivico')
+    m.campo('c.a.p.', 1, 'aCap')
+    m.campo('comune', 1, 'aComune')
+    m.campo('provincia', 1, 'aProv')
+    m.campo('telefono', 1, 'aTel')
+
+
+def pin7(src):
+    m = Modulo(os.path.join(src, 'PIN_7_2018Voltura.docx'))
+    blocco_titolare(m)
+    m.campo('tipo di attività (albergo, scuola, centrale termica, etc.)', 0, 'tipoAttivita')
+    m.campo('indirizzo', 2, 'aIndirizzo')
+    m.campo('n. civico', 2, 'aCivico')
+    m.campo('c.a.p.', 2, 'aCap')
+    m.campo('Comune', 0, 'aComune')
+    m.campo('provincia', 2, 'aProv')
+    m.campo('telefono', 2, 'aTel')
+    m.campo('individuata/e ai n./sotto classe/ cat.:', 0, 'classe')
+    m.campo('Data', 0, 'dataFirma')
+    return m, 'pin7-voltura.docx'
+
+
+def pin1(src):
+    m = Modulo(os.path.join(src, 'PIN_1_2023_ValutazioneProgetto_FV.docx'))
+    blocco_titolare(m)
+    m.campo('tipo di attività (albergo, scuola, etc.)', 0, 'tipoAttivita')
+    m.campo('indirizzo', 2, 'aIndirizzo')
+    m.campo('n. civico', 2, 'aCivico')
+    m.campo('c.a.p.', 2, 'aCap')
+    m.campo('comune', 2, 'aComune')
+    m.campo('provincia', 2, 'aProv')
+    m.campo('telefono', 2, 'aTel')
+    # documentazione tecnica sottoscritta da: il professionista
+    m.campo('Titolo professionale', 0, 'pTitolo')
+    m.campo('Cognome', 1, 'pCognome')
+    m.campo('Nome', 1, 'pNome')
+    m.campo('indirizzo', 3, 'pIndirizzo')
+    m.campo('n. civico', 3, 'pCivico')
+    m.campo('comune', 3, 'pComune')
+    m.campo('provincia', 3, 'pProv')
+    m.campo('telefono', 3, 'pTel')
+    m.campo('indirizzo di posta elettronica', 1, 'pEmail')
+    m.campo('indirizzo di posta elettronica certificata', 1, 'pPec')
+    return m, 'pin1-valutazione-progetto.docx'
+
+
+def pin22(src):
+    m = Modulo(os.path.join(src, 'PIN_2_2_2023_CERT_REI.docx'))
+    blocco_professionista(m, con_cf=True)
+    blocco_ufficio(m, pec='indirizzo di posta elettronica certificatac')
+    blocco_edificio(m)
+    m.campo('Data', 0, 'dataFirma')
+    return m, 'pin22-cert-rei.docx'
+
+
+def pin23(src):
+    m = Modulo(os.path.join(src, 'PIN_2_3-2018-DichiarazioneProdotto.docx'))
+    blocco_professionista(m)
+    blocco_ufficio(m, email=False)
+    blocco_edificio(m)
+    m.campo('Data', 0, 'dataFirma')
+    return m, 'pin23-dichiarazione-prodotto.docx'
+
+
+def pin25(src):
+    m = Modulo(os.path.join(src, 'PIN_2_5-2018-CertificazioneImpianto.docx'))
+    m.campo('Titolo professionale', 0, 'pTitolo')
+    m.campo('Cognome', 0, 'pCognome')
+    m.campo('Nome', 0, 'pNome')
+    m.campo('provincia', 0, 'pCollegio')
+    m.campo('indirizzo', 0, 'pIndirizzo')
+    m.campo('n. civico', 0, 'pCivico')
+    m.campo('comune', 0, 'pComune')
+    m.campo('provincia', 1, 'pProv')
+    m.campo('telefono', 0, 'pTel')
+    m.campo('indirizzo di posta elettronica', 0, 'pEmail')
+    m.campo('indirizzo di posta elettronica certificata', 0, 'pPec')
+    m.campo('n. civico', 1, 'aCivico')
+    m.campo('c.a.p.', 1, 'aCap')
+    m.campo('comune', 1, 'aComune')
+    m.campo('provincia', 2, 'aProv')
+    m.campo('telefono', 1, 'aTel')
+    m.campo('Data', 0, 'dataFirma')
+    return m, 'pin25-certificazione-impianto.docx'
+
+
+def pin26(src):
+    m = Modulo(os.path.join(src, 'PIN_2_6_2018DichiarazioneNonAggravioRischio.docx'))
+    m.campo('Titolo professionale', 0, 'pTitolo')
+    m.campo('Cognome', 0, 'pCognome')
+    m.campo('Nome', 0, 'pNome')
+    m.campo('provincia', 0, 'pCollegio')
+    m.campo('indirizzo', 0, 'pIndirizzo')
+    m.campo('n. civico', 0, 'pCivico')
+    m.campo('c.a.p.', 0, 'pCap')
+    m.campo('comune', 0, 'pComune')
+    m.campo('provincia', 1, 'pProv')
+    m.campo('telefono', 0, 'pTel')
+    m.campo('indirizzo di posta elettronica', 0, 'pEmail')
+    m.campo('indirizzo di posta elettronica certificata', 0, 'pPec')
+    m.campo('indirizzo', 1, 'aIndirizzo')
+    m.campo('n. civico', 1, 'aCivico')
+    m.campo('c.a.p.', 1, 'aCap')
+    m.campo('comune', 1, 'aComune')
+    m.campo('provincia', 2, 'aProv')
+    m.campo('telefono', 1, 'aTel')
+    m.campo('Data', 0, 'dataFirma')
+    return m, 'pin26-non-aggravio-rischio.docx'
+
+
+COSTRUTTORI = {'pin3': pin3, 'pin31': pin31, 'pin2': pin2, 'pin21': pin21, 'pin7': pin7, 'pin1': pin1, 'pin22': pin22, 'pin23': pin23,  'pin25': pin25, 'pin26': pin26}
+
 
 if __name__ == '__main__':
     argv = sys.argv[1:]
@@ -466,6 +612,6 @@ if __name__ == '__main__':
     if file_elenca:
         elenca(os.path.join(src, file_elenca))
         sys.exit(0)
-    for nome, costruttore in COSTRUTTORI.items():
-        modulo, file = costruttore(src)
+    for nome in argv[1:] or list(COSTRUTTORI):
+        modulo, file = COSTRUTTORI[nome](src)
         modulo.scrivi(file)

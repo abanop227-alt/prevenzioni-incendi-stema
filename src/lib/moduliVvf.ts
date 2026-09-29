@@ -8,7 +8,7 @@ import { dataItaliana } from './util';
 export type Valori = Record<string, string | boolean>;
 
 export interface ModelloModulo {
-  id: 'pin3' | 'pin31' | 'pin2' | 'pin21';
+  id: 'pin3' | 'pin31' | 'pin2' | 'pin21' | 'pin1' | 'pin7' | 'pin22' | 'pin23' | 'pin25' | 'pin26';
   file: string;
   /** nome del file generato, senza estensione */
   nome: string;
@@ -19,6 +19,12 @@ export const MODELLI: Record<ModelloModulo['id'], ModelloModulo> = {
   pin31: { id: 'pin31', file: 'pin31-asseverazione-rinnovo.docx', nome: 'MOD. PIN 3.1 - 2014_ASSEVERAZIONE PER RINNOVO' },
   pin2: { id: 'pin2', file: 'pin2-scia.docx', nome: 'MOD. PIN 2 - 2023_SCIA' },
   pin21: { id: 'pin21', file: 'pin21-asseverazione-scia.docx', nome: 'MOD. PIN 2.1 - 2018_ASSEVERAZIONE' },
+  pin1: { id: 'pin1', file: 'pin1-valutazione-progetto.docx', nome: 'MOD. PIN 1 - 2023_VALUTAZIONE PROGETTO' },
+  pin7: { id: 'pin7', file: 'pin7-voltura.docx', nome: 'MOD. PIN 7 - 2018_VOLTURA' },
+  pin22: { id: 'pin22', file: 'pin22-cert-rei.docx', nome: 'MOD. PIN 2.2 - 2023_CERT REI' },
+  pin23: { id: 'pin23', file: 'pin23-dichiarazione-prodotto.docx', nome: 'MOD. PIN 2.3 - 2018_DICHIARAZIONE PRODOTTO' },
+  pin25: { id: 'pin25', file: 'pin25-certificazione-impianto.docx', nome: 'MOD. PIN 2.5 - 2018_CERTIFICAZIONE IMPIANTO' },
+  pin26: { id: 'pin26', file: 'pin26-non-aggravio-rischio.docx', nome: 'MOD. PIN 2.6 - 2018_NON AGGRAVIO RISCHIO' },
 };
 
 const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -363,10 +369,79 @@ export function valoriPin21(s: Sopralluogo, d: DatiModuli, tecnico: Tecnico): Va
   };
 }
 
+/** Dati anagrafici e recapiti del professionista, con le chiavi p… dei moduli PIN 1, 2.2, 2.3, 2.5, 2.6. */
+function valoriProfessionistaP(p: ProfessionistaVvf, collegioComeProvincia = false): Valori {
+  return {
+    pTitolo: maiuscolo(p.titolo),
+    pCognome: maiuscolo(p.cognome),
+    pNome: maiuscolo(p.nome),
+    pCollegio: maiuscolo(collegioComeProvincia ? p.alboProvincia : p.collegio),
+    pCodiceMI: p.codiceMI,
+    pIndirizzo: maiuscolo(p.ufficio.indirizzo),
+    pCivico: p.ufficio.civico,
+    pCap: p.ufficio.cap,
+    pComune: maiuscolo(p.ufficio.comune),
+    pProv: maiuscolo(p.ufficio.provincia),
+    pTel: p.ufficio.telefono,
+    pEmail: p.email,
+    pPec: p.pec,
+  };
+}
+
+/** Recapito dell'attività (n. civico, CAP, comune, provincia, telefono) e, dove serve, la via. */
+function valoriSedeAttivita(d: DatiModuli): Valori {
+  return { ...valoriAttivita(d), dataFirma: '' };
+}
+
+/** MOD. PIN 1 – valutazione del progetto. */
+export function valoriPin1(_s: Sopralluogo, d: DatiModuli, tecnico: Tecnico): Valori {
+  const p = tecnico.vvf ?? professionistaVuoto();
+  return { ...valoriTitolare(d), ...valoriSedeAttivita(d), ...valoriProfessionistaP(p) };
+}
+
+/** MOD. PIN 7 – voltura (cambio di titolare). */
+export function valoriPin7(_s: Sopralluogo, d: DatiModuli, _tecnico: Tecnico): Valori {
+  return { ...valoriTitolare(d), ...valoriSedeAttivita(d), classe: d.attivita.classe };
+}
+
+/** MOD. PIN 2.2 – certificazione di resistenza al fuoco (REI). */
+export function valoriPin22(_s: Sopralluogo, d: DatiModuli, tecnico: Tecnico): Valori {
+  return { ...valoriProfessionistaP(tecnico.vvf ?? professionistaVuoto()), ...valoriSedeAttivita(d) };
+}
+
+/** MOD. PIN 2.3 – dichiarazione di prodotto. */
+export function valoriPin23(_s: Sopralluogo, d: DatiModuli, tecnico: Tecnico): Valori {
+  return { ...valoriProfessionistaP(tecnico.vvf ?? professionistaVuoto()), ...valoriSedeAttivita(d) };
+}
+
+/** MOD. PIN 2.5 – certificazione di impianto. */
+export function valoriPin25(_s: Sopralluogo, d: DatiModuli, tecnico: Tecnico): Valori {
+  return { ...valoriProfessionistaP(tecnico.vvf ?? professionistaVuoto(), true), ...valoriSedeAttivita(d) };
+}
+
+/** MOD. PIN 2.6 – dichiarazione di non aggravio del rischio. */
+export function valoriPin26(_s: Sopralluogo, d: DatiModuli, tecnico: Tecnico): Valori {
+  return { ...valoriProfessionistaP(tecnico.vvf ?? professionistaVuoto(), true), ...valoriSedeAttivita(d) };
+}
+
+/** Funzione dei valori di ogni modulo. */
+export const VALORI_MODULO: Record<ModelloModulo['id'], (s: Sopralluogo, d: DatiModuli, t: Tecnico) => Valori> = {
+  pin3: valoriPin3,
+  pin31: valoriPin31,
+  pin2: valoriPin2,
+  pin21: valoriPin21,
+  pin1: valoriPin1,
+  pin7: valoriPin7,
+  pin22: valoriPin22,
+  pin23: valoriPin23,
+  pin25: valoriPin25,
+  pin26: valoriPin26,
+};
+
 /** Nome del file: "VIA CIVICO_MOD. PIN 3 - 2023_RINNOVO PERIODICO.docx" come nell'archivio dello studio. */
 export function nomeFileModulo(id: ModelloModulo['id'], s: Sopralluogo): string {
   const c = s.condominio;
   const base = [c.indirizzo.trim() || 'pratica'].join(' ').replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim();
-  const num = id === 'pin3' || id === 'pin2' ? '01_' : '02_';
+  const num = id === 'pin3' || id === 'pin2' || id === 'pin1' || id === 'pin7' ? '01_' : '02_';
   return `${num}${base}_${MODELLI[id].nome}.docx`;
 }

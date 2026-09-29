@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
 import { tecnicoVuoto } from '../src/lib/catalogo';
-import { compilaModello, dividiCodice, dividiIndirizzo, moduliPredefiniti, nomeFileModulo, professionistaVuoto, valoriPin2, valoriPin21, valoriPin3, valoriPin31 } from '../src/lib/moduliVvf';
+import { compilaModello, dividiCodice, dividiIndirizzo, moduliPredefiniti, nomeFileModulo, professionistaVuoto, valoriPin2, valoriPin21, valoriPin3, valoriPin31, MODELLI, VALORI_MODULO } from '../src/lib/moduliVvf';
 import type { Tecnico } from '../src/lib/types';
 import { sopralluogoCon } from './aiuti';
 
@@ -151,3 +151,44 @@ describe('nome del file', () => {
     expect(nomeFileModulo('pin21', s)).toBe('02_Via Aosta, 21_MOD. PIN 2.1 - 2018_ASSEVERAZIONE.docx');
   });
 });
+
+describe('altri moduli: PIN 1, 2.2, 2.3, 2.5, 2.6, 7', () => {
+  const ids = ['pin1', 'pin7', 'pin22', 'pin23', 'pin25', 'pin26'] as const;
+
+  it('ogni modello si compila senza segnaposto rimasti e con i dati del professionista e dell’attività', async () => {
+    const { s, d } = esempio();
+    for (const id of ids) {
+      const { testo, xml } = await testi(await compilaModello(modello(MODELLI[id].file), VALORI_MODULO[id](s, d, tecnico)));
+      expect(xml, id).not.toContain('{{');
+      expect(xml.match(/<w:default(?! w:val="[01]")/g), id).toBeNull();
+      expect(testo, id).toContain('VIA AOSTA'.length ? '20155' : '');
+      if (id !== 'pin7') expect(testo, id).toContain('ROSSI');
+    }
+  });
+
+  it('PIN 7 e PIN 1 riportano il titolare; PIN 7 anche la classe', async () => {
+    const { s, d } = esempio();
+    for (const id of ['pin7', 'pin1'] as const) {
+      const { testo } = await testi(await compilaModello(modello(MODELLI[id].file), VALORI_MODULO[id](s, d, tecnico)));
+      for (const atteso of ['BIANCHI', 'LUCA', 'VIA VERDI', 'AMMINISTRATORE PRO TEMPORE', 'EDIFICIO DI CIVILE ABITAZIONE']) expect(testo, `${id} ${atteso}`).toContain(atteso);
+    }
+    expect((await testi(await compilaModello(modello('pin7-voltura.docx'), valoriPin7Prova()))).testo).toContain('77.1.A');
+  });
+
+  it('PIN 2.5 e 2.6 mettono la provincia dell’albo, PIN 2.2 e 2.3 il collegio', async () => {
+    const { s, d } = esempio();
+    expect((await testi(await compilaModello(modello('pin26-non-aggravio-rischio.docx'), VALORI_MODULO.pin26(s, d, tecnico)))).testo).toContain('MILANO');
+    expect((await testi(await compilaModello(modello('pin22-cert-rei.docx'), VALORI_MODULO.pin22(s, d, tecnico)))).testo).toContain('COLLEGIO GEOMETRI');
+  });
+
+  it('nome del file dei nuovi moduli', () => {
+    const { s } = esempio();
+    expect(nomeFileModulo('pin7', s)).toBe('01_Via Aosta, 21_MOD. PIN 7 - 2018_VOLTURA.docx');
+    expect(nomeFileModulo('pin26', s)).toBe('02_Via Aosta, 21_MOD. PIN 2.6 - 2018_NON AGGRAVIO RISCHIO.docx');
+  });
+});
+
+function valoriPin7Prova() {
+  const { s, d } = esempio();
+  return VALORI_MODULO.pin7(s, d, tecnico);
+}

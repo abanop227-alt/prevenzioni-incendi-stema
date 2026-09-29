@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { condividi, fileDaBlob, isMobile, puoCondividere, scarica } from '../lib/condividi';
 import { leggiAmministratore, leggiTecnico, salvaAmministratore } from '../lib/db';
-import { generaModulo, moduliPredefiniti, nomeFileModulo, valoriPin2, valoriPin21, valoriPin3, valoriPin31, type ModelloModulo } from '../lib/moduliVvf';
+import { generaModulo, moduliPredefiniti, nomeFileModulo, VALORI_MODULO, type ModelloModulo } from '../lib/moduliVvf';
 import { documentiPratica, praticaDi } from '../lib/pratiche';
 import type { DatiModuli, Sopralluogo, Tecnico } from '../lib/types';
 import { Campo } from './Campo';
@@ -28,6 +28,16 @@ const MODULI_PER_TIPO: Record<'rinnovo' | 'scia', { id: ModelloModulo['id']; doc
     { id: 'pin21', documento: 'pin21', testo: 'MOD. PIN 2.1 – asseverazione' },
   ],
 };
+
+/** Altri moduli VV.F. che possono servire, con i dati già noti (il resto si scrive a mano nel Word). */
+const ALTRI_MODULI: { id: ModelloModulo['id']; testo: string }[] = [
+  { id: 'pin1', testo: 'PIN 1 – valutazione progetto' },
+  { id: 'pin7', testo: 'PIN 7 – voltura' },
+  { id: 'pin22', testo: 'PIN 2.2 – certificazione REI' },
+  { id: 'pin23', testo: 'PIN 2.3 – dichiarazione prodotto' },
+  { id: 'pin25', testo: 'PIN 2.5 – certificazione impianto' },
+  { id: 'pin26', testo: 'PIN 2.6 – non aggravio rischio' },
+];
 
 /** Controlli sui dati prima di generare i moduli: cosa manca per non consegnare un modulo con riquadri vuoti. */
 function daCompletare(s: Sopralluogo, m: DatiModuli, tecnico: Tecnico): string[] {
@@ -76,7 +86,7 @@ export default function StepModuli({ s, aggiorna }: Props) {
     setGenerando(id);
     setEsito(null);
     try {
-      const valori = { pin3: valoriPin3, pin31: valoriPin31, pin2: valoriPin2, pin21: valoriPin21 }[id](s, m, tecnico);
+      const valori = VALORI_MODULO[id](s, m, tecnico);
       const blob = await generaModulo(id, valori);
       const file = fileDaBlob(blob, nomeFileModulo(id, s));
       await salvaAmministratore(s.condominio.pressoAmministrazione, m.titolare).catch(() => {});
@@ -209,6 +219,17 @@ export default function StepModuli({ s, aggiorna }: Props) {
               </button>
             ))}
           </div>
+          <details className="card">
+            <summary>Altri moduli VV.F.</summary>
+            <p className="muto piccolo">Si compilano i dati anagrafici e dell’attività; le parti tecniche e le firme restano da fare nel Word.</p>
+            <div className="riga-pulsanti">
+              {ALTRI_MODULI.map((mod) => (
+                <button key={mod.id} className="btn" onClick={() => genera(mod.id)} disabled={!!generando || !tecnico}>
+                  {generando === mod.id ? 'Genero…' : mod.testo}
+                </button>
+              ))}
+            </div>
+          </details>
           {esito && <p className="promemoria">{esito}</p>}
           <p className="muto piccolo">Il Word è il modulo ufficiale compilato: controllalo, firmalo e convertilo in PDF come fai oggi.</p>
         </>
