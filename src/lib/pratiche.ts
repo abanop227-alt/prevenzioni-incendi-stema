@@ -54,6 +54,12 @@ export function motivoSciaBloccata(s: Sopralluogo): string | null {
     : 'Porta la ROA a “Lavori eseguiti” per compilare la SCIA.';
 }
 
+/** Nuova pratica di qualsiasi tipo, senza partire da una ROA (es. SCIA o rinnovo per uno stabile senza ROA in archivio). */
+export function nuovaPratica(tipo: TipoPratica, referente = ''): Sopralluogo {
+  const nuovo = nuovoSopralluogo();
+  return { ...nuovo, pratica: { ...praticaVuota(tipo), referente } };
+}
+
 /**
  * Nuova pratica (SCIA o rinnovo) sullo stesso stabile: copia condominio e attività;
  * frasi e foto della ROA restano nella ROA.

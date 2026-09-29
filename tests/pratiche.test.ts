@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { nuovoSopralluogo } from '../src/lib/catalogo';
-import { anniRinnovo, conStato, giorniAllaScadenza, motivoSciaBloccata, nuovaPraticaDa, praticaDi, puoCreareScia, scadenzaRinnovo, scadenzeDistinte } from '../src/lib/pratiche';
+import { anniRinnovo, conStato, giorniAllaScadenza, motivoSciaBloccata, nuovaPratica, nuovaPraticaDa, praticaDi, puoCreareScia, scadenzaRinnovo, scadenzeDistinte } from '../src/lib/pratiche';
 import { sopralluogoCon } from './aiuti';
 
 describe('flusso della pratica', () => {
@@ -81,3 +81,14 @@ describe('scadenza del rinnovo (art. 5 D.P.R. 151/2011)', () => {
     expect(giorniAllaScadenza('2026-09-01', '2026-09-29')).toBe(-28);
   });
 });
+
+describe('pratiche senza ROA', () => {
+  it('SCIA e rinnovo si creano da zero, con il referente e senza origine', () => {
+    for (const tipo of ['scia', 'rinnovo'] as const) {
+      const s = nuovaPratica(tipo, 'ABA');
+      expect(praticaDi(s)).toMatchObject({ tipo, stato: 'bozza', referente: 'ABA', origineId: null });
+      expect(s.attivita).toEqual([]);
+    }
+  });
+});
+

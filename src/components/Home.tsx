@@ -19,7 +19,7 @@ import Sincronizzazione from './Sincronizzazione';
 import { programmaSync, type StatoAutoSync } from '../lib/autosync';
 import { leggiConfigSync, registraEliminazione } from '../lib/sync';
 import { dataItaliana, oggiISO } from '../lib/util';
-import { NOME_STATO, STATI, TIPI, conStato, motivoSciaBloccata, nomeStato, nuovaPraticaDa, praticaDi, praticaVuota, puoCreareScia } from '../lib/pratiche';
+import { NOME_STATO, STATI, TIPI, conStato, motivoSciaBloccata, nomeStato, nuovaPratica, nuovaPraticaDa, praticaDi, praticaVuota, puoCreareScia } from '../lib/pratiche';
 import type { StatoPratica, TipoPratica } from '../lib/types';
 
 interface Props {
@@ -58,6 +58,15 @@ export default function Home({ catalogo, catalogoPersonalizzato, onCatalogoCambi
     const nome = (await leggiConfigSync().catch(() => undefined))?.nome?.trim();
     if (nome) s.pratica = { ...praticaVuota('roa'), referente: nome };
     await salvaSopralluogo(s);
+    onApri(s.id);
+  }
+
+  /** SCIA o rinnovo da zero, senza ROA: si sceglie l'attività e lo stabile nei primi passi. */
+  async function nuovaDaZero(tipo: 'scia' | 'rinnovo') {
+    const nome = (await leggiConfigSync().catch(() => undefined))?.nome?.trim();
+    const s = nuovaPratica(tipo, nome ?? '');
+    await salvaSopralluogo(s);
+    programmaSync(1000);
     onApri(s.id);
   }
 
@@ -152,8 +161,17 @@ export default function Home({ catalogo, catalogoPersonalizzato, onCatalogoCambi
         )}
 
         <button className="btn btn-primario btn-grande btn-blocco" onClick={nuovo}>
-          + Nuovo sopralluogo
+          + Nuovo sopralluogo (ROA)
         </button>
+        <div className="riga-pulsanti">
+          <button className="btn" onClick={() => nuovaDaZero('scia')}>
+            + Nuova SCIA
+          </button>
+          <button className="btn" onClick={() => nuovaDaZero('rinnovo')}>
+            + Nuovo rinnovo
+          </button>
+        </div>
+        <p className="muto piccolo">SCIA e rinnovo si possono compilare anche senza ROA: scegli le attività, cerca lo stabile e genera i moduli.</p>
 
         <h2 className="titolo-sezione">Sopralluoghi</h2>
         {elenco === null && <p className="muto">Caricamento…</p>}
