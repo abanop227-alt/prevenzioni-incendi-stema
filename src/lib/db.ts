@@ -16,7 +16,7 @@ let dbPromise: Promise<IDBPDatabase<RoaDB>> | null = null;
 
 export function db(): Promise<IDBPDatabase<RoaDB>> {
   if (!dbPromise) {
-    dbPromise = openDB<RoaDB>('roa-antincendio', 2, {
+    dbPromise = openDB<RoaDB>('pi-stema', 1, {
       upgrade(d, versionePrecedente) {
         if (versionePrecedente < 1) {
           d.createObjectStore('sopralluoghi', { keyPath: 'id' });

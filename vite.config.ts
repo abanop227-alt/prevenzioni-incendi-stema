@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
     transformIndexHtml: (html) => html.replace('%PRODOTTO%', prodotto).replace('%PRODOTTO_BREVE%', breve),
   };
   return {
-  base: '/ROA/',
+  base: '/prevenzioni-incendi-stema/',
   plugins: [
     react(),
     titoloHtml,
@@ -27,8 +27,8 @@ export default defineConfig(({ mode }) => {
         short_name: breve,
         description: 'Prevenzione incendi: sopralluoghi, ROA, prove idranti, SCIA e rinnovi (D.P.R. 151/2011)',
         lang: 'it',
-        start_url: '/ROA/',
-        scope: '/ROA/',
+        start_url: '/prevenzioni-incendi-stema/',
+        scope: '/prevenzioni-incendi-stema/',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
@@ -42,7 +42,7 @@ export default defineConfig(({ mode }) => {
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,ico,json,webmanifest,docx}'],
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
-        navigateFallback: '/ROA/index.html',
+        navigateFallback: '/prevenzioni-incendi-stema/index.html',
       },
     }),
   ],
