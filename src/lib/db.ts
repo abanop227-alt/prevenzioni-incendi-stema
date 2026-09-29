@@ -1,5 +1,5 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
-import type { Commessa } from './commesse';
+import { clienteDa, type Commessa } from './commesse';
 import type { Stabile } from './stabili';
 import type { Catalogo, DatiModuli, FotoRecord, Sopralluogo, Tecnico } from './types';
 import { tecnicoVuoto } from './catalogo';
@@ -213,18 +213,26 @@ export async function eliminaStabiliDi(origine: string): Promise<void> {
 type Titolare = DatiModuli['titolare'];
 const chiaveAmministratore = (nome: string) => nome.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
 
+/** Chiave canonica di un'amministrazione: il nome breve ("Amministrazione PASQUALI" e la cartella "PASQUALI" → "alias:pasquali"). */
+const chiaveCanonica = (nome: string) => {
+  const breve = chiaveAmministratore(clienteDa(nome));
+  return breve ? `alias:${breve}` : '';
+};
+
 export async function leggiAmministratore(nome: string): Promise<Titolare | undefined> {
-  const k = chiaveAmministratore(nome);
-  if (!k) return undefined;
   const r = (await (await db()).get('impostazioni', 'amministratori')) as Record<string, Titolare> | undefined;
-  return r?.[k];
+  // prima la chiave canonica, poi quella per nome intero (voci ricordate dalle versioni precedenti)
+  for (const k of [chiaveCanonica(nome), chiaveAmministratore(nome)]) if (k && r?.[k]) return r[k];
+  return undefined;
 }
 
-export async function salvaAmministratore(nome: string, titolare: Titolare): Promise<void> {
-  const k = chiaveAmministratore(nome);
+/** Ricorda il titolare per l'amministrazione. Con `soloSeMancante` non sostituisce un titolare già ricordato (importazione dall'archivio). */
+export async function salvaAmministratore(nome: string, titolare: Titolare, soloSeMancante = false): Promise<void> {
+  const k = chiaveCanonica(nome) || chiaveAmministratore(nome);
   if (!k || !titolare.cognome.trim()) return;
   const d = await db();
   const r = ((await d.get('impostazioni', 'amministratori')) as Record<string, Titolare> | undefined) ?? {};
+  if (soloSeMancante && (r[k] || r[chiaveAmministratore(nome)])) return;
   await d.put('impostazioni', { ...r, [k]: titolare }, 'amministratori');
   await segnaModificaDati('amministratori');
 }

@@ -199,11 +199,11 @@ export function riempiVuoti<T>(attuale: T, nuovo: T): T {
 }
 
 /**
- * Dati dei moduli completati. Per ogni campo vuoto vale, in ordine: la rubrica dell'amministrazione, il modulo già in archivio,
+ * Dati dei moduli completati. Per ogni campo vuoto vale, in ordine: il modulo già in archivio per quello stabile, la rubrica dell'amministrazione,
  * i dati di condominio e attività (`predefiniti`). Ciò che l'utente ha già scritto in `attuali` non si tocca mai.
  */
 export function moduliCompletati(attuali: DatiModuli | undefined, predefiniti: DatiModuli, letti?: DatiLetti, noto?: DatiModuli['titolare']): DatiModuli {
   const daArchivio = letti ? { comando: letti.comando, titolare: letti.titolare, ragione: letti.ragione, sede: letti.sede, attivita: letti.attivita } : {};
-  const priorita = riempiVuoti(riempiVuoti((noto ? { titolare: noto } : {}) as Partial<DatiModuli>, daArchivio as Partial<DatiModuli>), predefiniti) as DatiModuli;
+  const priorita = riempiVuoti(riempiVuoti(daArchivio as Partial<DatiModuli>, (noto ? { titolare: noto } : {}) as Partial<DatiModuli>), predefiniti) as DatiModuli;
   return attuali ? riempiVuoti(attuali, priorita) : priorita;
 }

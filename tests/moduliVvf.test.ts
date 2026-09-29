@@ -278,10 +278,12 @@ describe('lettura di un modulo già compilato (andata e ritorno con i nostri mod
     // solo archivio: il titolare arriva dal modulo (non resta l'indirizzo dell'amministrazione predefinito)
     const daArchivio = moduliCompletati(undefined, pre, letti);
     expect(daArchivio.titolare).toMatchObject({ cognome: 'BIANCHI', codiceFiscale: 'BNCLCU70A01F205X', indirizzo: 'VIA VERDI', civico: '5' });
-    // rubrica prima dell'archivio
-    const noto = { ...d.titolare, cognome: 'NERI', nome: 'ANNA', codiceFiscale: 'NRINNA80A41F205Z', indirizzo: '', civico: '', qualifica: '' };
-    const conRubrica = moduliCompletati(undefined, pre, letti, noto);
-    expect(conRubrica.titolare).toMatchObject({ cognome: 'NERI', nome: 'ANNA', indirizzo: 'VIA VERDI' }); // l'indirizzo che la rubrica non ha lo completa l'archivio
+    // il modulo dello stesso stabile prevale sulla rubrica dell'amministrazione; la rubrica completa ciò che il modulo non ha
+    const noto = { ...d.titolare, cognome: 'NERI', nome: 'ANNA', codiceFiscale: 'NRINNA80A41F205Z', indirizzo: '', civico: '', qualifica: '', email: 'neri@example.it' };
+    const conRubrica = moduliCompletati(undefined, pre, { ...letti, titolare: { ...letti.titolare, email: '' } }, noto);
+    expect(conRubrica.titolare).toMatchObject({ cognome: 'BIANCHI', nome: 'LUCA', email: 'neri@example.it' });
+    // senza modulo in archivio vale la rubrica
+    expect(moduliCompletati(undefined, pre, undefined, noto).titolare).toMatchObject({ cognome: 'NERI', codiceFiscale: 'NRINNA80A41F205Z' });
     // niente archivio né rubrica: restano i dati del condominio
     expect(moduliCompletati(undefined, pre).titolare.indirizzo).toBe('VIA NUOVA');
     // già scritto: non si tocca

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { tecnicoVuoto } from '../src/lib/catalogo';
-import { chiaviDaCartella, chiaviIndirizzo, datiDaArchivio, èModuloPrincipale } from '../src/lib/moduliInArchivio';
+import { amministratoriDaArchivio, chiaviDaCartella, chiaviIndirizzo, datiDaArchivio, èModuloPrincipale } from '../src/lib/moduliInArchivio';
 import { compilaModello, moduliPredefiniti, professionistaVuoto, valoriPin3 } from '../src/lib/moduliVvf';
 import { chiaveIndirizzo } from '../src/lib/stabiliAggiornati';
 import { sopralluogoCon } from './aiuti';
@@ -106,5 +106,23 @@ describe('lettura dall’archivio (struttura reale)', () => {
     const vuoto = await datiDaArchivio(radice as unknown as FileSystemDirectoryHandle, 'Via Inesistente, 1');
     expect(vuoto).toMatchObject({ cartelle: 0, docx: 0 });
     expect(vuoto.letti).toBeUndefined();
+  });
+
+  it('titolare di ogni amministratore dai moduli più recenti; salta chi non ha moduli leggibili', async () => {
+    const s = sopralluogoCon(['77.1.A']);
+    Object.assign(s.condominio, { indirizzo: 'Via Linati, 8', cap: '20128', comune: 'Milano' });
+    const d = moduliPredefiniti(s);
+    Object.assign(d.titolare, { cognome: 'BIANCHI', nome: 'LUCA', codiceFiscale: 'BNCLCU70A01F205X' });
+    const modello = new Uint8Array(readFileSync(new URL('../public/moduli/pin3-rinnovo.docx', import.meta.url)));
+    const docx = new Uint8Array(await (await compilaModello(modello, valoriPin3(s, d, { ...tecnicoVuoto, vvf: professionistaVuoto() }))).arrayBuffer());
+
+    const radice = new CartellaFinta('ARCHIVIO 2026');
+    radice.percorso('PASQUALI', '01_LAVORI', 'CPI', 'LINATI, 8_ROA').figli.set('01_L_PIN_3_2023 Rinnovo_FV.docx', new FileFinto('01_L_PIN_3_2023 Rinnovo_FV.docx', docx, 3));
+    radice.percorso('BARBATI ERMINIO (STUDIO C.S.E.)', '01_LAVORI', 'CPI', 'TAJANI, 16_ROA').figli.set('01_T_MOD. PIN 2-2023_SCIA.docx', new FileFinto('01_T_MOD. PIN 2-2023_SCIA.docx', docx, 3));
+    radice.percorso('GUIDO', '01_LAVORI', 'CPI', 'MERULA, 9_RINNOVO').figli.set('03_M_PIN 3_2018.pdf', new FileFinto('03_M_PIN 3_2018.pdf', new Uint8Array([1])));
+    radice.percorso('BARESI', 'RGSA').figli.set('P_RGSA.docx', new FileFinto('P_RGSA.docx', new Uint8Array([1])));
+    const lista = await amministratoriDaArchivio(radice as unknown as FileSystemDirectoryHandle);
+    expect(lista.map((a) => a.amministrazione).sort()).toEqual(['BARBATI ERMINIO (STUDIO C.S.E.)', 'PASQUALI']);
+    expect(lista[0].titolare).toMatchObject({ cognome: 'BIANCHI', nome: 'LUCA', codiceFiscale: 'BNCLCU70A01F205X' });
   });
 });

@@ -96,3 +96,37 @@ export async function datiDaArchivio(radice: FileSystemDirectoryHandle, indirizz
   }
   return esito;
 }
+
+export interface AmministratoreLetto {
+  /** nome della cartella dell'amministratore nell'archivio */
+  amministrazione: string;
+  titolare: DatiLetti['titolare'];
+  file: string;
+}
+
+/**
+ * Per ogni cartella di amministratore, il titolare scritto nel MOD. PIN 2/3 .docx più recente che si legge.
+ * Serve a riempire la rubrica una volta sola, invece di aspettare che ogni amministrazione venga usata nell'app.
+ */
+export async function amministratoriDaArchivio(radice: FileSystemDirectoryHandle, avanzamento?: (nome: string) => void): Promise<AmministratoreLetto[]> {
+  const out: AmministratoreLetto[] = [];
+  for await (const amm of voci(radice)) {
+    if (amm.kind !== 'directory' || CARTELLE_DA_SALTARE.test(amm.name)) continue;
+    const cpi = await cartellaCpi(amm as FileSystemDirectoryHandle).catch(() => undefined);
+    if (!cpi) continue;
+    avanzamento?.(amm.name);
+    const t: Trovati = { docx: [], altri: 0 };
+    await moduliInCartella(cpi, t, 5).catch(() => undefined);
+    for (const f of t.docx.sort((a, b) => b.lastModified - a.lastModified).slice(0, 8)) {
+      try {
+        const l = await leggiModuloCompilato(f, f.name);
+        if (!l.titolare.cognome.trim() || !l.titolare.nome.trim()) continue;
+        out.push({ amministrazione: amm.name, titolare: l.titolare, file: f.name });
+        break;
+      } catch {
+        /* si prova il file successivo */
+      }
+    }
+  }
+  return out;
+}

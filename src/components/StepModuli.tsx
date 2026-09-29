@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { condividi, fileDaBlob, isMobile, puoCondividere, scarica } from '../lib/condividi';
-import { leggiAmministratore, leggiCartellaArchivio, leggiTecnico, salvaAmministratore } from '../lib/db';
-import { permessoScrittura } from '../lib/archivio';
+import { leggiAmministratore, leggiCartellaArchivio, leggiTecnico, salvaAmministratore, salvaCartellaArchivio } from '../lib/db';
+import { cartellaSupportata, permessoScrittura, scegliCartella } from '../lib/archivio';
 import { moduliCompletati, type DatiLetti } from '../lib/moduliEsistenti';
-import { datiDaArchivio } from '../lib/moduliInArchivio';
+import { amministratoriDaArchivio, datiDaArchivio } from '../lib/moduliInArchivio';
 import { generaModulo, moduliPredefiniti, nomeFileModulo, VALORI_MODULO, type ModelloModulo } from '../lib/moduliVvf';
 import { documentiPratica, praticaDi } from '../lib/pratiche';
 import type { DatiModuli, Sopralluogo, Tecnico } from '../lib/types';
@@ -103,12 +103,36 @@ export default function StepModuli({ s, aggiorna }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /** Riempie la rubrica con il titolare di ogni amministratore, letto dai moduli in archivio (senza sostituire quelli già ricordati). */
+  async function riempiRubrica(c: FileSystemDirectoryHandle): Promise<number> {
+    const lista = await amministratoriDaArchivio(c, (nome) => setRicerca(`Leggo l’archivio: ${nome}…`));
+    for (const a of lista) await salvaAmministratore(a.amministrazione, a.titolare, true).catch(() => {});
+    return lista.length;
+  }
+
+  /** Scelta della cartella dell'archivio direttamente da qui (una volta sola): poi tutto si compila da solo. */
+  async function scegliEcerca() {
+    try {
+      const c = await scegliCartella();
+      await salvaCartellaArchivio(c);
+      setCartella(c);
+      setRicerca('Leggo l’archivio…');
+      const n = await riempiRubrica(c);
+      await cercaInArchivio(c, await leggiAmministratore(s.condominio.pressoAmministrazione).catch(() => undefined));
+      setRicerca((r) => `Letti i titolari di ${n} amministratori dall’archivio. ${r ?? ''}`);
+    } catch (e) {
+      if ((e as Error).name !== 'AbortError') setRicerca(`Errore: ${(e as Error).message}`);
+    }
+  }
+
   async function leggiDaArchivio() {
     if (!cartella) return;
     setRicerca('Cerco nell’archivio…');
     try {
       if (!(await permessoScrittura(cartella, true))) return setRicerca('Serve il permesso di accesso alla cartella dell’archivio.');
+      const n = await riempiRubrica(cartella);
       await cercaInArchivio(cartella, await leggiAmministratore(s.condominio.pressoAmministrazione).catch(() => undefined));
+      setRicerca((r) => `Letti i titolari di ${n} amministratori dall’archivio. ${r ?? ''}`);
     } catch (e) {
       setRicerca(`Errore: ${(e as Error).message}`);
     }
@@ -174,13 +198,22 @@ export default function StepModuli({ s, aggiorna }: Props) {
           <p className="muto piccolo">
             I dati si compilano da soli da condominio, attività, rubrica dell’amministrazione
             {fonte ? <> e dal modulo già in archivio (<em>{fonte}</em>)</> : ' e, sul computer con la cartella archivio scelta, dai moduli già compilati'}. Controllali e correggi se serve.
+            Titolare e codice fiscale vengono dai moduli PIN 2/3 dell’archivio: senza la cartella scelta restano da scrivere una volta per amministrazione.
           </p>
-          {cartella && (
+          {cartella ? (
             <div className="riga-pulsanti">
               <button className="btn" onClick={leggiDaArchivio}>
                 Leggi dai moduli dell’archivio
               </button>
             </div>
+          ) : (
+            cartellaSupportata() && (
+              <div className="riga-pulsanti">
+                <button className="btn btn-primario" onClick={scegliEcerca}>
+                  Scegli la cartella dell’archivio per compilare da solo
+                </button>
+              </div>
+            )
           )}
           {ricerca && <p className="promemoria">{ricerca}</p>}
           <details className="card" open>
