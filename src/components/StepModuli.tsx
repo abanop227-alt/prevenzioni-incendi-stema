@@ -191,6 +191,32 @@ export default function StepModuli({ s, aggiorna }: Props) {
               </div>
             ))}
           </details>
+          <details className="card">
+            <summary>Firma{p.tipo === 'scia' ? ' e asseverazione (MOD. PIN 2.1)' : ''}</summary>
+            <Campo etichetta="Data di firma (se vuota, si scrive a mano)" type="date" valore={m.dataFirma ?? ''} onValore={(v) => set('dataFirma', v)} />
+            {p.tipo === 'scia' && (
+              <>
+                <label className="campo">
+                  <span className="campo-etichetta">Intervento</span>
+                  <select value={m.intervento ?? ''} onChange={(e) => set('intervento', e.target.value)}>
+                    <option value="">Da indicare a mano</option>
+                    <option value="nuovo">Nuovo insediamento</option>
+                    <option value="modifica">Modifica di attività esistente</option>
+                  </select>
+                </label>
+                <label className="riga-check">
+                  <input type="checkbox" checked={!!m.progettoApprovato?.attivo} onChange={(e) => set('progettoApprovato', { data: '', protocollo: '', ...m.progettoApprovato, attivo: e.target.checked })} />
+                  <span>Progetto approvato dal Comando VV.F. (solo attività di categoria B e C)</span>
+                </label>
+                {m.progettoApprovato?.attivo && (
+                  <div className="griglia-2">
+                    <Campo etichetta="In data" type="date" valore={m.progettoApprovato.data} onValore={(v) => set('progettoApprovato.data', v)} />
+                    {campo('Prot. n.', 'progettoApprovato.protocollo')}
+                  </div>
+                )}
+              </>
+            )}
+          </details>
           {p.tipo === 'rinnovo' && (
           <details className="card">
             <summary>Asseverazione (MOD. PIN 3.1)</summary>

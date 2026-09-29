@@ -192,3 +192,27 @@ function valoriPin7Prova() {
   const { s, d } = esempio();
   return VALORI_MODULO.pin7(s, d, tecnico);
 }
+
+describe('completamenti dei moduli SCIA', () => {
+  it('PIN 2 riporta la sottoclasse del versamento; PIN 2.1 data, intervento e progetto approvato', async () => {
+    const { s, d } = esempio();
+    d.dataFirma = '2026-09-29';
+    d.intervento = 'nuovo';
+    d.progettoApprovato = { attivo: true, data: '2025-03-10', protocollo: '12345' };
+    const pin2 = await testi(await compilaModello(modello('pin2-scia.docx'), valoriPin2(s, d, tecnico)));
+    expect(pin2.xml).not.toContain('{{');
+    expect(pin2.testo).toContain('\n1.A\n');
+    const caselle = (x: string) => (x.match(/<w:checkBox>[\s\S]*?<\/w:checkBox>/g) ?? []).map((c) => /w:val="(\d)"/.exec(c)?.[1]);
+    const pin21 = await testi(await compilaModello(modello('pin21-asseverazione-scia.docx'), valoriPin21(s, d, tecnico)));
+    expect(pin21.xml).not.toContain('{{');
+    for (const atteso of ['29/09/2026', '10/03/2025', '12345']) expect(pin21.testo, atteso).toContain(atteso);
+    const spuntate = (x: string) => caselle(x).filter((v) => v === '1').length;
+    expect(caselle(pin21.xml).slice(0, 2)).toEqual(['1', '0']); // nuovo insediamento, modifica
+    d.intervento = 'modifica';
+    d.progettoApprovato = undefined;
+    const altro = await testi(await compilaModello(modello('pin21-asseverazione-scia.docx'), valoriPin21(s, d, tecnico)));
+    expect(caselle(altro.xml).slice(0, 2)).toEqual(['0', '1']);
+    expect(spuntate(pin21.xml) - spuntate(altro.xml)).toBe(1); // solo la casella dei progetti approvati cambia (nuovo→modifica è a somma zero)
+  });
+});
+

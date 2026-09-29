@@ -331,6 +331,7 @@ export function valoriPin2(s: Sopralluogo, d: DatiModuli, tecnico: Tecnico): Val
     fProv: maiuscolo(t.provincia),
     ...valoriProfessionista(p),
     totale: d.versamentoTotale.trim(),
+    dataFirma: dataFirma(d),
   };
   for (let k = 0; k < 6; k++) {
     const r = d.versamento[k];

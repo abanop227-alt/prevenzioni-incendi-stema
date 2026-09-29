@@ -436,6 +436,7 @@ def pin2(src):
     m.campo('comune', 4, 'dComune')
     m.campo('provincia', 3, 'dProv')
     m.campo('telefono', 4, 'dTel')
+    m.campo('Data', 0, 'dataFirma')
     return m, 'pin2-scia.docx'
 
 
