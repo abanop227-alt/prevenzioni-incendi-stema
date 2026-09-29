@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { scarica } from '../lib/condividi';
 import { elencaSopralluoghi, elencaStabili } from '../lib/db';
 import { FASCE, nellaFascia, scadenziario, type Fascia, type VoceScadenza } from '../lib/scadenziario';
+import { useDatiSincronizzati } from '../lib/useDatiSincronizzati';
 import { creaXlsx } from '../lib/xlsxScrittura';
 import { dataItaliana } from '../lib/util';
 
@@ -20,11 +21,13 @@ export default function Scadenziario() {
   const [amm, setAmm] = useState('');
   const [fascia, setFascia] = useState<Fascia | ''>('entro12');
 
-  useEffect(() => {
+  const carica = useCallback(() => {
     Promise.all([elencaStabili(), elencaSopralluoghi()])
       .then(([st, so]) => setVoci(scadenziario(st, so)))
       .catch(() => setVoci([]));
   }, []);
+  useEffect(carica, [carica]);
+  useDatiSincronizzati(carica);
 
   const amministrazioni = [...new Set((voci ?? []).map((v) => v.amministrazione).filter(Boolean))].sort();
   const dellAmm = (voci ?? []).filter((v) => !amm || v.amministrazione === amm);

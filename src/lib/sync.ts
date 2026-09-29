@@ -212,114 +212,124 @@ async function esegui({ fetch: f = fetch, aperto = null }: { fetch?: Fetch; aper
   /** sopralluoghi aperti nell'editor con una versione più recente altrove: non si sovrascrivono */
   const rimandati = new Set<string>();
 
-  // 1) novità dagli altri dispositivi
-  for (const [percorso, sha] of remoto) {
-    const m = /^sopralluoghi\/(.+)\.json$/.exec(percorso);
-    if (!m || stato.sha[percorso] === sha) continue;
-    const id = m[1];
-    const file = JSON.parse(leggi.decode(await gh.blob(sha))) as FileSopralluogo;
-    const locale = await d.get('sopralluoghi', id);
+  // un problema con i sopralluoghi non deve bloccare la sincronizzazione dei dati importati: l'errore si segnala alla fine
+  let errore: unknown;
+  try {
+    // 1) novità dagli altri dispositivi
+    for (const [percorso, sha] of remoto) {
+      const m = /^sopralluoghi\/(.+)\.json$/.exec(percorso);
+      if (!m || stato.sha[percorso] === sha) continue;
+      const id = m[1];
+      const file = JSON.parse(leggi.decode(await gh.blob(sha))) as FileSopralluogo;
+      const locale = await d.get('sopralluoghi', id);
 
-    if (file.eliminato) {
-      if (locale && locale.modificato <= (file.modificato ?? 0) && id !== aperto) {
-        const tx = d.transaction(['sopralluoghi', 'foto'], 'readwrite');
-        await tx.objectStore('sopralluoghi').delete(id);
-        for await (const cur of tx.objectStore('foto').index('sopralluogoId').iterate(id)) await cur.delete();
-        await tx.done;
-        esito.eliminati++;
+      if (file.eliminato) {
+        if (locale && locale.modificato <= (file.modificato ?? 0) && id !== aperto) {
+          const tx = d.transaction(['sopralluoghi', 'foto'], 'readwrite');
+          await tx.objectStore('sopralluoghi').delete(id);
+          for await (const cur of tx.objectStore('foto').index('sopralluogoId').iterate(id)) await cur.delete();
+          await tx.done;
+          esito.eliminati++;
+        }
+        stato.sha[percorso] = sha;
+        delete stato.versioni[id];
+        continue;
+      }
+
+      const s = file.sopralluogo;
+      if (!s) continue;
+      if (id === aperto) {
+        // aperto nell'editor: lo aggiorno alla chiusura, senza sovrascrivere la versione più recente
+        if (!locale || s.modificato > locale.modificato) rimandati.add(id);
+        continue;
+      }
+      if (stato.eliminati[id]) {
+        // cancellato qui ma modificato altrove dopo: vince la modifica più recente
+        if (s.modificato <= stato.eliminati[id]) continue;
+        delete stato.eliminati[id];
+      }
+      if (!locale || s.modificato > locale.modificato) {
+        // foto mancanti prima del sopralluogo, così non restano riferimenti vuoti
+        for (const meta of file.foto ?? []) {
+          if (await d.get('foto', meta.id)) continue;
+          const shaFoto = remoto.get(`foto/${meta.id}.${estensione(meta.type)}`);
+          if (!shaFoto) continue;
+          const dati = await gh.blob(shaFoto);
+          const rec: FotoRecord = {
+            ...meta,
+            sopralluogoId: id,
+            blob: new Blob([dati as BlobPart], { type: meta.type }),
+            creato: Date.now(),
+          };
+          await d.put('foto', rec);
+          esito.foto++;
+        }
+        await d.put('sopralluoghi', s);
+        stato.versioni[id] = s.modificato;
+        esito.ricevuti++;
+      } else if (locale.modificato === s.modificato) {
+        stato.versioni[id] = s.modificato;
       }
       stato.sha[percorso] = sha;
-      delete stato.versioni[id];
-      continue;
     }
 
-    const s = file.sopralluogo;
-    if (!s) continue;
-    if (id === aperto) {
-      // aperto nell'editor: lo aggiorno alla chiusura, senza sovrascrivere la versione più recente
-      if (!locale || s.modificato > locale.modificato) rimandati.add(id);
-      continue;
-    }
-    if (stato.eliminati[id]) {
-      // cancellato qui ma modificato altrove dopo: vince la modifica più recente
-      if (s.modificato <= stato.eliminati[id]) continue;
+    // 2) cancellazioni fatte qui
+    for (const [id, quando] of Object.entries(stato.eliminati)) {
+      const percorso = percorsoSopralluogo(id);
+      const file: FileSopralluogo = { formato: 'roa-sync', eliminato: true, id, modificato: quando };
+      stato.sha[percorso] = await gh.scrivi(
+        percorso,
+        testo.encode(JSON.stringify(file)),
+        `Eliminato sopralluogo (${firma})`,
+        ramo,
+        remoto.get(percorso),
+      );
       delete stato.eliminati[id];
+      delete stato.versioni[id];
+      esito.eliminati++;
     }
-    if (!locale || s.modificato > locale.modificato) {
-      // foto mancanti prima del sopralluogo, così non restano riferimenti vuoti
-      for (const meta of file.foto ?? []) {
-        if (await d.get('foto', meta.id)) continue;
-        const shaFoto = remoto.get(`foto/${meta.id}.${estensione(meta.type)}`);
-        if (!shaFoto) continue;
-        const dati = await gh.blob(shaFoto);
-        const rec: FotoRecord = {
-          ...meta,
-          sopralluogoId: id,
-          blob: new Blob([dati as BlobPart], { type: meta.type }),
-          creato: Date.now(),
-        };
-        await d.put('foto', rec);
-        esito.foto++;
-      }
-      await d.put('sopralluoghi', s);
-      stato.versioni[id] = s.modificato;
-      esito.ricevuti++;
-    } else if (locale.modificato === s.modificato) {
-      stato.versioni[id] = s.modificato;
-    }
-    stato.sha[percorso] = sha;
-  }
 
-  // 2) cancellazioni fatte qui
-  for (const [id, quando] of Object.entries(stato.eliminati)) {
-    const percorso = percorsoSopralluogo(id);
-    const file: FileSopralluogo = { formato: 'roa-sync', eliminato: true, id, modificato: quando };
-    stato.sha[percorso] = await gh.scrivi(
-      percorso,
-      testo.encode(JSON.stringify(file)),
-      `Eliminato sopralluogo (${firma})`,
-      ramo,
-      remoto.get(percorso),
-    );
-    delete stato.eliminati[id];
-    delete stato.versioni[id];
-    esito.eliminati++;
-  }
-
-  // 3) modifiche fatte qui
-  for (const s of await d.getAll('sopralluoghi')) {
-    if (stato.versioni[s.id] === s.modificato || rimandati.has(s.id)) continue;
-    const percorso = percorsoSopralluogo(s.id);
-    const foto = await d.getAllFromIndex('foto', 'sopralluogoId', s.id);
-    const usate = new Set(fotoUsate(s));
-    const meta: FileSopralluogo['foto'] = [];
-    for (const ft of foto) {
-      if (!usate.has(ft.id)) continue;
-      const p = `foto/${ft.id}.${estensione(ft.type)}`;
-      if (!remoto.has(p) && !stato.sha[p]) {
-        stato.sha[p] = await gh.scrivi(p, new Uint8Array(await ft.blob.arrayBuffer()), `Foto (${firma})`, ramo);
-        esito.foto++;
+    // 3) modifiche fatte qui
+    for (const s of await d.getAll('sopralluoghi')) {
+      if (stato.versioni[s.id] === s.modificato || rimandati.has(s.id)) continue;
+      const percorso = percorsoSopralluogo(s.id);
+      const foto = await d.getAllFromIndex('foto', 'sopralluogoId', s.id);
+      const usate = new Set(fotoUsate(s));
+      const meta: FileSopralluogo['foto'] = [];
+      for (const ft of foto) {
+        if (!usate.has(ft.id)) continue;
+        const p = `foto/${ft.id}.${estensione(ft.type)}`;
+        if (!remoto.has(p) && !stato.sha[p]) {
+          stato.sha[p] = await gh.scrivi(p, new Uint8Array(await ft.blob.arrayBuffer()), `Foto (${firma})`, ramo);
+          esito.foto++;
+        }
+        meta.push({ id: ft.id, type: ft.type, width: ft.width, height: ft.height });
       }
-      meta.push({ id: ft.id, type: ft.type, width: ft.width, height: ft.height });
+      const file: FileSopralluogo = { formato: 'roa-sync', sopralluogo: s, foto: meta, autore: firma };
+      const nome = s.condominio.nome || s.condominio.indirizzo || s.id.slice(0, 8);
+      stato.sha[percorso] = await gh.scrivi(
+        percorso,
+        testo.encode(JSON.stringify(file)),
+        `${nome} (${firma})`,
+        ramo,
+        remoto.get(percorso) ?? stato.sha[percorso],
+      );
+      stato.versioni[s.id] = s.modificato;
+      esito.inviati++;
+      await salvaStato(stato); // avanzamento salvato: se cade la rete non si ricomincia da capo
     }
-    const file: FileSopralluogo = { formato: 'roa-sync', sopralluogo: s, foto: meta, autore: firma };
-    const nome = s.condominio.nome || s.condominio.indirizzo || s.id.slice(0, 8);
-    stato.sha[percorso] = await gh.scrivi(
-      percorso,
-      testo.encode(JSON.stringify(file)),
-      `${nome} (${firma})`,
-      ramo,
-      remoto.get(percorso) ?? stato.sha[percorso],
-    );
-    stato.versioni[s.id] = s.modificato;
-    esito.inviati++;
-    await salvaStato(stato); // avanzamento salvato: se cade la rete non si ricomincia da capo
+  } catch (e) {
+    errore = e;
   }
 
   // 4) dati importati: stabili con i loro Excel, elenco lavori, rubrica amministratori
   const dati = await sincronizzaDati(gh, ramo, remoto, stato, firma);
   esito.datiInviati = dati.inviati;
   esito.datiRicevuti = dati.ricevuti;
+  if (errore) {
+    await salvaStato(stato);
+    throw errore;
+  }
 
   stato.ultima = Date.now();
   await salvaStato(stato);

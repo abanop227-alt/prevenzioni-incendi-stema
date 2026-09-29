@@ -182,6 +182,8 @@ export async function segnaModificaDati(chiave: string, quando = Date.now()): Pr
   const d = await db();
   const m = ((await d.get('impostazioni', 'datiMod')) as ModificheDati | undefined) ?? {};
   await d.put('impostazioni', { ...m, [chiave]: quando }, 'datiMod');
+  // avvisa la sincronizzazione automatica: i dati importati raggiungono gli altri dispositivi senza altre azioni
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event('pi-dati'));
 }
 
 // ---- stabili (anagrafica importata dagli Excel) ----

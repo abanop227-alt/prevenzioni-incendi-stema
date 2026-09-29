@@ -23,6 +23,7 @@ import { amministrazioni, creaResoconto, mesePrecedente, nomeMese } from '../lib
 import { nomeFileResoconto, resocontoDocx, resocontoXlsx } from '../lib/resocontoDocs';
 import type { Stabile } from '../lib/stabili';
 import type { Sopralluogo } from '../lib/types';
+import { useDatiSincronizzati } from '../lib/useDatiSincronizzati';
 import { dataItaliana } from '../lib/util';
 
 /** Elenco lavori sempre aggiornato, resoconto mensile per amministrazione e aggiornamento dei file dell'archivio. */
@@ -51,6 +52,8 @@ export default function ElencoLavoriResoconti() {
     carica().catch(() => {});
     leggiImpostazione<boolean>('archivioAuto').then((v) => setAutomatico(!!v)).catch(() => {});
   }, [carica]);
+
+  useDatiSincronizzati(() => void carica());
 
   const righe = elencoLavori(importate?.righe ?? [], sopralluoghi);
   const elenco = amministrazioni(righe, stabili);

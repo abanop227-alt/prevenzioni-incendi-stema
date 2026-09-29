@@ -58,6 +58,7 @@ export function avviaSyncAutomatica(): void {
   if (avviata) return;
   avviata = true;
   window.addEventListener('online', () => programmaSync(500));
+  window.addEventListener('pi-dati', () => programmaSync(1500));
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') programmaSync(500);
   });

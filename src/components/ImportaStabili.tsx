@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { elencaStabili, eliminaFileStabili, eliminaStabiliDi, importaStabiliDb, salvaFileStabili } from '../lib/db';
 import { leggiStabiliXlsx } from '../lib/stabili';
+import { useDatiSincronizzati } from '../lib/useDatiSincronizzati';
 
 /** Importazione degli elenchi "Stabili <amministrazione>.xlsx": restano solo su questo dispositivo. */
 export default function ImportaStabili() {
@@ -19,6 +20,7 @@ export default function ImportaStabili() {
   useEffect(() => {
     ricarica();
   }, []);
+  useDatiSincronizzati(ricarica);
 
   async function importa(files: FileList) {
     const esiti: string[] = [];
@@ -41,7 +43,7 @@ export default function ImportaStabili() {
       <h2 className="titolo-sezione">Stabili</h2>
       <p className="muto piccolo">
         Importa gli elenchi Excel dei tuoi clienti (“Stabili … 2026.xlsx”): nel passo Condominio potrai cercare lo stabile e
-        precompilare indirizzo, CAP, comune, codice fiscale e attività. Restano solo su questo dispositivo.
+        precompilare indirizzo, CAP, comune, codice fiscale e attività. Con la sincronizzazione attiva passano da soli agli altri dispositivi, Excel originale compreso.
       </p>
       {messaggio && (
         <p className="promemoria" role="status">
