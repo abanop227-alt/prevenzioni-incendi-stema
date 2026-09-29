@@ -63,6 +63,7 @@ export default function StepModuli({ s, aggiorna }: Props) {
 
   const [fonte, setFonte] = useState<string | null>(null);
   const [cartella, setCartella] = useState<FileSystemDirectoryHandle | undefined>();
+  const [ricerca, setRicerca] = useState<string | null>(null);
 
   /** Completa i moduli: prima ciò che l'utente ha già scritto, poi la rubrica dell'amministrazione, poi il modulo più recente in archivio, poi condominio e attività. */
   function applica(letti: DatiLetti | undefined, noto: DatiModuli['titolare'] | undefined) {
@@ -74,6 +75,18 @@ export default function StepModuli({ s, aggiorna }: Props) {
     });
   }
 
+  /** Cerca in archivio, applica i dati e racconta cosa è successo. */
+  async function cercaInArchivio(c: FileSystemDirectoryHandle, noto: DatiModuli['titolare'] | undefined) {
+    const r = await datiDaArchivio(c, s.condominio.indirizzo);
+    if (r.letti) {
+      setFonte(r.letti.file);
+      setRicerca(`✓ Compilato dai dati di “${r.letti.file}” (solo i campi vuoti).`);
+    } else if (!r.cartelle) setRicerca('Nessuna cartella di questo indirizzo trovata in archivio (cerco “VIA, CIVICO_…” in CPI).');
+    else if (r.altri) setRicerca(`Trovati ${r.altri} moduli PIN 2/PIN 3 solo in .doc o PDF: non si possono leggere. Salva un modulo come .docx e riprova.`);
+    else setRicerca('Trovata la cartella, ma senza un MOD. PIN 2 o PIN 3 in .docx.');
+    applica(r.letti, noto);
+  }
+
   // apertura: i dati dei moduli si ricavano da soli da condominio, rubrica dell'amministrazione e moduli già presenti in archivio
   useEffect(() => {
     leggiTecnico().then(setTecnico).catch(() => {});
@@ -81,26 +94,23 @@ export default function StepModuli({ s, aggiorna }: Props) {
       const noto = await leggiAmministratore(s.condominio.pressoAmministrazione).catch(() => undefined);
       const c = await leggiCartellaArchivio().catch(() => undefined);
       setCartella(c);
-      let letti: DatiLetti | undefined;
-      if (c && (await permessoScrittura(c, false).catch(() => false))) letti = await datiDaArchivio(c, s.condominio.indirizzo).catch(() => undefined);
-      if (letti) setFonte(letti.file);
-      applica(letti, noto);
+      if (c && (await permessoScrittura(c, false).catch(() => false))) await cercaInArchivio(c, noto).catch((e) => setRicerca(`Errore: ${(e as Error).message}`));
+      else {
+        applica(undefined, noto);
+        if (c) setRicerca('Concedi l’accesso alla cartella dell’archivio per compilare dai moduli già presenti.');
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function leggiDaArchivio() {
     if (!cartella) return;
-    setEsito('Cerco nell’archivio…');
+    setRicerca('Cerco nell’archivio…');
     try {
-      if (!(await permessoScrittura(cartella, true))) return setEsito('Serve il permesso di accesso alla cartella dell’archivio.');
-      const letti = await datiDaArchivio(cartella, s.condominio.indirizzo);
-      if (!letti) return setEsito('Nessun MOD. PIN 2 o PIN 3 compilato trovato in archivio per questo indirizzo.');
-      setFonte(letti.file);
-      applica(letti, await leggiAmministratore(s.condominio.pressoAmministrazione).catch(() => undefined));
-      setEsito(`✓ Compilato dai dati di “${letti.file}” (solo i campi vuoti).`);
+      if (!(await permessoScrittura(cartella, true))) return setRicerca('Serve il permesso di accesso alla cartella dell’archivio.');
+      await cercaInArchivio(cartella, await leggiAmministratore(s.condominio.pressoAmministrazione).catch(() => undefined));
     } catch (e) {
-      setEsito(`Errore: ${(e as Error).message}`);
+      setRicerca(`Errore: ${(e as Error).message}`);
     }
   }
 
@@ -172,6 +182,7 @@ export default function StepModuli({ s, aggiorna }: Props) {
               </button>
             </div>
           )}
+          {ricerca && <p className="promemoria">{ricerca}</p>}
           <details className="card" open>
             <summary>Titolare (amministratore)</summary>
             <div className="griglia-2">

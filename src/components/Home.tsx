@@ -7,6 +7,7 @@ import {
   duplicaSopralluogo,
   elencaSopralluoghi,
   eliminaSopralluogo,
+  leggiCartellaArchivio,
   salvaCatalogoPersonalizzato,
   salvaSopralluogo,
 } from '../lib/db';
@@ -16,6 +17,7 @@ import ElencoLavoriResoconti from './ElencoLavoriResoconti';
 import ImportaStabili from './ImportaStabili';
 import Scadenziario from './Scadenziario';
 import Sincronizzazione from './Sincronizzazione';
+import { permessoScrittura } from '../lib/archivio';
 import { programmaSync, type StatoAutoSync } from '../lib/autosync';
 import { leggiConfigSync, registraEliminazione } from '../lib/sync';
 import { dataItaliana, oggiISO } from '../lib/util';
@@ -61,8 +63,22 @@ export default function Home({ catalogo, catalogoPersonalizzato, onCatalogoCambi
     onApri(s.id);
   }
 
+  /**
+   * Il click su "Nuova SCIA / Nuovo rinnovo" è il momento giusto per chiedere (una volta per sessione) l'accesso alla cartella
+   * dell'archivio: i moduli si compilano poi da soli dai file già presenti. Se manca la cartella o si rifiuta, non cambia nulla.
+   */
+  async function chiediAccessoArchivio() {
+    try {
+      const c = await leggiCartellaArchivio();
+      if (c) await permessoScrittura(c, true);
+    } catch {
+      /* nessuna cartella scelta o permesso negato */
+    }
+  }
+
   /** SCIA o rinnovo da zero, senza ROA: si sceglie l'attività e lo stabile nei primi passi. */
   async function nuovaDaZero(tipo: 'scia' | 'rinnovo') {
+    await chiediAccessoArchivio();
     const nome = (await leggiConfigSync().catch(() => undefined))?.nome?.trim();
     const s = nuovaPratica(tipo, nome ?? '');
     await salvaSopralluogo(s);
@@ -71,6 +87,7 @@ export default function Home({ catalogo, catalogoPersonalizzato, onCatalogoCambi
   }
 
   async function creaDa(s: Sopralluogo, tipo: 'scia' | 'rinnovo') {
+    await chiediAccessoArchivio();
     setMenuAperto(null);
     const nuova = nuovaPraticaDa(s, tipo);
     await salvaSopralluogo(nuova);

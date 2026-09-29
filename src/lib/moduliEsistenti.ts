@@ -161,12 +161,10 @@ export async function leggiModuloCompilato(dati: ArrayBuffer | Uint8Array | Blob
     },
     attivita: {
       tipo: m.campo(['tipo di attività (albergo, scuola, centrale termica, etc.)', 'tipo di attività (albergo, scuola, etc.) – in caso di SCIA parziale indicare i riferimenti pertinenti']),
-      indirizzo: m.campo('Indirizzo', 0),
-      civico: m.campo('n. civico', 2),
-      cap: m.campo('c.a.p.', 2),
-      comune: m.campo('Comune', 0),
-      provincia: m.campo('provincia', 2),
-      telefono: m.campo('telefono', 2),
+      // l'indirizzo dell'attività si legge solo dove i riquadri sono allineati alle etichette (MOD. PIN 3): nel PIN 2 no, per non prendere un dato sbagliato
+      ...(m.campo('Indirizzo', 0)
+        ? { indirizzo: m.campo('Indirizzo', 0), civico: m.campo('n. civico', 2), cap: m.campo('c.a.p.', 2), comune: m.campo('Comune', 0), provincia: m.campo('provincia', 2), telefono: m.campo('telefono', 2) }
+        : { indirizzo: '', civico: '', cap: '', comune: '', provincia: '', telefono: '' }),
     },
   };
 }
