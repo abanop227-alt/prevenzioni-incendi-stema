@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
 import { tecnicoVuoto } from '../src/lib/catalogo';
+import { completaConLetti, moduliCompletati, riempiVuoti } from '../src/lib/moduliEsistenti';
 import { compilaModello, dividiCodice, dividiIndirizzo, moduliPredefiniti, nomeFileModulo, professionistaVuoto, valoriPin2, valoriPin21, valoriPin3, valoriPin31, MODELLI, VALORI_MODULO } from '../src/lib/moduliVvf';
 import type { Tecnico } from '../src/lib/types';
 import { sopralluogoCon } from './aiuti';
@@ -216,3 +217,78 @@ describe('completamenti dei moduli SCIA', () => {
   });
 });
 
+describe('lettura di un modulo già compilato (andata e ritorno con i nostri modelli)', () => {
+  it('PIN 3: titolare, sede, attività e numero pratica si rileggono uguali', async () => {
+    const { s, d } = esempio();
+    d.titolare.telefono = '02 555555';
+    d.titolare.email = 'amm@example.it';
+    d.titolare.pec = 'amm@pec.example.it';
+    const blob = await compilaModello(modello('pin3-rinnovo.docx'), valoriPin3(s, d, tecnico));
+    const { leggiModuloCompilato } = await import('../src/lib/moduliEsistenti');
+    const l = await leggiModuloCompilato(await blob.arrayBuffer(), 'prova.docx');
+    expect(l.rifPratica).toBe('309845');
+    expect(l.comando).toBe('MILANO');
+    expect(l.titolare).toMatchObject({ cognome: 'BIANCHI', nome: 'LUCA', indirizzo: 'VIA VERDI', civico: '5', codiceFiscale: 'BNCLCU70A01F205X', qualifica: 'AMMINISTRATORE PRO TEMPORE', telefono: '02 555555', email: 'amm@example.it', pec: 'amm@pec.example.it' });
+    expect(l.ragione).toBe('CONDOMINIO Alfa – Via Aosta, 21 – C.F: 80000000000');
+    expect(l.sede).toMatchObject({ indirizzo: 'VIA AOSTA', civico: '21', cap: '20155', comune: 'MILANO', provincia: 'MI' });
+    expect(l.attivita).toMatchObject({ tipo: 'EDIFICIO DI CIVILE ABITAZIONE', indirizzo: 'VIA AOSTA', civico: '21', cap: '20155' });
+  });
+
+  it('PIN 2: titolare e attività', async () => {
+    const { s, d } = esempio();
+    const blob = await compilaModello(modello('pin2-scia.docx'), valoriPin2(s, d, tecnico));
+    const { leggiModuloCompilato } = await import('../src/lib/moduliEsistenti');
+    const l = await leggiModuloCompilato(await blob.arrayBuffer());
+    expect(l.titolare).toMatchObject({ cognome: 'BIANCHI', nome: 'LUCA', codiceFiscale: 'BNCLCU70A01F205X' });
+    expect(l.attivita.tipo).toBe('EDIFICIO DI CIVILE ABITAZIONE');
+  });
+
+  it('un file che non è un modulo dà un errore chiaro', async () => {
+    const { leggiModuloCompilato } = await import('../src/lib/moduliEsistenti');
+    await expect(leggiModuloCompilato(new Uint8Array([1, 2, 3]))).rejects.toThrow();
+  });
+
+  it('completa solo i campi vuoti e non tocca ciò che l’utente ha scritto', async () => {
+    const { s, d } = esempio();
+    const blob = await compilaModello(modello('pin3-rinnovo.docx'), valoriPin3(s, d, tecnico));
+    const { leggiModuloCompilato } = await import('../src/lib/moduliEsistenti');
+    const l = await leggiModuloCompilato(await blob.arrayBuffer());
+    const base = moduliPredefiniti(s);
+    base.titolare.nome = 'Marco';
+    const m = completaConLetti(base, l);
+    expect(m.titolare.nome).toBe('Marco'); // già scritto: resta
+    expect(m.titolare.cognome).toBe('BIANCHI'); // vuoto: preso dal modulo
+    expect(m.titolare.codiceFiscale).toBe('BNCLCU70A01F205X');
+    expect(m.titolare.qualifica).toBe('AMMINISTRATORE PRO TEMPORE');
+  });
+
+  it('riempiVuoti: completa solo i testi vuoti, anche negli oggetti annidati', () => {
+    const r = riempiVuoti({ a: 'x', b: '', c: { d: '', e: 'k' }, n: [1] }, { a: 'Z', b: 'B', c: { d: 'D', e: 'E' }, n: [2] });
+    expect(r).toEqual({ a: 'x', b: 'B', c: { d: 'D', e: 'k' }, n: [1] });
+  });
+
+  it('moduliCompletati: rubrica > archivio > condominio, e ciò che è scritto non si tocca', async () => {
+    const { s, d } = esempio();
+    const blob = await compilaModello(modello('pin3-rinnovo.docx'), valoriPin3(s, d, tecnico));
+    const { leggiModuloCompilato } = await import('../src/lib/moduliEsistenti');
+    const letti = await leggiModuloCompilato(await blob.arrayBuffer(), 'x.docx');
+    const nuovoS = sopralluogoCon(['77.1.A']);
+    Object.assign(nuovoS.condominio, { indirizzo: 'Via Aosta, 21', cap: '20155', comune: 'Milano', telefono: '02 111111', indirizzoAmministrazione: 'Via Nuova, 9' });
+    const pre = moduliPredefiniti(nuovoS);
+    // solo archivio: il titolare arriva dal modulo (non resta l'indirizzo dell'amministrazione predefinito)
+    const daArchivio = moduliCompletati(undefined, pre, letti);
+    expect(daArchivio.titolare).toMatchObject({ cognome: 'BIANCHI', codiceFiscale: 'BNCLCU70A01F205X', indirizzo: 'VIA VERDI', civico: '5' });
+    // rubrica prima dell'archivio
+    const noto = { ...d.titolare, cognome: 'NERI', nome: 'ANNA', codiceFiscale: 'NRINNA80A41F205Z', indirizzo: '', civico: '', qualifica: '' };
+    const conRubrica = moduliCompletati(undefined, pre, letti, noto);
+    expect(conRubrica.titolare).toMatchObject({ cognome: 'NERI', nome: 'ANNA', indirizzo: 'VIA VERDI' }); // l'indirizzo che la rubrica non ha lo completa l'archivio
+    // niente archivio né rubrica: restano i dati del condominio
+    expect(moduliCompletati(undefined, pre).titolare.indirizzo).toBe('VIA NUOVA');
+    // già scritto: non si tocca
+    const scritto = { ...pre, titolare: { ...pre.titolare, cognome: 'ROSSI' } };
+    expect(moduliCompletati(scritto, pre, letti, noto).titolare.cognome).toBe('ROSSI');
+    // l'attività del modulo in archivio arriva nei nuovi moduli
+    expect(daArchivio.attivita.tipo).toBe('EDIFICIO DI CIVILE ABITAZIONE');
+    expect(daArchivio.attivita.classe).toBe('77.1.A'); // dal condominio: nel modulo non c'è
+  });
+});

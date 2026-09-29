@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { condividi, fileDaBlob, isMobile, puoCondividere, scarica } from '../lib/condividi';
-import { leggiAmministratore, leggiTecnico, salvaAmministratore } from '../lib/db';
+import { leggiAmministratore, leggiCartellaArchivio, leggiTecnico, salvaAmministratore } from '../lib/db';
+import { permessoScrittura } from '../lib/archivio';
+import { moduliCompletati, type DatiLetti } from '../lib/moduliEsistenti';
+import { datiDaArchivio } from '../lib/moduliInArchivio';
 import { generaModulo, moduliPredefiniti, nomeFileModulo, VALORI_MODULO, type ModelloModulo } from '../lib/moduliVvf';
 import { documentiPratica, praticaDi } from '../lib/pratiche';
 import type { DatiModuli, Sopralluogo, Tecnico } from '../lib/types';
@@ -58,17 +61,48 @@ export default function StepModuli({ s, aggiorna }: Props) {
   const [generando, setGenerando] = useState<string | null>(null);
   const [esito, setEsito] = useState<string | null>(null);
 
-  // primo accesso: dati dei moduli ricavati da condominio e attività, titolare dalla rubrica
+  const [fonte, setFonte] = useState<string | null>(null);
+  const [cartella, setCartella] = useState<FileSystemDirectoryHandle | undefined>();
+
+  /** Completa i moduli: prima ciò che l'utente ha già scritto, poi la rubrica dell'amministrazione, poi il modulo più recente in archivio, poi condominio e attività. */
+  function applica(letti: DatiLetti | undefined, noto: DatiModuli['titolare'] | undefined) {
+    aggiorna((x) => {
+      const base = moduliCompletati(x.moduli, moduliPredefiniti(x), letti, noto);
+      const pr = x.pratica;
+      const conPratica = pr && !pr.nPraticaVvf && letti?.rifPratica && /^\d{4,}$/.test(letti.rifPratica) ? { pratica: { ...pr, nPraticaVvf: letti.rifPratica } } : {};
+      return JSON.stringify(base) === JSON.stringify(x.moduli) && !Object.keys(conPratica).length ? x : { ...x, moduli: base, ...conPratica };
+    });
+  }
+
+  // apertura: i dati dei moduli si ricavano da soli da condominio, rubrica dell'amministrazione e moduli già presenti in archivio
   useEffect(() => {
     leggiTecnico().then(setTecnico).catch(() => {});
-    if (s.moduli) return;
     (async () => {
-      const iniziali = moduliPredefiniti(s);
       const noto = await leggiAmministratore(s.condominio.pressoAmministrazione).catch(() => undefined);
-      aggiorna((x) => (x.moduli ? x : { ...x, moduli: noto ? { ...moduliPredefiniti(x), titolare: noto } : iniziali }));
+      const c = await leggiCartellaArchivio().catch(() => undefined);
+      setCartella(c);
+      let letti: DatiLetti | undefined;
+      if (c && (await permessoScrittura(c, false).catch(() => false))) letti = await datiDaArchivio(c, s.condominio.indirizzo).catch(() => undefined);
+      if (letti) setFonte(letti.file);
+      applica(letti, noto);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  async function leggiDaArchivio() {
+    if (!cartella) return;
+    setEsito('Cerco nell’archivio…');
+    try {
+      if (!(await permessoScrittura(cartella, true))) return setEsito('Serve il permesso di accesso alla cartella dell’archivio.');
+      const letti = await datiDaArchivio(cartella, s.condominio.indirizzo);
+      if (!letti) return setEsito('Nessun MOD. PIN 2 o PIN 3 compilato trovato in archivio per questo indirizzo.');
+      setFonte(letti.file);
+      applica(letti, await leggiAmministratore(s.condominio.pressoAmministrazione).catch(() => undefined));
+      setEsito(`✓ Compilato dai dati di “${letti.file}” (solo i campi vuoti).`);
+    } catch (e) {
+      setEsito(`Errore: ${(e as Error).message}`);
+    }
+  }
 
   const m = s.moduli;
   const moduli = p.tipo === 'rinnovo' ? MODULI_PER_TIPO.rinnovo : p.tipo === 'scia' ? MODULI_PER_TIPO.scia : [];
@@ -127,6 +161,17 @@ export default function StepModuli({ s, aggiorna }: Props) {
       {moduli.length > 0 && m && (
         <>
           <h3 className="titolo-sezione">Moduli VV.F. da compilare</h3>
+          <p className="muto piccolo">
+            I dati si compilano da soli da condominio, attività, rubrica dell’amministrazione
+            {fonte ? <> e dal modulo già in archivio (<em>{fonte}</em>)</> : ' e, sul computer con la cartella archivio scelta, dai moduli già compilati'}. Controllali e correggi se serve.
+          </p>
+          {cartella && (
+            <div className="riga-pulsanti">
+              <button className="btn" onClick={leggiDaArchivio}>
+                Leggi dai moduli dell’archivio
+              </button>
+            </div>
+          )}
           <details className="card" open>
             <summary>Titolare (amministratore)</summary>
             <div className="griglia-2">
