@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { scarica } from '../lib/condividi';
-import { elencaSopralluoghi, elencaStabili } from '../lib/db';
+import { elencaSopralluoghi, elencaStabili, leggiRinnoviImportati, salvaRinnoviImportati } from '../lib/db';
+import { leggiElencoRinnovi, type RinnoviImportati } from '../lib/rinnovi';
 import { FASCE, nellaFascia, scadenziario, type Fascia, type VoceScadenza } from '../lib/scadenziario';
 import { useDatiSincronizzati } from '../lib/useDatiSincronizzati';
 import { creaXlsx } from '../lib/xlsxScrittura';
@@ -17,13 +18,19 @@ function frase(v: VoceScadenza): string {
 
 /** Prossime scadenze dei rinnovi periodici, dagli elenchi stabili e dai rinnovi presentati con l'app. */
 export default function Scadenziario() {
+  const input = useRef<HTMLInputElement>(null);
   const [voci, setVoci] = useState<VoceScadenza[] | null>(null);
+  const [rinnovi, setRinnovi] = useState<RinnoviImportati | undefined>();
+  const [messaggio, setMessaggio] = useState<string | null>(null);
   const [amm, setAmm] = useState('');
   const [fascia, setFascia] = useState<Fascia | ''>('entro12');
 
   const carica = useCallback(() => {
-    Promise.all([elencaStabili(), elencaSopralluoghi()])
-      .then(([st, so]) => setVoci(scadenziario(st, so)))
+    Promise.all([elencaStabili(), elencaSopralluoghi(), leggiRinnoviImportati()])
+      .then(([st, so, ri]) => {
+        setRinnovi(ri);
+        setVoci(scadenziario(st, so, undefined, ri?.righe));
+      })
       .catch(() => setVoci([]));
   }, []);
   useEffect(carica, [carica]);
@@ -34,6 +41,17 @@ export default function Scadenziario() {
   const mostrate = dellAmm.filter((v) => !fascia || nellaFascia(v, fascia));
   const conteggio = (f: Fascia) => dellAmm.filter((v) => nellaFascia(v, f)).length;
 
+  async function importaRinnovi(file: File) {
+    try {
+      const righe = await leggiElencoRinnovi(await file.arrayBuffer());
+      await salvaRinnoviImportati({ righe, file: file.name, importato: Date.now() });
+      setMessaggio(`Elenco rinnovi importato: ${righe.length} righe da ${file.name}.`);
+      carica();
+    } catch (e) {
+      setMessaggio((e as Error).message);
+    }
+  }
+
   async function esportaExcel() {
     const righe = dellAmm;
     const blob = await creaXlsx([
@@ -41,11 +59,11 @@ export default function Scadenziario() {
         nome: 'Scadenze',
         titoli: [0],
         intestazioni: [1],
-        larghezze: [16, 34, 20, 14, 14, 14],
+        larghezze: [16, 34, 20, 14, 14, 14, 10, 36],
         righe: [
           ['Scadenziario rinnovi periodici'],
-          ['AMMINISTRAZIONE', 'INDIRIZZO', 'ATTIVITÀ', 'SCADENZA', 'STATO', 'FONTE'],
-          ...righe.map((v) => [v.amministrazione, v.indirizzo, v.attivita, testoScadenza(v), frase(v), v.fonte === 'pratica' ? 'pratica dell’app' : 'elenco stabili']),
+          ['AMMINISTRAZIONE', 'INDIRIZZO', 'ATTIVITÀ', 'SCADENZA', 'STATO', 'FONTE', 'NOP', 'NOTE'],
+          ...righe.map((v) => [v.amministrazione, v.indirizzo, v.attivita, testoScadenza(v), frase(v), v.fonte === 'pratica' ? 'pratica dell’app' : v.fonte === 'rinnovi' ? 'elenco rinnovi' : 'elenco stabili', v.nop ?? '', v.note ?? '']),
         ],
       },
     ]);
@@ -59,10 +77,36 @@ export default function Scadenziario() {
         Le scadenze arrivano dagli elenchi stabili importati e dai rinnovi presentati con l’app (la pratica dell’app prevale sull’elenco). Se nell’elenco c’è
         solo l’anno, la scadenza vale fino al 31 dicembre.
       </p>
+      {messaggio && (
+        <p className="promemoria" role="status">
+          {messaggio}
+        </p>
+      )}
+      <div className="riga-pulsanti">
+        <button className="btn" onClick={() => input.current?.click()}>
+          Importa elenco rinnovi (Excel)
+        </button>
+        {rinnovi && (
+          <span className="muto piccolo">
+            {rinnovi.righe.length} righe da {rinnovi.file}
+          </span>
+        )}
+        <input
+          ref={input}
+          type="file"
+          accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          hidden
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            e.target.value = '';
+            if (f) importaRinnovi(f);
+          }}
+        />
+      </div>
       {voci === null ? (
         <p className="muto">Carico…</p>
       ) : voci.length === 0 ? (
-        <p className="muto">Nessuna scadenza: importa gli elenchi “Stabili …” con la colonna SCADENZA, oppure presenta un rinnovo dall’app.</p>
+        <p className="muto">Nessuna scadenza: importa l’elenco rinnovi o gli elenchi “Stabili …” con la colonna SCADENZA, oppure presenta un rinnovo dall’app.</p>
       ) : (
         <div className="card">
           <div className="griglia-2">
@@ -95,8 +139,15 @@ export default function Scadenziario() {
                   <br />
                   <span className="piccolo">
                     {v.attivita || 'attività non indicata'} · {testoScadenza(v)} · <span className={v.giorni < 0 ? 'errore' : ''}>{frase(v)}</span>
-                    {v.fonte === 'pratica' ? ' · da pratica' : ''}
+                    {v.fonte === 'pratica' ? ' · da pratica' : v.fonte === 'rinnovi' ? ' · elenco rinnovi' : ''}
+                    {v.nop ? ` · NOP ${v.nop}` : ''}
                   </span>
+                  {v.note && (
+                    <>
+                      <br />
+                      <span className="piccolo muto">{v.note}</span>
+                    </>
+                  )}
                 </span>
               </li>
             ))}

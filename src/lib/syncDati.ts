@@ -13,16 +13,19 @@ import {
   leggiCommesseImportate,
   leggiFileStabili,
   leggiIndiceModuli,
+  leggiRinnoviImportati,
   leggiModificheDati,
   leggiRubricaAmministratori,
   salvaCommesseImportate,
   salvaIndiceModuli,
+  salvaRinnoviImportati,
   salvaFileStabili,
   segnaModificaDati,
   unisciRubricaAmministratori,
   type CommesseImportate,
 } from './db';
 import type { IndiceModuli } from './moduliInArchivio';
+import type { RinnoviImportati } from './rinnovi';
 import type { Stabile } from './stabili';
 import type { DatiModuli } from './types';
 
@@ -41,7 +44,7 @@ export interface StatoDati {
 
 interface Documento {
   formato: 'pi-dati';
-  tipo: 'stabili' | 'commesse' | 'amministratori' | 'indice';
+  tipo: 'stabili' | 'commesse' | 'amministratori' | 'indice' | 'rinnovi';
   modificato: number;
   eliminato?: boolean;
   origine?: string;
@@ -49,6 +52,7 @@ interface Documento {
   commesse?: CommesseImportate;
   rubrica?: Record<string, Titolare>;
   indice?: IndiceModuli;
+  rinnovi?: RinnoviImportati;
   autore?: string;
 }
 
@@ -67,6 +71,7 @@ export const percorsoExcel = (origine: string) => `dati/excel/${origine.replace(
 const P_COMMESSE = 'dati/commesse.json';
 const P_AMMINISTRATORI = 'dati/amministratori.json';
 const P_INDICE = 'dati/indice-moduli.json';
+const P_RINNOVI = 'dati/rinnovi.json';
 
 const stessa = (a: object, b: object) => JSON.stringify(Object.entries(a).sort()) === JSON.stringify(Object.entries(b).sort());
 
@@ -167,6 +172,30 @@ export async function sincronizzaDati(gh: ClientDati, ramo: string, remoto: Map<
       if ((locale || L) && !(stato.versioni['dati:commesse'] === L && remoto.has(P_COMMESSE))) {
         await invia(P_COMMESSE, locale ? { formato: 'pi-dati', tipo: 'commesse', modificato: L, commesse: locale } : { formato: 'pi-dati', tipo: 'commesse', modificato: L, eliminato: true }, 'Elenco lavori');
         stato.versioni['dati:commesse'] = L;
+      }
+    }
+  }
+
+  // ---- elenco rinnovi importato ----
+  {
+    const remotoDoc = await scarica(P_RINNOVI);
+    const locale = await leggiRinnoviImportati();
+    let L = mod.rinnovi ?? 0;
+    if (remotoDoc && remotoDoc.modificato > L) {
+      await salvaRinnoviImportati(remotoDoc.eliminato ? null : (remotoDoc.rinnovi ?? null));
+      await segnaModificaDati('rinnovi', remotoDoc.modificato);
+      stato.sha[P_RINNOVI] = remoto.get(P_RINNOVI)!;
+      stato.versioni['dati:rinnovi'] = remotoDoc.modificato;
+      esito.ricevuti++;
+    } else {
+      if (remotoDoc) stato.sha[P_RINNOVI] = remoto.get(P_RINNOVI)!;
+      if (locale && !L) {
+        L = locale.importato;
+        await segnaModificaDati('rinnovi', L);
+      }
+      if ((locale || L) && !(stato.versioni['dati:rinnovi'] === L && remoto.has(P_RINNOVI))) {
+        await invia(P_RINNOVI, locale ? { formato: 'pi-dati', tipo: 'rinnovi', modificato: L, rinnovi: locale } : { formato: 'pi-dati', tipo: 'rinnovi', modificato: L, eliminato: true }, 'Elenco rinnovi');
+        stato.versioni['dati:rinnovi'] = L;
       }
     }
   }

@@ -3,6 +3,7 @@
 import { dividiIndirizzo } from './moduliVvf';
 import { clienteDa } from './commesse';
 import { giorniAllaScadenza, praticaDi, scadenzaRinnovo } from './pratiche';
+import type { VoceRinnovo } from './rinnovi';
 import { indirizzoStabile, type Stabile } from './stabili';
 import { chiaveIndirizzo } from './stabiliAggiornati';
 import type { Sopralluogo } from './types';
@@ -16,7 +17,10 @@ export interface VoceScadenza {
   scadenza: string;
   /** false se è solo un anno */
   precisa: boolean;
-  fonte: 'pratica' | 'elenco';
+  fonte: 'pratica' | 'elenco' | 'rinnovi';
+  /** note e numero di pratica VV.F. dall'elenco rinnovi */
+  note?: string;
+  nop?: string;
   /** giorni da oggi (per un anno solo: fino al 31 dicembre); negativo = scaduta */
   giorni: number;
 }
@@ -38,7 +42,7 @@ export function nellaFascia(v: Pick<VoceScadenza, 'giorni'>, f: Fascia): boolean
 
 const fineAnno = (anno: string) => `${anno}-12-31`;
 
-export function scadenziario(stabili: Stabile[], sopralluoghi: Sopralluogo[], oggi = oggiISO()): VoceScadenza[] {
+export function scadenziario(stabili: Stabile[], sopralluoghi: Sopralluogo[], oggi = oggiISO(), rinnovi: VoceRinnovo[] = []): VoceScadenza[] {
   const voci = new Map<string, VoceScadenza>();
   for (const s of stabili) {
     const t = s.scadenza.trim();
@@ -54,6 +58,30 @@ export function scadenziario(stabili: Stabile[], sopralluoghi: Sopralluogo[], og
       giorni: giorniAllaScadenza(precisa ? t : fineAnno(t), oggi),
     });
   }
+  // elenco rinnovi dello studio: per gli stabili che ci sono prende il posto della scadenza dell'elenco stabili (una voce per attività)
+  const dagliRinnovi = new Map<string, VoceScadenza[]>();
+  for (const r of rinnovi) {
+    if (!r.scadenza) continue;
+    const k = chiaveIndirizzo(r.via, r.civico);
+    const lista = dagliRinnovi.get(k) ?? [];
+    lista.push({
+      indirizzo: `${r.via}, ${r.civico}`,
+      amministrazione: r.amministrazione,
+      attivita: r.attivita,
+      scadenza: r.scadenza,
+      precisa: true,
+      fonte: 'rinnovi',
+      note: r.note,
+      nop: r.nop,
+      giorni: giorniAllaScadenza(r.scadenza, oggi),
+    });
+    dagliRinnovi.set(k, lista);
+  }
+  for (const [k, lista] of dagliRinnovi) {
+    voci.delete(k);
+    lista.forEach((v, i) => voci.set(`${k}#${i}`, v));
+  }
+
   // rinnovi presentati con l'app: per ogni stabile il più recente
   const recenti = new Map<string, Sopralluogo>();
   for (const s of sopralluoghi) {
@@ -69,9 +97,11 @@ export function scadenziario(stabili: Stabile[], sopralluoghi: Sopralluogo[], og
     const codici = s.attivita.map((a) => a.codice);
     const sc = scadenzaRinnovo(codici, p.dataPresentazione, !!p.indipendenti);
     if (!sc) continue;
+    // la pratica dell'app è più recente di ogni elenco: sostituisce le voci dello stesso stabile
+    for (const chiave of [...voci.keys()]) if (chiave === k || chiave.startsWith(`${k}#`)) voci.delete(chiave);
     voci.set(k, {
       indirizzo: s.condominio.indirizzo,
-      amministrazione: clienteDa(s.condominio.pressoAmministrazione) || voci.get(k)?.amministrazione || '',
+      amministrazione: clienteDa(s.condominio.pressoAmministrazione) || '',
       attivita: codici.join(', '),
       scadenza: sc,
       precisa: true,

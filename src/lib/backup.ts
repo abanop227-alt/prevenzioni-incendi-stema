@@ -6,14 +6,17 @@ import {
   importaStabiliDb,
   leggiCommesseImportate,
   leggiFileStabili,
+  leggiRinnoviImportati,
   leggiRubricaAmministratori,
   leggiTecnico,
   salvaCommesseImportate,
+  salvaRinnoviImportati,
   salvaFileStabili,
   salvaTecnico,
   unisciRubricaAmministratori,
   type CommesseImportate,
 } from './db';
+import type { RinnoviImportati } from './rinnovi';
 import type { Stabile } from './stabili';
 import type { FotoRecord, Sopralluogo, Tecnico } from './types';
 
@@ -32,6 +35,7 @@ export interface Backup {
   dati?: {
     stabili: { origine: string; stabili: Stabile[]; excel?: string }[];
     commesse?: CommesseImportate;
+    rinnovi?: RinnoviImportati;
     amministratori?: Record<string, unknown>;
   };
 }
@@ -64,7 +68,7 @@ export async function creaBackup(ids?: string[]): Promise<Backup> {
       const x = await leggiFileStabili(origine);
       stabili.push({ origine, stabili: l, excel: x ? bytesToBase64(new Uint8Array(await x.arrayBuffer())) : undefined });
     }
-    backup.dati = { stabili, commesse: await leggiCommesseImportate(), amministratori: await leggiRubricaAmministratori() };
+    backup.dati = { stabili, commesse: await leggiCommesseImportate(), rinnovi: await leggiRinnoviImportati(), amministratori: await leggiRubricaAmministratori() };
   }
   return backup;
 }
@@ -100,6 +104,7 @@ export async function importaBackup(testo: string): Promise<EsitoImport> {
       if (e.excel) await salvaFileStabili(e.origine, new Blob([base64ToBytes(e.excel) as BlobPart]));
     }
     if (b.dati.commesse && !(await leggiCommesseImportate())) await salvaCommesseImportate(b.dati.commesse);
+    if (b.dati.rinnovi && !(await leggiRinnoviImportati())) await salvaRinnoviImportati(b.dati.rinnovi);
     if (b.dati.amministratori) await unisciRubricaAmministratori(b.dati.amministratori as never, false);
   }
   for (const s of b.sopralluoghi) {

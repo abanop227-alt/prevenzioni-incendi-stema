@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { condividi, fileDaBlob, isMobile, puoCondividere, scarica } from '../lib/condividi';
-import { leggiAmministratore, leggiCartellaArchivio, leggiIndiceModuli, leggiTecnico, salvaAmministratore, salvaCartellaArchivio, salvaIndiceModuli } from '../lib/db';
+import { chiaveIndirizzo } from '../lib/stabiliAggiornati';
+import { dividiIndirizzo } from '../lib/moduliVvf';
+import { leggiRinnoviImportati, leggiAmministratore, leggiCartellaArchivio, leggiIndiceModuli, leggiTecnico, salvaAmministratore, salvaCartellaArchivio, salvaIndiceModuli } from '../lib/db';
 import { cartellaSupportata, permessoScrittura, scegliCartella } from '../lib/archivio';
 import { moduliCompletati, type DatiLetti } from '../lib/moduliEsistenti';
 import { amministratoriDaIndice, cercaInIndice, costruisciIndice, datiDaArchivio } from '../lib/moduliInArchivio';
@@ -78,6 +80,16 @@ export default function StepModuli({ s, aggiorna }: Props) {
     });
   }
 
+  /** Numero di pratica VV.F. (NOP) dall'elenco rinnovi, se la pratica non lo ha ancora. */
+  async function nopDaElencoRinnovi() {
+    if (praticaDi(s).nPraticaVvf.trim()) return;
+    const r = await leggiRinnoviImportati().catch(() => undefined);
+    const { indirizzo, civico } = dividiIndirizzo(s.condominio.indirizzo);
+    const k = chiaveIndirizzo(indirizzo, civico);
+    const nop = r?.righe.find((x) => x.nop && /^\d{3,}$/.test(x.nop) && chiaveIndirizzo(x.via, x.civico) === k)?.nop;
+    if (nop) aggiorna((x) => (x.pratica && !x.pratica.nPraticaVvf ? { ...x, pratica: { ...x.pratica, nPraticaVvf: nop } } : x));
+  }
+
   const rubricaDi = () => leggiAmministratore(s.condominio.pressoAmministrazione).catch(() => undefined);
 
   /** Rilegge l'archivio (solo i file cambiati), aggiorna l'indice condiviso col telefono e la rubrica, e compila. */
@@ -111,6 +123,7 @@ export default function StepModuli({ s, aggiorna }: Props) {
       const voce = cercaInIndice(idx, s.condominio.indirizzo);
       if (voce) setFonte(voce.file);
       applica(voce?.letti, await rubricaDi());
+      await nopDaElencoRinnovi();
       const c = await leggiCartellaArchivio().catch(() => undefined);
       setCartella(c);
       if (!c) return;

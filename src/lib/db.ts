@@ -1,6 +1,7 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 import { clienteDa, type Commessa } from './commesse';
 import type { IndiceModuli } from './moduliInArchivio';
+import type { RinnoviImportati } from './rinnovi';
 import type { Stabile } from './stabili';
 import type { Catalogo, DatiModuli, FotoRecord, Sopralluogo, Tecnico } from './types';
 import { tecnicoVuoto } from './catalogo';
@@ -247,6 +248,19 @@ export async function unisciRubricaAmministratori(remota: Record<string, Titolar
   const d = await db();
   const locale = await leggiRubricaAmministratori();
   await d.put('impostazioni', sostituisci ? { ...locale, ...remota } : { ...remota, ...locale }, 'amministratori');
+}
+
+// ---- elenco rinnovi importato (scadenze, NOP, note; si sincronizza) ----
+
+export async function leggiRinnoviImportati(): Promise<RinnoviImportati | undefined> {
+  return (await (await db()).get('impostazioni', 'rinnovi')) as RinnoviImportati | undefined;
+}
+
+export async function salvaRinnoviImportati(r: RinnoviImportati | null): Promise<void> {
+  const d = await db();
+  if (r) await d.put('impostazioni', r, 'rinnovi');
+  else await d.delete('impostazioni', 'rinnovi');
+  await segnaModificaDati('rinnovi', r?.importato ?? Date.now());
 }
 
 // ---- indice dei moduli VV.F. dell'archivio (dati dei moduli già compilati per ogni stabile; si sincronizza) ----
