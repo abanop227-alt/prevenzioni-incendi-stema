@@ -75,7 +75,7 @@ describe('elenco lavori aggiornato sul posto', () => {
     const zip = await JSZip.loadAsync(buf);
     const xml = await zip.file('xl/worksheets/sheet1.xml')!.async('string');
     expect(xml).toMatch(/<c r="K3" s="1"><v>\d+<\/v><\/c>/);
-    expect(xml).toMatch(/<c r="K5" s="1"><v>\d+<\/v><\/c>/);
+    expect(xml).not.toContain('r="K5"'); // commessa non ancora completata: nessuna data fine
     expect(xml).toContain('<dimension ref="A1:M9"/>');
   });
 
