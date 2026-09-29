@@ -15,7 +15,9 @@ import {
   salvaAmministratore,
   salvaCommesseImportate,
   salvaFileStabili,
+  leggiIndiceModuli,
   salvaFoto,
+  salvaIndiceModuli,
   salvaSopralluogo,
 } from '../src/lib/db';
 import { registraEliminazione, salvaConfigSync, sincronizzaOra, verificaConfig } from '../src/lib/sync';
@@ -211,5 +213,20 @@ describe('sincronizzazione dei dati importati (stabili, Excel, elenco lavori, ru
     await nuovoDispositivo();
     await sincronizzaOra({ fetch: gh.f });
     expect(await elencaStabili()).toHaveLength(0);
+  });
+
+  it('l’indice dei moduli costruito sul PC arriva sul telefono, che compila senza vedere la cartella', async () => {
+    const gh = githubFinto();
+    await nuovoDispositivo();
+    const voce = { file: 'a.docx', modificato: 5, amministrazione: 'PASQUALI', letti: { file: 'a.docx', titolare: { cognome: 'BIANCHI' } } } as never;
+    await salvaIndiceModuli({ aggiornato: 1000, voci: { 'LINATI|8': voce } });
+    let e = await sincronizzaOra({ fetch: gh.f });
+    expect(e.datiInviati).toBe(1);
+    expect([...gh.file.keys()]).toContain('dati/indice-moduli.json');
+    await nuovoDispositivo();
+    e = await sincronizzaOra({ fetch: gh.f });
+    expect(e.datiRicevuti).toBe(1);
+    expect((await leggiIndiceModuli())?.voci['LINATI|8']).toMatchObject({ file: 'a.docx' });
+    expect(await sincronizzaOra({ fetch: gh.f })).toMatchObject({ datiInviati: 0, datiRicevuti: 0 });
   });
 });

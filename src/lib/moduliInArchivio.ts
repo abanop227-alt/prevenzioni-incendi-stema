@@ -130,3 +130,91 @@ export async function amministratoriDaArchivio(radice: FileSystemDirectoryHandle
   }
   return out;
 }
+
+// ---------------- indice dei moduli di tutto l'archivio ----------------
+
+export interface IndiceVoce {
+  /** file .docx da cui vengono i dati */
+  file: string;
+  /** data di ultima modifica di quel file (ms): serve per rileggerlo solo se cambia */
+  modificato: number;
+  /** cartella dell'amministratore */
+  amministrazione: string;
+  letti: DatiLetti;
+}
+
+export interface IndiceModuli {
+  /** quando è stato costruito (ms): decide quale copia vince nella sincronizzazione */
+  aggiornato: number;
+  /** chiave dell'indirizzo (via + civico) → dati del modulo più recente di quello stabile */
+  voci: Record<string, IndiceVoce>;
+}
+
+/**
+ * Legge tutto l'archivio una volta e ricorda, per ogni stabile, i dati del MOD. PIN 2/3 .docx più recente (anche le copie
+ * convertite da .doc in _AGGIORNAMENTI\Moduli convertiti). L'indice si sincronizza con gli altri dispositivi, così anche il
+ * telefono, che non vede la cartella, compila da solo. Rilegge solo i file cambiati dall'ultima volta.
+ */
+export async function costruisciIndice(radice: FileSystemDirectoryHandle, precedente?: IndiceModuli, avanzamento?: (testo: string) => void): Promise<IndiceModuli> {
+  const voceDi = new Map<string, IndiceVoce>();
+  const convertiti = await sotto(radice, '_AGGIORNAMENTI').then((a) => (a ? sotto(a, 'Moduli convertiti') : undefined)).catch(() => undefined);
+  let pratiche = 0;
+  for await (const amm of voci(radice)) {
+    if (amm.kind !== 'directory' || amm.name.startsWith('_')) continue;
+    const cpi = await cartellaCpi(amm as FileSystemDirectoryHandle).catch(() => undefined);
+    if (!cpi) continue;
+    avanzamento?.(`Leggo l’archivio: ${amm.name}…`);
+    const convAmm = convertiti ? await sotto(convertiti, amm.name).catch(() => undefined) : undefined;
+    for await (const pratica of voci(cpi)) {
+      if (pratica.kind !== 'directory') continue;
+      const chiavi = chiaviDaCartella(pratica.name);
+      if (!chiavi.length) continue;
+      const t: Trovati = { docx: [], altri: 0 };
+      await moduliInCartella(pratica as FileSystemDirectoryHandle, t).catch(() => undefined);
+      const convertita = convAmm ? await sotto(convAmm, pratica.name).catch(() => undefined) : undefined;
+      if (convertita) await moduliInCartella(convertita, t).catch(() => undefined);
+      pratiche++;
+      let voce: IndiceVoce | undefined;
+      for (const f of t.docx.sort((a, b) => b.lastModified - a.lastModified)) {
+        const prima = chiavi.map((k) => precedente?.voci[k]).find((v) => v && v.file === f.name && v.modificato === f.lastModified);
+        if (prima) {
+          voce = prima;
+          break;
+        }
+        try {
+          const letti = await leggiModuloCompilato(f, f.name);
+          if (!letti.titolare.cognome.trim()) continue;
+          voce = { file: f.name, modificato: f.lastModified, amministrazione: amm.name, letti };
+          break;
+        } catch {
+          /* non leggibile: si prova il successivo */
+        }
+      }
+      if (!voce) continue;
+      for (const k of chiavi) {
+        const esistente = voceDi.get(k);
+        if (!esistente || esistente.modificato < voce.modificato) voceDi.set(k, voce);
+      }
+    }
+  }
+  avanzamento?.(`Archivio letto: ${voceDi.size} stabili con moduli (${pratiche} cartelle).`);
+  return { aggiornato: Date.now(), voci: Object.fromEntries(voceDi) };
+}
+
+/** I dati del modulo più recente per quell'indirizzo, dall'indice. */
+export function cercaInIndice(indice: IndiceModuli | undefined, indirizzo: string): IndiceVoce | undefined {
+  if (!indice) return undefined;
+  return chiaviIndirizzo(indirizzo).map((k) => indice.voci[k]).find(Boolean);
+}
+
+/** Titolare più recente di ogni amministratore, dall'indice: riempie la rubrica. */
+export function amministratoriDaIndice(indice: IndiceModuli): AmministratoreLetto[] {
+  const per = new Map<string, IndiceVoce>();
+  for (const v of Object.values(indice.voci)) {
+    const p = per.get(v.amministrazione);
+    if (!p || p.modificato < v.modificato) per.set(v.amministrazione, v);
+  }
+  return [...per.values()]
+    .filter((v) => v.letti.titolare.cognome.trim() && v.letti.titolare.nome.trim())
+    .map((v) => ({ amministrazione: v.amministrazione, titolare: v.letti.titolare, file: v.file }));
+}

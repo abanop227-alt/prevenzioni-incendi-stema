@@ -1,5 +1,6 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 import { clienteDa, type Commessa } from './commesse';
+import type { IndiceModuli } from './moduliInArchivio';
 import type { Stabile } from './stabili';
 import type { Catalogo, DatiModuli, FotoRecord, Sopralluogo, Tecnico } from './types';
 import { tecnicoVuoto } from './catalogo';
@@ -246,6 +247,19 @@ export async function unisciRubricaAmministratori(remota: Record<string, Titolar
   const d = await db();
   const locale = await leggiRubricaAmministratori();
   await d.put('impostazioni', sostituisci ? { ...locale, ...remota } : { ...remota, ...locale }, 'amministratori');
+}
+
+// ---- indice dei moduli VV.F. dell'archivio (dati dei moduli già compilati per ogni stabile; si sincronizza) ----
+
+export async function leggiIndiceModuli(): Promise<IndiceModuli | undefined> {
+  return (await (await db()).get('impostazioni', 'indiceModuli')) as IndiceModuli | undefined;
+}
+
+export async function salvaIndiceModuli(i: IndiceModuli | null): Promise<void> {
+  const d = await db();
+  if (i) await d.put('impostazioni', i, 'indiceModuli');
+  else await d.delete('impostazioni', 'indiceModuli');
+  await segnaModificaDati('indice', i?.aggiornato ?? Date.now());
 }
 
 // ---- elenco lavori importato e file Excel originali degli stabili (solo su questo dispositivo) ----

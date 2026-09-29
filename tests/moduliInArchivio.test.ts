@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { tecnicoVuoto } from '../src/lib/catalogo';
-import { amministratoriDaArchivio, chiaviDaCartella, chiaviIndirizzo, datiDaArchivio, èModuloPrincipale } from '../src/lib/moduliInArchivio';
+import { amministratoriDaArchivio, amministratoriDaIndice, cercaInIndice, chiaviDaCartella, chiaviIndirizzo, costruisciIndice, datiDaArchivio, èModuloPrincipale } from '../src/lib/moduliInArchivio';
 import { compilaModello, moduliPredefiniti, professionistaVuoto, valoriPin3 } from '../src/lib/moduliVvf';
 import { chiaveIndirizzo } from '../src/lib/stabiliAggiornati';
 import { sopralluogoCon } from './aiuti';
@@ -124,5 +124,34 @@ describe('lettura dall’archivio (struttura reale)', () => {
     const lista = await amministratoriDaArchivio(radice as unknown as FileSystemDirectoryHandle);
     expect(lista.map((a) => a.amministrazione).sort()).toEqual(['BARBATI ERMINIO (STUDIO C.S.E.)', 'PASQUALI']);
     expect(lista[0].titolare).toMatchObject({ cognome: 'BIANCHI', nome: 'LUCA', codiceFiscale: 'BNCLCU70A01F205X' });
+  });
+
+  it('indice di tutto l’archivio: un dato per stabile, anche dalle copie convertite; rilegge solo i file cambiati', async () => {
+    const s = sopralluogoCon(['77.1.A']);
+    Object.assign(s.condominio, { indirizzo: 'Via Linati, 8', cap: '20128', comune: 'Milano' });
+    const d = moduliPredefiniti(s);
+    Object.assign(d.titolare, { cognome: 'BIANCHI', nome: 'LUCA', codiceFiscale: 'BNCLCU70A01F205X' });
+    const modello = new Uint8Array(readFileSync(new URL('../public/moduli/pin3-rinnovo.docx', import.meta.url)));
+    const docx = new Uint8Array(await (await compilaModello(modello, valoriPin3(s, d, { ...tecnicoVuoto, vvf: professionistaVuoto() }))).arrayBuffer());
+
+    const radice = new CartellaFinta('ARCHIVIO 2026');
+    radice.percorso('PASQUALI', '01_LAVORI', 'CPI', 'LINATI, 8_ROA+SCIA').figli.set('01_L_PIN_3_2023 Rinnovo_FV.docx', new FileFinto('01_L_PIN_3_2023 Rinnovo_FV.docx', docx, 3));
+    // solo in .doc nell'archivio: la copia convertita sta in _AGGIORNAMENTI\Moduli convertiti\<amministratore>\<cartella pratica>
+    radice.percorso('PASQUALI', '01_LAVORI', 'CPI', 'GOVONE, 50_RINNOVO').figli.set('01_G_MOD PIN. 3 - 2023.doc', new FileFinto('01_G_MOD PIN. 3 - 2023.doc', new Uint8Array([1])));
+    radice.percorso('_AGGIORNAMENTI', 'Moduli convertiti', 'PASQUALI', 'GOVONE, 50_RINNOVO').figli.set('01_G_MOD PIN. 3 - 2023.docx', new FileFinto('01_G_MOD PIN. 3 - 2023.docx', docx, 4));
+    radice.percorso('GUIDO', '01_LAVORI', 'CPI', 'MERULA, 9_RINNOVO').figli.set('03_M_PIN 3_2018.pdf', new FileFinto('03_M_PIN 3_2018.pdf', new Uint8Array([1])));
+
+    const passi: string[] = [];
+    const indice = await costruisciIndice(radice as unknown as FileSystemDirectoryHandle, undefined, (t) => passi.push(t));
+    expect(Object.keys(indice.voci)).toHaveLength(2); // Linati 8 e Govone 50; Merula solo in PDF
+    expect(cercaInIndice(indice, 'Via Linati, 8')?.letti.titolare).toMatchObject({ cognome: 'BIANCHI', codiceFiscale: 'BNCLCU70A01F205X' });
+    expect(cercaInIndice(indice, 'Via Govone, 50')?.file).toBe('01_G_MOD PIN. 3 - 2023.docx');
+    expect(cercaInIndice(indice, 'Via Merula, 9')).toBeUndefined();
+    expect(amministratoriDaIndice(indice).map((a) => a.amministrazione)).toEqual(['PASQUALI']);
+    expect(passi.some((p) => p.includes('PASQUALI'))).toBe(true);
+
+    // seconda lettura: i file non cambiati non si rileggono (si riusa la voce precedente)
+    const ancora = await costruisciIndice(radice as unknown as FileSystemDirectoryHandle, indice);
+    expect(cercaInIndice(ancora, 'Via Linati, 8')).toBe(cercaInIndice(indice, 'Via Linati, 8'));
   });
 });

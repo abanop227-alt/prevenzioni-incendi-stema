@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { condividi, fileDaBlob, isMobile, puoCondividere, scarica } from '../lib/condividi';
-import { leggiAmministratore, leggiCartellaArchivio, leggiTecnico, salvaAmministratore, salvaCartellaArchivio } from '../lib/db';
+import { leggiAmministratore, leggiCartellaArchivio, leggiIndiceModuli, leggiTecnico, salvaAmministratore, salvaCartellaArchivio, salvaIndiceModuli } from '../lib/db';
 import { cartellaSupportata, permessoScrittura, scegliCartella } from '../lib/archivio';
 import { moduliCompletati, type DatiLetti } from '../lib/moduliEsistenti';
-import { amministratoriDaArchivio, datiDaArchivio } from '../lib/moduliInArchivio';
+import { amministratoriDaIndice, cercaInIndice, costruisciIndice, datiDaArchivio } from '../lib/moduliInArchivio';
 import { generaModulo, moduliPredefiniti, nomeFileModulo, VALORI_MODULO, type ModelloModulo } from '../lib/moduliVvf';
 import { documentiPratica, praticaDi } from '../lib/pratiche';
 import type { DatiModuli, Sopralluogo, Tecnico } from '../lib/types';
@@ -55,6 +55,9 @@ function daCompletare(s: Sopralluogo, m: DatiModuli, tecnico: Tecnico): string[]
   return out;
 }
 
+/** L'archivio si rilegge una volta per sessione all'apertura dei moduli (poi con il pulsante). */
+let indiceAggiornatoInSessione = false;
+
 export default function StepModuli({ s, aggiorna }: Props) {
   const p = praticaDi(s);
   const [tecnico, setTecnico] = useState<Tecnico | null>(null);
@@ -65,7 +68,7 @@ export default function StepModuli({ s, aggiorna }: Props) {
   const [cartella, setCartella] = useState<FileSystemDirectoryHandle | undefined>();
   const [ricerca, setRicerca] = useState<string | null>(null);
 
-  /** Completa i moduli: prima ciò che l'utente ha già scritto, poi la rubrica dell'amministrazione, poi il modulo più recente in archivio, poi condominio e attività. */
+  /** Completa i moduli: prima ciò che l'utente ha già scritto, poi il modulo dello stesso stabile, la rubrica dell'amministrazione, condominio e attività. */
   function applica(letti: DatiLetti | undefined, noto: DatiModuli['titolare'] | undefined) {
     aggiorna((x) => {
       const base = moduliCompletati(x.moduli, moduliPredefiniti(x), letti, noto);
@@ -75,40 +78,53 @@ export default function StepModuli({ s, aggiorna }: Props) {
     });
   }
 
-  /** Cerca in archivio, applica i dati e racconta cosa è successo. */
-  async function cercaInArchivio(c: FileSystemDirectoryHandle, noto: DatiModuli['titolare'] | undefined) {
-    const r = await datiDaArchivio(c, s.condominio.indirizzo);
-    if (r.letti) {
-      setFonte(r.letti.file);
-      setRicerca(`✓ Compilato dai dati di “${r.letti.file}” (solo i campi vuoti).`);
-    } else if (!r.cartelle) setRicerca('Nessuna cartella di questo indirizzo trovata in archivio (cerco “VIA, CIVICO_…” in CPI).');
-    else if (r.altri) setRicerca(`Trovati ${r.altri} moduli PIN 2/PIN 3 solo in .doc o PDF: non si possono leggere. Salva un modulo come .docx e riprova.`);
-    else setRicerca('Trovata la cartella, ma senza un MOD. PIN 2 o PIN 3 in .docx.');
-    applica(r.letti, noto);
+  const rubricaDi = () => leggiAmministratore(s.condominio.pressoAmministrazione).catch(() => undefined);
+
+  /** Rilegge l'archivio (solo i file cambiati), aggiorna l'indice condiviso col telefono e la rubrica, e compila. */
+  async function aggiornaIndice(c: FileSystemDirectoryHandle) {
+    const nuovo = await costruisciIndice(c, await leggiIndiceModuli().catch(() => undefined), setRicerca);
+    await salvaIndiceModuli(nuovo);
+    for (const a of amministratoriDaIndice(nuovo)) await salvaAmministratore(a.amministrazione, a.titolare, true).catch(() => {});
+    const v = cercaInIndice(nuovo, s.condominio.indirizzo);
+    if (v) {
+      setFonte(v.file);
+      setRicerca(`✓ Archivio letto (${Object.keys(nuovo.voci).length} stabili con moduli). Compilato dai dati di “${v.file}”.`);
+    } else {
+      const r = await datiDaArchivio(c, s.condominio.indirizzo).catch(() => undefined);
+      setRicerca(
+        `Archivio letto (${Object.keys(nuovo.voci).length} stabili con moduli). ` +
+          (!r || !r.cartelle
+            ? 'Per questo indirizzo non c’è ancora una cartella in archivio: uso la rubrica dell’amministrazione.'
+            : r.altri
+              ? `Per questo stabile ci sono ${r.altri} moduli solo in .doc o PDF: converti in .docx (vedi guida) per leggerli.`
+              : 'Per questo stabile non c’è un MOD. PIN 2 o PIN 3 in .docx: uso la rubrica.'),
+      );
+    }
+    applica(v?.letti, await rubricaDi());
   }
 
-  // apertura: i dati dei moduli si ricavano da soli da condominio, rubrica dell'amministrazione e moduli già presenti in archivio
+  // apertura: i dati si ricavano da soli. Subito dall'indice condiviso (funziona anche da telefono), poi, sul computer, rileggendo l'archivio.
   useEffect(() => {
     leggiTecnico().then(setTecnico).catch(() => {});
     (async () => {
-      const noto = await leggiAmministratore(s.condominio.pressoAmministrazione).catch(() => undefined);
+      const idx = await leggiIndiceModuli().catch(() => undefined);
+      const voce = cercaInIndice(idx, s.condominio.indirizzo);
+      if (voce) setFonte(voce.file);
+      applica(voce?.letti, await rubricaDi());
       const c = await leggiCartellaArchivio().catch(() => undefined);
       setCartella(c);
-      if (c && (await permessoScrittura(c, false).catch(() => false))) await cercaInArchivio(c, noto).catch((e) => setRicerca(`Errore: ${(e as Error).message}`));
-      else {
-        applica(undefined, noto);
-        if (c) setRicerca('Concedi l’accesso alla cartella dell’archivio per compilare dai moduli già presenti.');
+      if (!c) return;
+      if (!(await permessoScrittura(c, false).catch(() => false))) {
+        if (!voce) setRicerca('Concedi l’accesso alla cartella dell’archivio per compilare dai moduli già presenti.');
+        return;
+      }
+      if (!indiceAggiornatoInSessione || !idx) {
+        indiceAggiornatoInSessione = true;
+        await aggiornaIndice(c).catch((e) => setRicerca(`Errore: ${(e as Error).message}`));
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  /** Riempie la rubrica con il titolare di ogni amministratore, letto dai moduli in archivio (senza sostituire quelli già ricordati). */
-  async function riempiRubrica(c: FileSystemDirectoryHandle): Promise<number> {
-    const lista = await amministratoriDaArchivio(c, (nome) => setRicerca(`Leggo l’archivio: ${nome}…`));
-    for (const a of lista) await salvaAmministratore(a.amministrazione, a.titolare, true).catch(() => {});
-    return lista.length;
-  }
 
   /** Scelta della cartella dell'archivio direttamente da qui (una volta sola): poi tutto si compila da solo. */
   async function scegliEcerca() {
@@ -116,10 +132,8 @@ export default function StepModuli({ s, aggiorna }: Props) {
       const c = await scegliCartella();
       await salvaCartellaArchivio(c);
       setCartella(c);
-      setRicerca('Leggo l’archivio…');
-      const n = await riempiRubrica(c);
-      await cercaInArchivio(c, await leggiAmministratore(s.condominio.pressoAmministrazione).catch(() => undefined));
-      setRicerca((r) => `Letti i titolari di ${n} amministratori dall’archivio. ${r ?? ''}`);
+      indiceAggiornatoInSessione = true;
+      await aggiornaIndice(c);
     } catch (e) {
       if ((e as Error).name !== 'AbortError') setRicerca(`Errore: ${(e as Error).message}`);
     }
@@ -130,9 +144,8 @@ export default function StepModuli({ s, aggiorna }: Props) {
     setRicerca('Cerco nell’archivio…');
     try {
       if (!(await permessoScrittura(cartella, true))) return setRicerca('Serve il permesso di accesso alla cartella dell’archivio.');
-      const n = await riempiRubrica(cartella);
-      await cercaInArchivio(cartella, await leggiAmministratore(s.condominio.pressoAmministrazione).catch(() => undefined));
-      setRicerca((r) => `Letti i titolari di ${n} amministratori dall’archivio. ${r ?? ''}`);
+      indiceAggiornatoInSessione = true;
+      await aggiornaIndice(cartella);
     } catch (e) {
       setRicerca(`Errore: ${(e as Error).message}`);
     }

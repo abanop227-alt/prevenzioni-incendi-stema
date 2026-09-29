@@ -67,3 +67,12 @@ codice: intestazione, firma, piè di pagina e carta intestata sono impostazioni 
 file (`roa-dati.json`); i dati dei clienti stanno solo sui dispositivi e nel repository privato di sincronizzazione.
 La libreria predefinita contiene frasi ricavate dalle ROA dello studio STEMA: prima di distribuire l'app ad altri studi va sostituita
 con una libreria neutra o con la loro.
+
+## Moduli VV.F. compilati da soli dall'archivio
+
+- Con la cartella dell'archivio scelta (Chrome/Edge sul computer) l'app legge, per ogni stabile, il MOD. PIN 2/3 in `.docx` più recente
+  (cartelle `<amministratore>\01_LAVORI\CPI\<VIA, CIVICO>_<PRATICA>`) e ne ricava titolare, codice fiscale, sede e attività.
+- I dati letti formano un **indice** che si sincronizza (repository dati privato) con gli altri dispositivi: il telefono compila da solo
+  senza vedere la cartella. L'indice non è mai nel repository del codice.
+- I moduli rimasti in `.doc` si convertono con `scripts/archivio/converti_moduli_doc.ps1` (richiede Word): le copie `.docx` vanno in
+  `_AGGIORNAMENTI\Moduli convertiti\<amministratore>\<cartella pratica>` e gli originali non si toccano.

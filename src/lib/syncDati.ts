@@ -12,14 +12,17 @@ import {
   importaStabiliDb,
   leggiCommesseImportate,
   leggiFileStabili,
+  leggiIndiceModuli,
   leggiModificheDati,
   leggiRubricaAmministratori,
   salvaCommesseImportate,
+  salvaIndiceModuli,
   salvaFileStabili,
   segnaModificaDati,
   unisciRubricaAmministratori,
   type CommesseImportate,
 } from './db';
+import type { IndiceModuli } from './moduliInArchivio';
 import type { Stabile } from './stabili';
 import type { DatiModuli } from './types';
 
@@ -38,13 +41,14 @@ export interface StatoDati {
 
 interface Documento {
   formato: 'pi-dati';
-  tipo: 'stabili' | 'commesse' | 'amministratori';
+  tipo: 'stabili' | 'commesse' | 'amministratori' | 'indice';
   modificato: number;
   eliminato?: boolean;
   origine?: string;
   stabili?: Stabile[];
   commesse?: CommesseImportate;
   rubrica?: Record<string, Titolare>;
+  indice?: IndiceModuli;
   autore?: string;
 }
 
@@ -62,6 +66,7 @@ export const percorsoStabili = (origine: string) => `dati/stabili/${origine.repl
 export const percorsoExcel = (origine: string) => `dati/excel/${origine.replace(/\.xlsx$/i, '').replace(/[^A-Za-z0-9]+/g, '_').slice(0, 40)}-${impronta(origine)}.xlsx`;
 const P_COMMESSE = 'dati/commesse.json';
 const P_AMMINISTRATORI = 'dati/amministratori.json';
+const P_INDICE = 'dati/indice-moduli.json';
 
 const stessa = (a: object, b: object) => JSON.stringify(Object.entries(a).sort()) === JSON.stringify(Object.entries(b).sort());
 
@@ -162,6 +167,30 @@ export async function sincronizzaDati(gh: ClientDati, ramo: string, remoto: Map<
       if ((locale || L) && !(stato.versioni['dati:commesse'] === L && remoto.has(P_COMMESSE))) {
         await invia(P_COMMESSE, locale ? { formato: 'pi-dati', tipo: 'commesse', modificato: L, commesse: locale } : { formato: 'pi-dati', tipo: 'commesse', modificato: L, eliminato: true }, 'Elenco lavori');
         stato.versioni['dati:commesse'] = L;
+      }
+    }
+  }
+
+  // ---- indice dei moduli dell'archivio (costruito sul computer, letto anche dal telefono) ----
+  {
+    const remotoDoc = await scarica(P_INDICE);
+    const locale = await leggiIndiceModuli();
+    let L = mod.indice ?? 0;
+    if (remotoDoc && remotoDoc.modificato > L && remotoDoc.indice) {
+      await salvaIndiceModuli(remotoDoc.indice);
+      await segnaModificaDati('indice', remotoDoc.modificato);
+      stato.sha[P_INDICE] = remoto.get(P_INDICE)!;
+      stato.versioni['dati:indice'] = remotoDoc.modificato;
+      esito.ricevuti++;
+    } else {
+      if (remotoDoc) stato.sha[P_INDICE] = remoto.get(P_INDICE)!;
+      if (locale && !L) {
+        L = locale.aggiornato;
+        await segnaModificaDati('indice', L);
+      }
+      if (locale && L && !(stato.versioni['dati:indice'] === L && remoto.has(P_INDICE))) {
+        await invia(P_INDICE, { formato: 'pi-dati', tipo: 'indice', modificato: L, indice: locale }, 'Indice moduli');
+        stato.versioni['dati:indice'] = L;
       }
     }
   }
