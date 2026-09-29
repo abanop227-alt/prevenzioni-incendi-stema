@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto';
 import { describe, expect, it } from 'vitest';
 import { creaBackup, importaBackup } from '../src/lib/backup';
-import { duplicaSopralluogo, eliminaSopralluogo, fotoDiSopralluogo, leggiSopralluogo, salvaFoto, salvaSopralluogo } from '../src/lib/db';
+import { chiudiDb, elencaStabili, importaStabiliDb, leggiAmministratore, leggiFileStabili, salvaAmministratore, salvaFileStabili, duplicaSopralluogo, eliminaSopralluogo, fotoDiSopralluogo, leggiSopralluogo, salvaFoto, salvaSopralluogo } from '../src/lib/db';
 import { sopralluogoCon } from './aiuti';
 
 describe('archivio e backup', () => {
@@ -39,5 +39,22 @@ describe('archivio e backup', () => {
   it('rifiuta file non validi', async () => {
     await expect(importaBackup('non json')).rejects.toThrow(/JSON/);
     await expect(importaBackup('{"a":1}')).rejects.toThrow(/backup/);
+  });
+
+  it('il backup completo porta con sé stabili, Excel originale e rubrica', async () => {
+    await importaStabiliDb([{ id: 'x1', origine: 'Stabili BARZETTI.xlsx', via: 'NAGO', civico: '22' } as never], 'Stabili BARZETTI.xlsx');
+    await salvaFileStabili('Stabili BARZETTI.xlsx', new Blob([new Uint8Array([1, 2, 3])]));
+    await salvaAmministratore('Barzetti', { cognome: 'BIANCHI', nome: 'A', codiceFiscale: '', qualifica: '', email: '', pec: '' } as never);
+    const testo = JSON.stringify(await creaBackup());
+    expect(JSON.parse(testo).dati.stabili[0].origine).toBe('Stabili BARZETTI.xlsx');
+    // un backup parziale non contiene i dati importati
+    expect(JSON.parse(JSON.stringify(await creaBackup(['nessuno']))).dati).toBeUndefined();
+
+    await chiudiDb();
+    globalThis.indexedDB = new (await import('fake-indexeddb')).IDBFactory();
+    await importaBackup(testo);
+    expect(await elencaStabili()).toHaveLength(1);
+    expect((await (await leggiFileStabili('Stabili BARZETTI.xlsx'))!.arrayBuffer()).byteLength).toBe(3);
+    expect((await leggiAmministratore('Barzetti'))?.cognome).toBe('BIANCHI');
   });
 });

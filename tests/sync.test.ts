@@ -1,7 +1,23 @@
 import 'fake-indexeddb/auto';
 import { IDBFactory } from 'fake-indexeddb';
 import { describe, expect, it } from 'vitest';
-import { chiudiDb, elencaSopralluoghi, fotoDiSopralluogo, salvaFoto, salvaSopralluogo } from '../src/lib/db';
+import {
+  chiudiDb,
+  elencaSopralluoghi,
+  elencaStabili,
+  eliminaFileStabili,
+  eliminaStabiliDi,
+  fotoDiSopralluogo,
+  importaStabiliDb,
+  leggiAmministratore,
+  leggiCommesseImportate,
+  leggiFileStabili,
+  salvaAmministratore,
+  salvaCommesseImportate,
+  salvaFileStabili,
+  salvaFoto,
+  salvaSopralluogo,
+} from '../src/lib/db';
 import { registraEliminazione, salvaConfigSync, sincronizzaOra, verificaConfig } from '../src/lib/sync';
 import { sopralluogoCon } from './aiuti';
 
@@ -142,5 +158,58 @@ describe('sincronizzazione tra dispositivi (repository GitHub privato)', () => {
     await salvaSopralluogo(s);
     await expect(sincronizzaOra({ fetch: gh.f })).rejects.toThrow(/Chiave di accesso non valida/);
     expect(await elencaSopralluoghi()).toHaveLength(1);
+  });
+});
+
+describe('sincronizzazione dei dati importati (stabili, Excel, elenco lavori, rubrica)', () => {
+  const stabile = (id: string, origine: string) => ({ id, origine, via: 'LINATI', civico: '8', foglio: 'F', riga: 3 }) as never;
+  const titolare = (cognome: string) => ({ cognome, nome: 'M', codiceFiscale: '', qualifica: '', email: '', pec: '' }) as never;
+  const xlsxFinto = () => new Blob([new Uint8Array([80, 75, 3, 4, 9, 9])]);
+
+  it('PC → telefono → PC: stabili con Excel, elenco lavori e rubrica arrivano, si uniscono e le cancellazioni seguono', async () => {
+    const gh = githubFinto();
+
+    // PC: importa un elenco stabili (con il suo Excel), l'elenco lavori e un amministratore
+    await nuovoDispositivo();
+    await importaStabiliDb([stabile('a', 'Stabili PASQUALI 2026.xlsx'), stabile('b', 'Stabili PASQUALI 2026.xlsx')], 'Stabili PASQUALI 2026.xlsx');
+    await salvaFileStabili('Stabili PASQUALI 2026.xlsx', xlsxFinto());
+    await salvaCommesseImportate({ righe: [{ numero: 1 } as never], file: 'ELENCO LAVORI 2026.xlsx', importato: 1000 });
+    await salvaAmministratore('Pasquali', titolare('ROSSI'));
+    let e = await sincronizzaOra({ fetch: gh.f });
+    expect(e.datiInviati).toBe(3);
+    expect([...gh.file.keys()].filter((k) => k.startsWith('dati/')).length).toBe(4); // json stabili, excel, commesse, rubrica
+    expect(await sincronizzaOra({ fetch: gh.f })).toMatchObject({ datiInviati: 0, datiRicevuti: 0 });
+
+    // telefono: riceve tutto, compreso l'Excel originale
+    await nuovoDispositivo();
+    e = await sincronizzaOra({ fetch: gh.f });
+    expect(e.datiRicevuti).toBe(3);
+    expect(await elencaStabili()).toHaveLength(2);
+    expect((await (await leggiFileStabili('Stabili PASQUALI 2026.xlsx'))!.arrayBuffer()).byteLength).toBe(6);
+    expect((await leggiCommesseImportate())?.righe).toHaveLength(1);
+    expect((await leggiAmministratore('PASQUALI'))?.cognome).toBe('ROSSI');
+    expect(await sincronizzaOra({ fetch: gh.f })).toMatchObject({ datiInviati: 0, datiRicevuti: 0 });
+
+    // telefono aggiunge un altro amministratore: sul PC arriva senza perdere quello che c'era
+    await new Promise((r) => setTimeout(r, 5));
+    await salvaAmministratore('Barzetti', titolare('BIANCHI'));
+    await sincronizzaOra({ fetch: gh.f });
+    await nuovoDispositivo();
+    await salvaAmministratore('Giorio', titolare('VERDI')); // il PC ha una voce sua, non ancora sincronizzata
+    await sincronizzaOra({ fetch: gh.f });
+    expect((await leggiAmministratore('Pasquali'))?.cognome).toBe('ROSSI');
+    expect((await leggiAmministratore('Barzetti'))?.cognome).toBe('BIANCHI');
+    expect((await leggiAmministratore('Giorio'))?.cognome).toBe('VERDI');
+
+    // tolto l'elenco stabili sul PC: sparisce anche dall'altro dispositivo
+    await new Promise((r) => setTimeout(r, 5));
+    await eliminaStabiliDi('Stabili PASQUALI 2026.xlsx');
+    await eliminaFileStabili('Stabili PASQUALI 2026.xlsx');
+    await sincronizzaOra({ fetch: gh.f });
+    const json = [...gh.file].find(([k]) => k.startsWith('dati/stabili/'))![1].content;
+    expect(JSON.parse(atob(json))).toMatchObject({ eliminato: true });
+    await nuovoDispositivo();
+    await sincronizzaOra({ fetch: gh.f });
+    expect(await elencaStabili()).toHaveLength(0);
   });
 });

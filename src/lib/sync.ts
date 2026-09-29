@@ -10,6 +10,7 @@
 import { base64ToBytes, bytesToBase64 } from './base64';
 import { fotoUsate } from './catalogo';
 import { db } from './db';
+import { sincronizzaDati } from './syncDati';
 import type { FotoRecord, Sopralluogo } from './types';
 
 export interface ConfigSync {
@@ -35,6 +36,9 @@ export interface EsitoSync {
   ricevuti: number;
   eliminati: number;
   foto: number;
+  /** elenchi stabili, elenco lavori e rubrica: inviati / ricevuti */
+  datiInviati: number;
+  datiRicevuti: number;
 }
 
 interface FileSopralluogo {
@@ -200,7 +204,7 @@ async function esegui({ fetch: f = fetch, aperto = null }: { fetch?: Fetch; aper
   const gh = client(config, f);
   const d = await db();
   const stato = await leggiStato();
-  const esito: EsitoSync = { inviati: 0, ricevuti: 0, eliminati: 0, foto: 0 };
+  const esito: EsitoSync = { inviati: 0, ricevuti: 0, eliminati: 0, foto: 0, datiInviati: 0, datiRicevuti: 0 };
 
   const ramo = (await gh.info()).default_branch || 'main';
   const remoto = await gh.albero(ramo);
@@ -311,6 +315,11 @@ async function esegui({ fetch: f = fetch, aperto = null }: { fetch?: Fetch; aper
     esito.inviati++;
     await salvaStato(stato); // avanzamento salvato: se cade la rete non si ricomincia da capo
   }
+
+  // 4) dati importati: stabili con i loro Excel, elenco lavori, rubrica amministratori
+  const dati = await sincronizzaDati(gh, ramo, remoto, stato, firma);
+  esito.datiInviati = dati.inviati;
+  esito.datiRicevuti = dati.ricevuti;
 
   stato.ultima = Date.now();
   await salvaStato(stato);

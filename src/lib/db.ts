@@ -169,7 +169,22 @@ export async function salvaCartaIntestata(c: CartaIntestata | null): Promise<voi
   else await d.delete('impostazioni', 'cartaIntestata');
 }
 
-// ---- stabili (anagrafica importata dagli Excel, solo su questo dispositivo) ----
+// ---- ultima modifica dei dati importati (per la sincronizzazione tra dispositivi) ----
+
+export type ModificheDati = Record<string, number>;
+
+export async function leggiModificheDati(): Promise<ModificheDati> {
+  return ((await (await db()).get('impostazioni', 'datiMod')) as ModificheDati | undefined) ?? {};
+}
+
+/** Registra quando è cambiato un insieme di dati ("stabili:<file>", "commesse", "amministratori"); `quando` solo dalla sincronizzazione. */
+export async function segnaModificaDati(chiave: string, quando = Date.now()): Promise<void> {
+  const d = await db();
+  const m = ((await d.get('impostazioni', 'datiMod')) as ModificheDati | undefined) ?? {};
+  await d.put('impostazioni', { ...m, [chiave]: quando }, 'datiMod');
+}
+
+// ---- stabili (anagrafica importata dagli Excel) ----
 
 export async function elencaStabili(): Promise<Stabile[]> {
   return (await db()).getAll('stabili');
@@ -181,12 +196,14 @@ export async function importaStabiliDb(nuovi: Stabile[], origine: string): Promi
   for await (const cur of tx.store.index('origine').iterate(origine)) await cur.delete();
   for (const s of nuovi) await tx.store.put(s);
   await tx.done;
+  await segnaModificaDati(`stabili:${origine}`);
 }
 
 export async function eliminaStabiliDi(origine: string): Promise<void> {
   const tx = (await db()).transaction('stabili', 'readwrite');
   for await (const cur of tx.store.index('origine').iterate(origine)) await cur.delete();
   await tx.done;
+  await segnaModificaDati(`stabili:${origine}`);
 }
 
 // ---- rubrica degli amministratori (titolare dei moduli VV.F., solo su questo dispositivo) ----
@@ -207,6 +224,18 @@ export async function salvaAmministratore(nome: string, titolare: Titolare): Pro
   const d = await db();
   const r = ((await d.get('impostazioni', 'amministratori')) as Record<string, Titolare> | undefined) ?? {};
   await d.put('impostazioni', { ...r, [k]: titolare }, 'amministratori');
+  await segnaModificaDati('amministratori');
+}
+
+export async function leggiRubricaAmministratori(): Promise<Record<string, Titolare>> {
+  return ((await (await db()).get('impostazioni', 'amministratori')) as Record<string, Titolare> | undefined) ?? {};
+}
+
+/** Rubrica ricevuta da un altro dispositivo: si aggiungono le voci mancanti; quelle già presenti le sostituisce solo se `sostituisci`. */
+export async function unisciRubricaAmministratori(remota: Record<string, Titolare>, sostituisci: boolean): Promise<void> {
+  const d = await db();
+  const locale = await leggiRubricaAmministratori();
+  await d.put('impostazioni', sostituisci ? { ...locale, ...remota } : { ...remota, ...locale }, 'amministratori');
 }
 
 // ---- elenco lavori importato e file Excel originali degli stabili (solo su questo dispositivo) ----
@@ -225,6 +254,7 @@ export async function salvaCommesseImportate(c: CommesseImportate | null): Promi
   const d = await db();
   if (c) await d.put('impostazioni', c, 'commesse');
   else await d.delete('impostazioni', 'commesse');
+  await segnaModificaDati('commesse', c?.importato ?? Date.now());
 }
 
 /** Il file Excel originale di un elenco stabili: serve per produrne la copia aggiornata. */

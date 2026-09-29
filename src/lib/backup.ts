@@ -1,6 +1,20 @@
 import { STUDIO } from '../config/studio';
 import { base64ToBytes, bytesToBase64 } from './base64';
-import { db, leggiTecnico, salvaTecnico } from './db';
+import {
+  db,
+  elencaStabili,
+  importaStabiliDb,
+  leggiCommesseImportate,
+  leggiFileStabili,
+  leggiRubricaAmministratori,
+  leggiTecnico,
+  salvaCommesseImportate,
+  salvaFileStabili,
+  salvaTecnico,
+  unisciRubricaAmministratori,
+  type CommesseImportate,
+} from './db';
+import type { Stabile } from './stabili';
 import type { FotoRecord, Sopralluogo, Tecnico } from './types';
 
 interface FotoBackup extends Omit<FotoRecord, 'blob'> {
@@ -14,6 +28,12 @@ export interface Backup {
   sopralluoghi: Sopralluogo[];
   foto: FotoBackup[];
   tecnico?: Tecnico;
+  /** dati importati: elenchi stabili con il loro Excel, elenco lavori, rubrica (solo nei backup completi) */
+  dati?: {
+    stabili: { origine: string; stabili: Stabile[]; excel?: string }[];
+    commesse?: CommesseImportate;
+    amministratori?: Record<string, unknown>;
+  };
 }
 
 export interface EsitoImport {
@@ -35,7 +55,18 @@ export async function creaBackup(ids?: string[]): Promise<Backup> {
     }
   }
   const tecnico = await leggiTecnico();
-  return { formato: 'roa-backup', versione: 1, esportato: new Date().toISOString(), sopralluoghi, foto, tecnico };
+  const backup: Backup = { formato: 'roa-backup', versione: 1, esportato: new Date().toISOString(), sopralluoghi, foto, tecnico };
+  if (!ids) {
+    const perOrigine = new Map<string, Stabile[]>();
+    for (const st of await elencaStabili()) perOrigine.set(st.origine, [...(perOrigine.get(st.origine) ?? []), st]);
+    const stabili = [];
+    for (const [origine, l] of perOrigine) {
+      const x = await leggiFileStabili(origine);
+      stabili.push({ origine, stabili: l, excel: x ? bytesToBase64(new Uint8Array(await x.arrayBuffer())) : undefined });
+    }
+    backup.dati = { stabili, commesse: await leggiCommesseImportate(), amministratori: await leggiRubricaAmministratori() };
+  }
+  return backup;
 }
 
 export async function esportaBackup(ids?: string[]): Promise<Blob> {
@@ -60,6 +91,17 @@ export async function importaBackup(testo: string): Promise<EsitoImport> {
   const esito: EsitoImport = { importati: 0, saltati: 0, foto: 0 };
   // dati del tecnico: importati solo se su questo dispositivo non sono ancora stati compilati
   if (b.tecnico && !(await leggiTecnico()).firma.trim()) await salvaTecnico({ ...(await leggiTecnico()), ...b.tecnico });
+  // dati importati: si aggiunge solo ciò che manca su questo dispositivo, senza sovrascrivere
+  if (b.dati) {
+    const presenti = new Set((await elencaStabili()).map((x) => x.origine));
+    for (const e of b.dati.stabili ?? []) {
+      if (presenti.has(e.origine) || !Array.isArray(e.stabili)) continue;
+      await importaStabiliDb(e.stabili, e.origine);
+      if (e.excel) await salvaFileStabili(e.origine, new Blob([base64ToBytes(e.excel) as BlobPart]));
+    }
+    if (b.dati.commesse && !(await leggiCommesseImportate())) await salvaCommesseImportate(b.dati.commesse);
+    if (b.dati.amministratori) await unisciRubricaAmministratori(b.dati.amministratori as never, false);
+  }
   for (const s of b.sopralluoghi) {
     if (!s?.id || !Array.isArray(s.voci)) continue;
     const presente = await d.get('sopralluoghi', s.id);

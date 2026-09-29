@@ -51,6 +51,8 @@ async function sovrascrivi(h: FileSystemFileHandle, blob: Blob): Promise<void> {
 export interface EsitoSulPosto extends EsitoVista {
   /** elenco lavori come è ora sul disco, per aggiornare la copia dell'app */
   commesse?: { file: string; righe: Commessa[] };
+  /** elenchi stabili riscritti sul disco, per aggiornare anche la copia dell'app */
+  stabiliAggiornati: { origine: string; stabili: Stabile[]; blob: Blob }[];
 }
 
 export interface DatiSulPosto {
@@ -92,6 +94,7 @@ export async function aggiornaSulPosto(radice: FileSystemDirectoryHandle, d: Dat
 
   // 2. elenchi stabili di ogni amministrazione
   let stabili: Stabile[] = [];
+  const stabiliAggiornati: EsitoSulPosto['stabiliAggiornati'] = [];
   const elenchiStabili = await trovaFile(radice, èElencoStabili, 2);
   if (!elenchiStabili.length) avvisi.push('Nessun file “Stabili …” trovato nelle cartelle degli amministratori.');
   for (const f of elenchiStabili) {
@@ -105,6 +108,7 @@ export async function aggiornaSulPosto(radice: FileSystemDirectoryHandle, d: Dat
         const nuovo = await applicaModifiche(attuale, m);
         await sovrascrivi(f.handle, nuovo);
         letti = await leggiStabiliXlsx(nuovo, f.handle.name);
+        stabiliAggiornati.push({ origine: f.handle.name, stabili: letti, blob: nuovo });
       }
       stabili.push(...letti);
       file.push({ cartella: f.percorso.slice(0, -1), nome: f.handle.name, descrizione: m.length ? `${m.length} celle aggiornate` : 'nessuna modifica' });
@@ -120,5 +124,5 @@ export async function aggiornaSulPosto(radice: FileSystemDirectoryHandle, d: Dat
     await scriviNellArchivio(radice, resoconti);
     file.push({ cartella: [CARTELLA_AGGIORNAMENTI, 'Resoconti'], nome: `${resoconti.length} file`, descrizione: 'resoconti del mese' });
   }
-  return { file, modifiche, avvisi, commesse: commesseDaDisco };
+  return { file, modifiche, avvisi, commesse: commesseDaDisco, stabiliAggiornati };
 }

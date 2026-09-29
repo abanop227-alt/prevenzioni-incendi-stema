@@ -56,13 +56,15 @@ export default function Sincronizzazione() {
     config === undefined
       ? '…'
       : !config
-        ? 'Non attiva: i sopralluoghi restano solo su questo dispositivo.'
+        ? 'Non attiva: sopralluoghi, stabili, elenco lavori e rubrica restano solo su questo dispositivo.'
         : stato.stato === 'in-corso'
           ? 'Sincronizzazione in corso…'
           : stato.stato === 'ok'
             ? `✓ Sincronizzato alle ${ora(stato.quando)}` +
-              (stato.esito.ricevuti || stato.esito.inviati
-                ? ` (${stato.esito.ricevuti} ricevuti, ${stato.esito.inviati} inviati)`
+              (stato.esito.ricevuti || stato.esito.inviati || stato.esito.datiRicevuti || stato.esito.datiInviati
+                ? ` (${stato.esito.ricevuti} ricevuti, ${stato.esito.inviati} inviati` +
+                  (stato.esito.datiRicevuti || stato.esito.datiInviati ? `; elenchi e rubrica: ${stato.esito.datiRicevuti} ricevuti, ${stato.esito.datiInviati} inviati` : '') +
+                  ')'
                 : '')
             : stato.stato === 'errore'
               ? `⚠ ${stato.messaggio}`

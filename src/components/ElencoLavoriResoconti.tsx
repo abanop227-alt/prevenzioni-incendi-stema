@@ -10,7 +10,9 @@ import {
   leggiCartellaArchivio,
   leggiCommesseImportate,
   leggiFileStabili,
+  importaStabiliDb,
   leggiImpostazione,
+  salvaFileStabili,
   leggiTecnico,
   salvaImpostazione,
   salvaCartellaArchivio,
@@ -99,6 +101,10 @@ export default function ElencoLavoriResoconti() {
       else {
         const e = await aggiornaSulPosto(cartella, { sopralluoghi, tecnico: await leggiTecnico(), mese, commesseImportate: importate?.righe ?? [], stabili });
         setEsito(e);
+        for (const a of e.stabiliAggiornati) {
+          await importaStabiliDb(a.stabili, a.origine);
+          await salvaFileStabili(a.origine, a.blob);
+        }
         if (e.commesse) {
           await salvaCommesseImportate({ righe: e.commesse.righe, file: e.commesse.file, importato: Date.now() });
           await carica();
