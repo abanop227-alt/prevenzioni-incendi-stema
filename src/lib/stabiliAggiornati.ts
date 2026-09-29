@@ -118,10 +118,8 @@ export async function modifichePerFile(originale: ArrayBuffer | Uint8Array | Blo
 
 const escXml = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-/** Scrive le celle nel file (stringhe inline, stile della cella conservato) e restituisce la copia aggiornata. */
-export async function applicaModifiche(originale: ArrayBuffer | Uint8Array | Blob, modifiche: Modifica[]): Promise<Blob> {
-  const { col } = await colonneDelFile(originale);
-  const zip = await JSZip.loadAsync(originale);
+/** Nome del foglio → percorso del suo XML nel file .xlsx. */
+export async function percorsiFogli(zip: JSZip): Promise<Map<string, string>> {
   const wb = await zip.file('xl/workbook.xml')!.async('string');
   const rels = new Map<string, string>();
   for (const m of ((await zip.file('xl/_rels/workbook.xml.rels')?.async('string')) ?? '').matchAll(/<Relationship\s([^>]*?)\/?>/g)) {
@@ -135,6 +133,14 @@ export async function applicaModifiche(originale: ArrayBuffer | Uint8Array | Blo
     const rid = /r:id="([^"]+)"/.exec(m[1])?.[1];
     percorso.set(nome, (rid && rels.get(rid)) || `xl/worksheets/sheet${i + 1}.xml`);
   });
+  return percorso;
+}
+
+/** Scrive le celle nel file (stringhe inline, stile della cella conservato) e restituisce la copia aggiornata. */
+export async function applicaModifiche(originale: ArrayBuffer | Uint8Array | Blob, modifiche: Modifica[]): Promise<Blob> {
+  const { col } = await colonneDelFile(originale);
+  const zip = await JSZip.loadAsync(originale);
+  const percorso = await percorsiFogli(zip);
   const perFoglio = new Map<string, Modifica[]>();
   for (const m of modifiche) perFoglio.set(m.foglio, [...(perFoglio.get(m.foglio) ?? []), m]);
   for (const [foglio, lista] of perFoglio) {
@@ -153,22 +159,48 @@ export async function applicaModifiche(originale: ArrayBuffer | Uint8Array | Blo
 
 /** Imposta la cella `lettera+riga` nel foglio XML, mantenendo l'ordine delle celle nella riga. */
 export function scriviCella(xml: string, lettera: string, riga: number, testo: string): string {
+  return scriviValore(xml, lettera, riga, testo, undefined, false); // la riga non esiste: non la creiamo
+}
+
+/**
+ * Come scriviCella, ma accetta anche numeri e, se la riga non esiste, la crea al posto giusto.
+ * `stile` si usa solo per una cella nuova: se la cella c'è già, ne mantiene lo stile.
+ */
+export function scriviValore(xml: string, lettera: string, riga: number, valore: string | number, stile?: string, creaRiga = true): string {
   const rif = `${lettera}${riga}`;
-  const reRiga = new RegExp(`<row\\b([^>]*\\br="${riga}"[^>]*?)(/>|>([\\s\\S]*?)</row>)`);
-  const mr = reRiga.exec(xml);
-  if (!mr) return xml; // la riga non esiste: non la creiamo
+  const componi = (s?: string) =>
+    typeof valore === 'number'
+      ? `<c r="${rif}"${s ? ` s="${s}"` : ''}><v>${valore}</v></c>`
+      : `<c r="${rif}"${s ? ` s="${s}"` : ''} t="inlineStr"><is><t xml:space="preserve">${escXml(valore)}</t></is></c>`;
+  const mr = new RegExp(`<row\\b([^>]*\\br="${riga}"[^>]*?)(/>|>([\\s\\S]*?)</row>)`).exec(xml);
+  if (!mr) {
+    if (!creaRiga) return xml;
+    const nuovaRiga = `<row r="${riga}">${componi(stile)}</row>`;
+    const dopo = [...xml.matchAll(/<row\b[^>]*\br="(\d+)"/g)].find((m) => Number(m[1]) > riga);
+    if (dopo) return xml.replace(dopo[0], () => nuovaRiga + dopo[0]);
+    if (/<sheetData\s*\/>/.test(xml)) return xml.replace(/<sheetData\s*\/>/, () => `<sheetData>${nuovaRiga}</sheetData>`);
+    return xml.replace('</sheetData>', () => `${nuovaRiga}</sheetData>`);
+  }
   const attrRiga = mr[1];
   const dentro = mr[3] ?? '';
-  const cellaRe = new RegExp(`<c\\b[^>]*\\br="${rif}"[^>]*?(?:/>|>[\\s\\S]*?</c>)`);
-  const esistente = cellaRe.exec(dentro);
-  const stile = esistente ? /\bs="(\d+)"/.exec(esistente[0])?.[1] : undefined;
-  const nuova = `<c r="${rif}"${stile ? ` s="${stile}"` : ''} t="inlineStr"><is><t xml:space="preserve">${escXml(testo)}</t></is></c>`;
+  const esistente = new RegExp(`<c\\b[^>]*\\br="${rif}"[^>]*?(?:/>|>[\\s\\S]*?</c>)`).exec(dentro);
+  const nuova = componi(esistente ? /\bs="(\d+)"/.exec(esistente[0])?.[1] : stile);
   let nuovoDentro: string;
-  if (esistente) nuovoDentro = dentro.replace(esistente[0], nuova);
+  if (esistente) nuovoDentro = dentro.replace(esistente[0], () => nuova);
   else {
     const celle = [...dentro.matchAll(/<c\b[^>]*\br="([A-Z]+)\d+"[^>]*?(?:\/>|>[\s\S]*?<\/c>)/g)];
     const dopo = celle.find((c) => indiceColonna(c[1]) > indiceColonna(lettera));
-    nuovoDentro = dopo ? dentro.replace(dopo[0], nuova + dopo[0]) : dentro + nuova;
+    nuovoDentro = dopo ? dentro.replace(dopo[0], () => nuova + dopo[0]) : dentro + nuova;
   }
-  return xml.replace(mr[0], `<row ${attrRiga.trim()}>${nuovoDentro}</row>`);
+  return xml.replace(mr[0], () => `<row ${attrRiga.trim()}>${nuovoDentro}</row>`);
+}
+
+/** Stile (attributo s) di una colonna: quello della prima cella con stile, risalendo da `dalla` fino a `allaRiga` (esclusa). */
+export function stileColonna(xml: string, lettera: string, dalla: number, allaRiga: number): string | undefined {
+  for (let r = dalla; r > allaRiga; r--) {
+    const m = new RegExp(`<c\\b[^>]*\\br="${lettera}${r}"[^>]*>`).exec(xml);
+    const s = m && /\bs="(\d+)"/.exec(m[0])?.[1];
+    if (s) return s;
+  }
+  return undefined;
 }

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { generaAggiornamenti, type EsitoAggiornamenti } from '../lib/aggiornamenti';
-import { cartellaSupportata, permessoScrittura, scegliCartella, scriviNellArchivio, zipDeiFile } from '../lib/archivio';
+import { generaAggiornamenti, type EsitoAggiornamenti, type EsitoVista } from '../lib/aggiornamenti';
+import { aggiornaSulPosto } from '../lib/archivioSulPosto';
+import { cartellaSupportata, permessoScrittura, scegliCartella, zipDeiFile } from '../lib/archivio';
 import { elencoLavori, esportaElencoLavoriXlsx, leggiCommesseXlsx } from '../lib/commesse';
 import { scarica } from '../lib/condividi';
 import {
@@ -32,7 +33,7 @@ export default function ElencoLavoriResoconti() {
   const [mese, setMese] = useState(mesePrecedente());
   const [messaggio, setMessaggio] = useState<string | null>(null);
   const [cartella, setCartella] = useState<FileSystemDirectoryHandle | undefined>();
-  const [esito, setEsito] = useState<EsitoAggiornamenti | null>(null);
+  const [esito, setEsito] = useState<EsitoVista | null>(null);
   const [occupato, setOccupato] = useState(false);
   const [automatico, setAutomatico] = useState(false);
   const avviato = useRef(false);
@@ -93,13 +94,17 @@ export default function ElencoLavoriResoconti() {
     setOccupato(true);
     setMessaggio(null);
     try {
-      const e = await preparaFile();
-      setEsito(e);
-      if (cartella && (await permessoScrittura(cartella, conGesto))) {
-        const scritti = await scriviNellArchivio(cartella, e.file);
-        setMessaggio(`Archivio aggiornato: ${scritti.length} file scritti in “${cartella.name}/_AGGIORNAMENTI”.`);
-      } else if (!cartella) setMessaggio('Scegli prima la cartella dell’archivio (oppure scarica lo ZIP).');
-      else setMessaggio('Serve il permesso di scrittura nella cartella: premi di nuovo “Aggiorna archivio”.');
+      if (!cartella) setMessaggio('Scegli prima la cartella dell’archivio (oppure scarica lo ZIP).');
+      else if (!(await permessoScrittura(cartella, conGesto))) setMessaggio('Serve il permesso di scrittura nella cartella: premi di nuovo “Aggiorna archivio”.');
+      else {
+        const e = await aggiornaSulPosto(cartella, { sopralluoghi, tecnico: await leggiTecnico(), mese, commesseImportate: importate?.righe ?? [], stabili });
+        setEsito(e);
+        if (e.commesse) {
+          await salvaCommesseImportate({ righe: e.commesse.righe, file: e.commesse.file, importato: Date.now() });
+          await carica();
+        }
+        setMessaggio(e.avvisi.length ? 'Archivio aggiornato, con qualche avviso (vedi sotto).' : 'Archivio aggiornato.');
+      }
     } catch (err) {
       setMessaggio(`Errore: ${(err as Error).message}`);
     } finally {
@@ -188,8 +193,10 @@ export default function ElencoLavoriResoconti() {
       <h3 className="titolo-sezione">Aggiornamento dell’archivio</h3>
       <div className="card">
         <p className="muto piccolo">
-          Genera elenco lavori, elenchi stabili di ogni amministrazione (copia con ROA, SCIA, rinnovo e scadenza aggiornati) e resoconti del mese.
-          Gli originali non vengono toccati: i file nuovi vanno nella cartella <code>_AGGIORNAMENTI</code>.
+          Con la cartella dell’archivio scelta, “Aggiorna archivio” riscrive sul posto l’elenco lavori (stato, date e referente; nuove commesse in
+          fondo) e gli elenchi stabili di ogni amministrazione (ROA, SCIA, rinnovo e scadenza): cambiano solo le celle interessate, il resto
+          del file resta com’è. I resoconti del mese vanno in <code>_AGGIORNAMENTI/Resoconti</code>. I file non devono essere aperti in Excel.
+          Da telefono: “Scarica tutto (ZIP)” produce copie aggiornate da sostituire a mano.
         </p>
         <div className="riga-pulsanti">
           {cartellaSupportata() && (

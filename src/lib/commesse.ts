@@ -2,7 +2,7 @@
 // Le righe delle pratiche si calcolano ogni volta dai sopralluoghi (stato, date, referente): non c'è nulla da
 // ricopiare a mano. Se una pratica ha lo stesso numero di commessa e lo stesso tipo di una riga importata, la sostituisce.
 import { praticaDi, TIPI } from './pratiche';
-import { leggiFogli, seriale } from './stabili';
+import { leggiFogli, seriale, type Foglio } from './stabili';
 import type { Sopralluogo } from './types';
 import { dataItaliana } from './util';
 import { creaXlsx, type Valore } from './xlsxScrittura';
@@ -27,6 +27,9 @@ export interface Commessa {
   dataConsegna: string;
   note: string;
   origine: 'excel' | 'app';
+  /** posizione nel file Excel importato (foglio e riga): serve per aggiornarlo sul posto */
+  foglio?: string;
+  riga?: number;
 }
 
 const norm = (t: string) => t.replace(/\s+/g, ' ').trim();
@@ -36,34 +39,66 @@ export function numeroDa(testo: string): number | null {
   return m ? Number(m[1]) : null;
 }
 
+export interface ColonneCommesse {
+  /** riga delle intestazioni */
+  intestazione: number;
+  numero: string;
+  cliente?: string;
+  tipoVia?: string;
+  via?: string;
+  civico?: string;
+  cap?: string;
+  comune?: string;
+  pratica: string;
+  referente?: string;
+  stato?: string;
+  dataFine?: string;
+  dataConsegna?: string;
+  note?: string;
+}
+
+const lettereColonna = (l: string) => [...l].reduce((n, ch) => n * 26 + ch.charCodeAt(0) - 64, 0);
+
+/** Cerca nel foglio le intestazioni COMM. e PRATICA e restituisce la lettera di ogni colonna. */
+export function colonneCommesse(f: Foglio): ColonneCommesse | null {
+  const intest = [...f.righe.entries()].find(([, r]) => [...r.values()].some((t) => /^comm\.?$/i.test(t)) && [...r.values()].some((t) => /^pratica$/i.test(t)));
+  if (!intest) return null;
+  const [r0, riga] = intest;
+  const col = (re: RegExp) => [...riga.entries()].find(([, t]) => re.test(t))?.[0];
+  const numero = col(/^comm/i);
+  const pratica = col(/^pratica$/i);
+  if (!numero || !pratica) return null;
+  const tipoVia = col(/^via/i);
+  // il cliente sta nella colonna senza intestazione tra il numero e il tipo di via
+  const cliente = tipoVia
+    ? [...new Set([...f.righe.values()].flatMap((r) => [...r.keys()]))].find((k) => lettereColonna(k) > lettereColonna(numero) && lettereColonna(k) < lettereColonna(tipoVia))
+    : undefined;
+  return {
+    intestazione: r0,
+    numero,
+    cliente,
+    tipoVia,
+    via: col(/^indirizzo$/i),
+    civico: col(/^civ/i),
+    cap: col(/^cap$/i),
+    comune: col(/^citt/i),
+    pratica,
+    referente: col(/^referente/i),
+    stato: col(/^stato$/i),
+    dataFine: col(/^data fine/i),
+    dataConsegna: col(/^data consegna/i),
+    note: col(/^note/i),
+  };
+}
+
 /** Legge il foglio delle commesse (quello con le colonne COMM. e PRATICA). */
 export async function leggiCommesseXlsx(dati: ArrayBuffer | Uint8Array | Blob): Promise<Commessa[]> {
   const fogli = await leggiFogli(dati);
   for (const f of fogli) {
-    const intest = [...f.righe.entries()].find(([, r]) => [...r.values()].some((t) => /^comm\.?$/i.test(t)) && [...r.values()].some((t) => /^pratica$/i.test(t)));
-    if (!intest) continue;
-    const [r0, riga] = intest;
-    const col = (re: RegExp) => [...riga.entries()].find(([, t]) => re.test(t))?.[0];
-    const c = {
-      numero: col(/^comm/i),
-      tipoVia: col(/^via/i),
-      via: col(/^indirizzo$/i),
-      civico: col(/^civ/i),
-      cap: col(/^cap$/i),
-      comune: col(/^citt/i),
-      pratica: col(/^pratica$/i),
-      referente: col(/^referente/i),
-      stato: col(/^stato$/i),
-      dataFine: col(/^data fine/i),
-      dataConsegna: col(/^data consegna/i),
-      note: col(/^note/i),
-    };
-    if (!c.numero || !c.pratica) continue;
-    // il cliente sta nella colonna senza intestazione tra il numero e il tipo di via
-    const idx = (l: string) => [...l].reduce((n, ch) => n * 26 + ch.charCodeAt(0) - 64, 0);
-    const colCliente = c.tipoVia
-      ? [...new Set([...f.righe.values()].flatMap((r) => [...r.keys()]))].find((k) => idx(k) > idx(c.numero!) && idx(k) < idx(c.tipoVia!))
-      : undefined;
+    const c = colonneCommesse(f);
+    if (!c) continue;
+    const r0 = c.intestazione;
+    const colCliente = c.cliente;
     const out: Commessa[] = [];
     for (const [n, r] of [...f.righe.entries()].sort((a, b) => a[0] - b[0])) {
       if (n <= r0) continue;
@@ -72,7 +107,8 @@ export async function leggiCommesseXlsx(dati: ArrayBuffer | Uint8Array | Blob): 
       if (!/^\d+/.test(numTesto)) continue;
       const data = (k: string | undefined) => {
         const v = g(k);
-        return seriale(v) ?? v;
+        const it = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(v); // date scritte come testo gg/mm/aaaa
+        return seriale(v) ?? (it ? `${it[3]}-${it[2].padStart(2, '0')}-${it[1].padStart(2, '0')}` : v);
       };
       out.push({
         numero: numeroDa(numTesto),
@@ -90,6 +126,8 @@ export async function leggiCommesseXlsx(dati: ArrayBuffer | Uint8Array | Blob): 
         dataConsegna: data(c.dataConsegna),
         note: g(c.note),
         origine: 'excel',
+        foglio: f.nome,
+        riga: n,
       });
     }
     return out;

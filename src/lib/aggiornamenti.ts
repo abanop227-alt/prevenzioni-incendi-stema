@@ -33,6 +33,13 @@ export interface EsitoAggiornamenti {
   avvisi: string[];
 }
 
+/** Ciò che serve per mostrare l'esito all'utente (senza i file veri e propri). */
+export interface EsitoVista {
+  file: Pick<FileGenerato, 'cartella' | 'nome' | 'descrizione'>[];
+  modifiche: Record<string, Modifica[]>;
+  avvisi: string[];
+}
+
 const senzaEstensione = (n: string) => n.replace(/\.xlsx$/i, '');
 
 export async function generaAggiornamenti(d: DatiAggiornamenti): Promise<EsitoAggiornamenti> {
@@ -64,12 +71,29 @@ export async function generaAggiornamenti(d: DatiAggiornamenti): Promise<EsitoAg
     });
   }
 
-  for (const amm of amministrazioni(lavori, d.stabili)) {
-    const r = creaResoconto(amm, mese, lavori, d.stabili);
+  file.push(...(await generaResoconti({ commesse: lavori, sopralluoghi: d.sopralluoghi, stabili: d.stabili, tecnico: d.tecnico, mese })));
+  return { file, modifiche, avvisi };
+}
+
+export interface DatiResoconti {
+  /** elenco lavori completo (già aggiornato con le pratiche) */
+  commesse: Commessa[];
+  sopralluoghi: Sopralluogo[];
+  stabili: Stabile[];
+  tecnico: Tecnico;
+  mese?: string;
+}
+
+/** Resoconti del mese (Word ed Excel) per ogni amministrazione con qualcosa da dire, in _AGGIORNAMENTI/Resoconti/<mese>. */
+export async function generaResoconti(d: DatiResoconti): Promise<FileGenerato[]> {
+  const mese = d.mese ?? mesePrecedente();
+  const file: FileGenerato[] = [];
+  for (const amm of amministrazioni(d.commesse, d.stabili)) {
+    const r = creaResoconto(amm, mese, d.commesse, d.stabili);
     if (!r.totale.completati && !r.totale.consegnati && !r.totale.inCorso && !r.scadenze.length) continue;
     const cartella = [CARTELLA_AGGIORNAMENTI, 'Resoconti', mese];
     file.push({ cartella, nome: nomeFileResoconto(r, 'docx'), blob: await resocontoDocx(r, d.tecnico), descrizione: `${r.totale.completati} completati, ${r.totale.inCorso} in corso` });
     file.push({ cartella, nome: nomeFileResoconto(r, 'xlsx'), blob: await resocontoXlsx(r), descrizione: 'tabella' });
   }
-  return { file, modifiche, avvisi };
+  return file;
 }
