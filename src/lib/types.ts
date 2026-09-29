@@ -329,6 +329,12 @@ export interface DatiModuli {
   versamento: RigaVersamento[];
   /** MOD. PIN 3.1, sezione A: impianti di protezione attiva verificati */
   impianti: { attivo: boolean; testo: string }[];
+  /** data di firma dei moduli (yyyy-mm-dd); vuota = si scrive a mano */
+  dataFirma?: string;
+  /** MOD. PIN 2.1: nuovo insediamento o modifica di attività esistente */
+  intervento?: '' | 'nuovo' | 'modifica';
+  /** MOD. PIN 2.1: progetti approvati dal Comando VV.F. (solo attività di categoria B e C) */
+  progettoApprovato?: { attivo: boolean; data: string; protocollo: string };
 }
 
 export interface Tecnico {

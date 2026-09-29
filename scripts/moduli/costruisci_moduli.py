@@ -106,11 +106,13 @@ class Modulo:
             t.set(XML_SPACE, 'preserve')
         self.usati.append(key)
 
-    def campo(self, etichetta, n, chiave):
+    def campo(self, etichetta, n, chiave, solo_vuoti=False):
         """Riquadro vuoto sopra la n-esima etichetta `etichetta`."""
         ets = self.etichette(etichetta)
         assert len(ets) > n, f'{os.path.basename(self.percorso)}: etichetta {etichetta!r} #{n} non trovata ({len(ets)} presenti)'
         cand = self.sopra(ets[n].getparent())
+        if solo_vuoti:
+            cand = [c for c in cand if ctext(c) == '']
         assert len(cand) == 1, f'etichetta {etichetta!r} #{n}: {len(cand)} riquadri sopra'
         p = cand[0].find('.//w:p', NS)
         assert ctext(cand[0]) in ('', '_'), f'etichetta {etichetta!r} #{n}: riquadro non vuoto ({ctext(cand[0])!r})'
@@ -205,6 +207,20 @@ class Modulo:
         pp = [p for p in self.par if ptext(p).startswith(inizia) and p.find('.//w:checkBox', NS) is not None]
         assert len(pp) > n, f'casella {inizia!r} non trovata'
         cb = pp[n].find('.//w:checkBox', NS)
+        for c in cb.findall('w:checked', NS):
+            cb.remove(c)
+        d = cb.find('w:default', NS)
+        if d is None:
+            d = etree.SubElement(cb, q('default'))
+        d.set(q('val'), '{{%s}}' % chiave)
+        self.usati.append(chiave)
+
+    def casella_idx(self, idx, chiave, testo_dopo=None):
+        """Casella di controllo nel paragrafo `idx` (senza testo); `testo_dopo` è il testo del paragrafo successivo (controllo)."""
+        cb = self.par[idx].find('.//w:checkBox', NS)
+        assert cb is not None, f'paragrafo {idx}: nessuna casella'
+        if testo_dopo is not None:
+            assert ptext(self.par[idx + 1]).startswith(testo_dopo), f'paragrafo {idx + 1}: atteso {testo_dopo!r}, trovato {ptext(self.par[idx + 1])!r}'
         for c in cb.findall('w:checked', NS):
             cb.remove(c)
         d = cb.find('w:default', NS)
@@ -427,6 +443,7 @@ def blocco_versamento_scia(m, righe=6):
     m.importi(['totale'] + [f'vaImporto{k}' for k in range(righe)])
     for k in range(righe):
         m.campo('Attività n.', k, f'vaN{k}')
+        m.campo('Sottocl./ categoria', k, f'vaSotto{k}', solo_vuoti=True)
 
 
 def pin21(src):
@@ -446,6 +463,9 @@ def pin21(src):
     m.par_idx(30, 'pTel', 'telefono', 34)
     m.par_idx(35, 'pEmail', 'indirizzo di posta elettronica', 37)
     m.par_idx(36, 'pPec', 'indirizzo di posta elettronica certificata', 38)
+    m.casella_idx(80, 'chkProgetti', 'progetti approvati')
+    m.par_idx(84, 'progettiData', 'in data', 83)
+    m.par_idx(86, 'progettiProt', 'prot. n.', 85)
     m.casella('nuovo insediamento', 'chkNuovo')
     m.casella('modifica attività esistente', 'chkModifica')
     m.campo('tipo di attività (albergo, scuola, etc.) - in caso di SCIA parziale indicare i riferimenti pertinenti', 0, 'tipoAttivita')
@@ -598,7 +618,19 @@ def pin26(src):
     return m, 'pin26-non-aggravio-rischio.docx'
 
 
-COSTRUTTORI = {'pin3': pin3, 'pin31': pin31, 'pin2': pin2, 'pin21': pin21, 'pin7': pin7, 'pin1': pin1, 'pin22': pin22, 'pin23': pin23,  'pin25': pin25, 'pin26': pin26}
+def pin24(src):
+    # dichiarazione dell'installatore: i suoi dati non sono nell'app, si compila solo il luogo di installazione
+    m = Modulo(os.path.join(src, 'PIN_2_4_2018DICH_IMP.docx'))
+    m.campo('Indirizzo', 1, 'aIndirizzo')
+    m.campo('n. civico', 2, 'aCivico')
+    m.campo('c.a.p.', 2, 'aCap')
+    m.campo('Comune', 0, 'aComune')
+    m.campo('provincia', 3, 'aProv')
+    m.campo('Data', 0, 'dataFirma')
+    return m, 'pin24-dichiarazione-impianto.docx'
+
+
+COSTRUTTORI = {'pin3': pin3, 'pin31': pin31, 'pin2': pin2, 'pin21': pin21, 'pin7': pin7, 'pin1': pin1, 'pin22': pin22, 'pin23': pin23,  'pin24': pin24, 'pin25': pin25, 'pin26': pin26}
 
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@ import { dataItaliana } from './util';
 export type Valori = Record<string, string | boolean>;
 
 export interface ModelloModulo {
-  id: 'pin3' | 'pin31' | 'pin2' | 'pin21' | 'pin1' | 'pin7' | 'pin22' | 'pin23' | 'pin25' | 'pin26';
+  id: 'pin3' | 'pin31' | 'pin2' | 'pin21' | 'pin1' | 'pin7' | 'pin22' | 'pin23' | 'pin24' | 'pin25' | 'pin26';
   file: string;
   /** nome del file generato, senza estensione */
   nome: string;
@@ -23,6 +23,7 @@ export const MODELLI: Record<ModelloModulo['id'], ModelloModulo> = {
   pin7: { id: 'pin7', file: 'pin7-voltura.docx', nome: 'MOD. PIN 7 - 2018_VOLTURA' },
   pin22: { id: 'pin22', file: 'pin22-cert-rei.docx', nome: 'MOD. PIN 2.2 - 2023_CERT REI' },
   pin23: { id: 'pin23', file: 'pin23-dichiarazione-prodotto.docx', nome: 'MOD. PIN 2.3 - 2018_DICHIARAZIONE PRODOTTO' },
+  pin24: { id: 'pin24', file: 'pin24-dichiarazione-impianto.docx', nome: 'MOD. PIN 2.4 - 2018_DICHIARAZIONE IMPIANTO' },
   pin25: { id: 'pin25', file: 'pin25-certificazione-impianto.docx', nome: 'MOD. PIN 2.5 - 2018_CERTIFICAZIONE IMPIANTO' },
   pin26: { id: 'pin26', file: 'pin26-non-aggravio-rischio.docx', nome: 'MOD. PIN 2.6 - 2018_NON AGGRAVIO RISCHIO' },
 };
@@ -142,6 +143,9 @@ export const professionistaVuoto = (): ProfessionistaVvf => ({
 
 const maiuscolo = (t: string) => t.trim().toUpperCase();
 
+/** Data di firma dei moduli, in formato gg/mm/aaaa (vuota se non impostata). */
+const dataFirma = (d: DatiModuli) => dataItaliana(d.dataFirma ?? '');
+
 /** Valori comuni ai moduli di rinnovo: titolare, sede, attività. */
 function valoriTitolare(d: DatiModuli): Valori {
   const t = d.titolare;
@@ -257,7 +261,7 @@ export function valoriPin31(s: Sopralluogo, d: DatiModuli, tecnico: Tecnico): Va
     sciaData: d.sciaPrecedente.trim(),
     sciaFirma: d.sciaFirma.trim(),
     dataSopralluogo: dataItaliana(d.dataSopralluogo),
-    dataFirma: '',
+    dataFirma: dataFirma(d),
   };
   d.impianti.forEach((i, k) => {
     v[`chkA${k}`] = i.attivo;
@@ -331,6 +335,7 @@ export function valoriPin2(s: Sopralluogo, d: DatiModuli, tecnico: Tecnico): Val
   for (let k = 0; k < 6; k++) {
     const r = d.versamento[k];
     v[`vaN${k}`] = r?.n ?? '';
+    v[`vaSotto${k}`] = r?.sotto ?? '';
     v[`vaImporto${k}`] = r?.importo.trim() ?? '';
   }
   return v;
@@ -355,8 +360,11 @@ export function valoriPin21(s: Sopralluogo, d: DatiModuli, tecnico: Tecnico): Va
     pTel: p.ufficio.telefono,
     pEmail: p.email,
     pPec: p.pec,
-    chkNuovo: false,
-    chkModifica: false,
+    chkNuovo: d.intervento === 'nuovo',
+    chkModifica: d.intervento === 'modifica',
+    chkProgetti: !!d.progettoApprovato?.attivo,
+    progettiData: d.progettoApprovato?.attivo ? dataItaliana(d.progettoApprovato.data) : '',
+    progettiProt: d.progettoApprovato?.attivo ? d.progettoApprovato.protocollo.trim() : '',
     tipoAttivita: maiuscolo(a.tipo),
     aIndirizzo: maiuscolo(a.indirizzo),
     aCivico: a.civico,
@@ -365,7 +373,7 @@ export function valoriPin21(s: Sopralluogo, d: DatiModuli, tecnico: Tecnico): Va
     aProv: maiuscolo(a.provincia),
     aTel: a.telefono,
     ...valoriClassi(s.attivita.map((x) => x.codice), 3),
-    dataFirma: '',
+    dataFirma: dataFirma(d),
   };
 }
 
@@ -390,7 +398,7 @@ function valoriProfessionistaP(p: ProfessionistaVvf, collegioComeProvincia = fal
 
 /** Recapito dell'attività (n. civico, CAP, comune, provincia, telefono) e, dove serve, la via. */
 function valoriSedeAttivita(d: DatiModuli): Valori {
-  return { ...valoriAttivita(d), dataFirma: '' };
+  return { ...valoriAttivita(d), dataFirma: dataFirma(d) };
 }
 
 /** MOD. PIN 1 – valutazione del progetto. */
@@ -419,6 +427,11 @@ export function valoriPin25(_s: Sopralluogo, d: DatiModuli, tecnico: Tecnico): V
   return { ...valoriProfessionistaP(tecnico.vvf ?? professionistaVuoto(), true), ...valoriSedeAttivita(d) };
 }
 
+/** MOD. PIN 2.4 – dichiarazione di conformità dell'installatore: si precompila solo il luogo di installazione. */
+export function valoriPin24(_s: Sopralluogo, d: DatiModuli, _tecnico: Tecnico): Valori {
+  return valoriSedeAttivita(d);
+}
+
 /** MOD. PIN 2.6 – dichiarazione di non aggravio del rischio. */
 export function valoriPin26(_s: Sopralluogo, d: DatiModuli, tecnico: Tecnico): Valori {
   return { ...valoriProfessionistaP(tecnico.vvf ?? professionistaVuoto(), true), ...valoriSedeAttivita(d) };
@@ -434,6 +447,7 @@ export const VALORI_MODULO: Record<ModelloModulo['id'], (s: Sopralluogo, d: Dati
   pin7: valoriPin7,
   pin22: valoriPin22,
   pin23: valoriPin23,
+  pin24: valoriPin24,
   pin25: valoriPin25,
   pin26: valoriPin26,
 };

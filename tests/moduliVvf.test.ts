@@ -152,8 +152,8 @@ describe('nome del file', () => {
   });
 });
 
-describe('altri moduli: PIN 1, 2.2, 2.3, 2.5, 2.6, 7', () => {
-  const ids = ['pin1', 'pin7', 'pin22', 'pin23', 'pin25', 'pin26'] as const;
+describe('altri moduli: PIN 1, 2.2, 2.3, 2.4, 2.5, 2.6, 7', () => {
+  const ids = ['pin1', 'pin7', 'pin22', 'pin23', 'pin24', 'pin25', 'pin26'] as const;
 
   it('ogni modello si compila senza segnaposto rimasti e con i dati del professionista e dell’attività', async () => {
     const { s, d } = esempio();
@@ -162,7 +162,7 @@ describe('altri moduli: PIN 1, 2.2, 2.3, 2.5, 2.6, 7', () => {
       expect(xml, id).not.toContain('{{');
       expect(xml.match(/<w:default(?! w:val="[01]")/g), id).toBeNull();
       expect(testo, id).toContain('VIA AOSTA'.length ? '20155' : '');
-      if (id !== 'pin7') expect(testo, id).toContain('ROSSI');
+      if (id !== 'pin7' && id !== 'pin24') expect(testo, id).toContain('ROSSI');
     }
   });
 

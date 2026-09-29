@@ -35,6 +35,7 @@ const ALTRI_MODULI: { id: ModelloModulo['id']; testo: string }[] = [
   { id: 'pin7', testo: 'PIN 7 – voltura' },
   { id: 'pin22', testo: 'PIN 2.2 – certificazione REI' },
   { id: 'pin23', testo: 'PIN 2.3 – dichiarazione prodotto' },
+  { id: 'pin24', testo: 'PIN 2.4 – dichiarazione impianto (installatore)' },
   { id: 'pin25', testo: 'PIN 2.5 – certificazione impianto' },
   { id: 'pin26', testo: 'PIN 2.6 – non aggravio rischio' },
 ];
