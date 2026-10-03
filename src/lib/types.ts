@@ -200,6 +200,8 @@ export interface ProvaIdranti {
   coefficienteK: string;
   /** portata minima richiesta all'idrante più sfavorito, l/min */
   portataMinima: string;
+  /** nelle conclusioni riporta anche la portata minima richiesta e quella riscontrata (non c'è nei Word dello studio) */
+  confrontoPortata?: boolean;
   misure: MisuraIdranti[];
   note: string;
   fotoAttaccoIds: string[];

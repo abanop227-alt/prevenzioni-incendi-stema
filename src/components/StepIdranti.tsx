@@ -149,6 +149,9 @@ export default function StepIdranti({ s, aggiorna }: Props) {
 
       <div className={`card esito-prova ${v.esito}`} role="status">
         <Campo etichetta="Portata minima richiesta (l/min)" inputMode="decimal" valore={p.portataMinima} onValore={(x) => campi({ portataMinima: x })} />
+        <label className="piccolo">
+          <input type="checkbox" checked={!!p.confrontoPortata} onChange={(e) => campi({ confrontoPortata: e.target.checked })} /> Riporta nelle conclusioni la portata minima e quella riscontrata
+        </label>
         {v.misure.map((m) => (
           <p key={m.n} className="piccolo">
             {v.misure.length > 1 ? `${m.n}ª misura: ` : ''}

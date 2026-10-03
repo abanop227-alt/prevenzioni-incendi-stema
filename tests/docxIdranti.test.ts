@@ -84,9 +84,7 @@ describe('Word della prova idranti', () => {
       'Q= 80,82 x √(10 x 0,23 Mpa)= 122,57 l/min.',
       'Q= 122,57 l/min. Portata idrica all’ idrante più sfavorito',
       '3 CONCLUSIONI',
-      'deve essere almeno di 120 l/min. la prova effettuata ha dato esito positivo, in quanto:',
-      'Portata minima richiesta = 120 l/min.',
-      'Portata riscontrata = 122,57 l/min.',
+      'Dai risultati emersi la prova effettuata ha avuto esito positivo.',
       'Ritenendo pertanto concluso il nostro incarico',
     ];
     let da = 0;
@@ -103,9 +101,13 @@ describe('Word della prova idranti', () => {
     const s = nago();
     s.provaIdranti!.misure[0].pEfflusso = '1,8';
     const { testo } = await apri(s);
-    expect(testo).toContain('ha dato esito negativo');
-    expect(testo).toContain('inferiore al minimo richiesto');
-    expect(testo).toContain('verificare l’impianto idrico antincendio da parte di un impiantista');
+    expect(testo).toContain('Dai risultati emersi la prova effettuata ha avuto esito negativo.');
+    expect(testo).toContain('Sarà pertanto necessario adeguare l’impianto, previa verifica da parte di un tecnico impiantista competente.');
+    expect(testo).not.toContain('Portata minima richiesta');
+    s.provaIdranti!.confrontoPortata = true;
+    const con = await apri(s);
+    expect(con.testo).toContain('Portata minima richiesta = 120 l/min.');
+    expect(con.testo).toContain('inferiore al minimo richiesto');
   });
 
   it('prova eseguita da una ditta: usa la portata misurata e allega il rapporto', async () => {

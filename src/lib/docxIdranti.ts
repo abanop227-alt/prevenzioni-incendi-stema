@@ -80,21 +80,18 @@ function sezioneMisure(p: ProvaIdranti, v: ValutazioneProva): Paragraph[] {
 
 function conclusioniIdranti(p: ProvaIdranti, v: ValutazioneProva, catalogo: Catalogo): Paragraph[] {
   const minima = p.portataMinima.trim() || '[portata minima]';
-  const intro = `Considerando che la portata minima necessaria in efflusso, misurata all’idrante più sfavorito, con la contemporanea apertura di almeno il 50% degli idranti presenti, deve essere almeno di ${minima} l/min.`;
   const out: Paragraph[] = [titolo('3', 'CONCLUSIONI', 1)];
   if (v.esito === 'incompleto' || v.minimoRiscontrato === null) {
-    out.push(...paragrafi(`${intro} [Esito della prova da completare: inserire le pressioni misurate.]`));
+    out.push(...paragrafi('[Esito della prova da completare: inserire le pressioni misurate.]'));
   } else {
     const positivo = v.esito === 'positivo';
-    out.push(...paragrafi(`${intro} la prova effettuata ha dato esito ${positivo ? 'positivo' : 'negativo'}, in quanto:`));
-    out.push(par(`Portata minima richiesta = ${minima} l/min.`, { bold: true, after: 0, align: S }));
-    out.push(par(`Portata riscontrata = ${formatPortata(v.minimoRiscontrato)} l/min${positivo ? '.' : ', inferiore al minimo richiesto.'}`, { bold: true, align: S }));
-    if (!positivo) {
-      out.push(
-        ...paragrafi(
-          'Sarà pertanto necessario far verificare l’impianto idrico antincendio da parte di un impiantista, per individuare e rimuovere la causa dell’insufficiente portata, e ripetere la prova.',
-        ),
-      );
+    const esito = positivo ? 'positivo' : 'negativo';
+    // come nei Word dello studio: una frase sola, più una per l'adeguamento se l'esito è negativo
+    out.push(...paragrafi(v.misure.length > 1 ? `Dai risultati emersi le prove effettuate hanno avuto esito ${esito}.` : `Dai risultati emersi la prova effettuata ha avuto esito ${esito}.`));
+    if (!positivo) out.push(...paragrafi('Sarà pertanto necessario adeguare l’impianto, previa verifica da parte di un tecnico impiantista competente.'));
+    if (p.confrontoPortata) {
+      out.push(par(`Portata minima richiesta = ${minima} l/min.`, { bold: true, after: 0, align: S }));
+      out.push(par(`Portata riscontrata = ${formatPortata(v.minimoRiscontrato)} l/min${positivo ? '.' : ', inferiore al minimo richiesto.'}`, { bold: true, align: S }));
     }
   }
   out.push(...paragrafi(catalogo.testi.chiusura));

@@ -31,6 +31,7 @@ describe('libreria', () => {
       'Locale macchine ascensore',
       'Mezzi di estinzione',
       'Cartelli e segnaletica di sicurezza',
+      'Porte dei locali tecnici (contatori, autoclave, solai)',
     ]);
   });
 
@@ -122,6 +123,7 @@ describe('istanziazione per attività', () => {
       'Locale macchine ascensore',
       'Mezzi di estinzione',
       'Cartelli e segnaletica di sicurezza',
+      'Porte dei locali tecnici (contatori, autoclave, solai)',
     ]);
     const nuove = vociDiSezione(s, sez[1].key);
     expect(nuove.length).toBe(vociDiSezione(s, vs.key).length);
@@ -219,7 +221,7 @@ describe('istanziazione per attività', () => {
     };
     const dopo = sincronizza(s, cat);
     const sez = sezioniDiAttivita(dopo, '77.1.A');
-    expect(sez.map((x) => x.titolo)).toEqual(['Vano scala', 'Locale macchine ascensore', 'Mezzi di estinzione', 'Cartelli e segnaletica di sicurezza']);
+    expect(sez.map((x) => x.titolo)).toEqual(['Vano scala', 'Locale macchine ascensore', 'Mezzi di estinzione', 'Cartelli e segnaletica di sicurezza', 'Porte dei locali tecnici (contatori, autoclave, solai)']);
     const porta = dopo.voci.filter((v) => v.voceId === '77-vs-lma-porta-80');
     expect(porta).toHaveLength(1);
     expect(porta[0].sezioneKey).toBe('77-lm@77.1.A');

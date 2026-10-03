@@ -183,6 +183,18 @@
               ]
             },
             {
+              "id": "74-ct-sfiato",
+              "titolo": "Vecchio tubo di sfiato e materiali ingombranti",
+              "testo": "Si consiglia di togliere il vecchio tubo di sfiato, e di mantenere sia l’ingresso della centrale termica che l’area della stessa priva di materiali ingombranti, per favorire l’accesso al personale dei vigili del fuoco in caso di emergenza.",
+              "didascalia": "Vecchio tubo di sfiato e materiali ingombranti.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Rimozione tubazione di sfiato.",
+                  "um": "cad"
+                }
+              ]
+            },
+            {
               "id": "74-ct-sgancio-doppione",
               "titolo": "Pulsante di sgancio doppione da rimuovere",
               "testo": "Si consiglia la rimozione del pulsante di sgancio installato [nei pressi dell’entrata del locale centrale termica, appena sotto la valvola di intercettazione gas], dato che doppione come funzione e non idoneo alla corretta visualizzazione e rappresentazione del pulsante di sgancio.",
@@ -244,6 +256,25 @@
                   "um": "cad"
                 }
               ]
+            },
+            {
+              "id": "74-ds-contatore-aerato",
+              "titolo": "Contatore gas: alloggiamento aerato",
+              "testo": "Il contatore gas dovrà essere dotato di apposito alloggiamento aerato.",
+              "didascalia": "Alloggio contatore gas da rendere aerato.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa cassonetto metallico aerato per contatore gas metano.",
+                  "um": "cad"
+                }
+              ]
+            },
+            {
+              "id": "74-ds-area-libera",
+              "titolo": "Area contatore, sgancio ed estintore da tenere libera",
+              "testo": "È stata riscontrata la presenza dei cassonetti dei rifiuti nelle vicinanze del contatore gas, del pulsante di sgancio e dell’estintore. Tale area deve essere sempre accessibile in caso di emergenza, pertanto dovrà essere libera.",
+              "didascalia": "Area da lasciare libera.",
+              "lavorazioni": []
             },
             {
               "id": "74-ds-gas-giallo",
@@ -1317,6 +1348,18 @@
               "lavorazioni": []
             },
             {
+              "id": "77-me-safecrash-danneggiati",
+              "titolo": "Idranti con vetro safe crash danneggiato",
+              "testo": "In ciascuno dei vani scala sono presenti idranti UNI 45 con lancia d’erogazione UNI 45 corredati da apposita cartellonistica. In fase di sopralluogo sono stati riscontrati presidi che presentavano il vetro “safe crash” danneggiato o mancante nel corpo scale [A]: si provveda alla sostituzione dei vetri.",
+              "didascalia": "Presidio con vetro safe crash rotto.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Sostituzione vetri safe crash entro cassette idranti UNI 45.",
+                  "um": "cad"
+                }
+              ]
+            },
+            {
               "id": "77-me-uni10779",
               "titolo": "Promemoria UNI 10779 (manutenzione idranti)",
               "testo": "Si rammenta, inoltre, che la norma UNI 10779-2014 – RETE IDRANTI – stabilisce che:\n- La manutenzione degli idranti a muro deve essere svolta almeno due volte all’anno, in conformità alla UNI EN 671-3, da personale competente e qualificato.\n- Tutte le tubazioni flessibili e semirigide devono essere verificate annualmente sottoponendole alla pressione di rete per verificarne l’integrità.\n- In ogni caso, ogni 5 anni deve essere eseguita la prova di tenuta delle tubazioni flessibili e semirigide (12 bar) come previsto dalla UNI EN 671-3. Se la prova dà esito positivo non vi è l’obbligo di sostituire la tubazione.",
@@ -1346,6 +1389,101 @@
               "titolo": "Presidi da corredare di cartellonistica",
               "testo": "Si provveda a corredare i presidi con cartellonistica conforme al D.lgs. 81/08.",
               "didascalia": "",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa nuova cartellonistica.",
+                  "um": "cad"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "77-lt",
+          "titolo": "Porte dei locali tecnici (contatori, autoclave, solai)",
+          "voci": [
+            {
+              "id": "77-lt-porta-contatori",
+              "titolo": "Porta locale contatori da sostituire (EI 120)",
+              "testo": "Al fine di garantire la compartimentazione del locale contatori, sarà necessario sostituire la porta in ferro grigliata con modello tagliafuoco EI 120, inoltre sarà necessario procedere con la chiusura della parte superiore del muro in quanto comunicante con il locale.",
+              "didascalia": "Porta del locale contatori.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Rimozione porta grigliata in ferro del locale contatori.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Fornitura e posa porta tagliafuoco EI 120, dimensioni minime [80 cm x 205 cm].",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Chiusura della parte superiore del muro e dei sopraluci con materiali aventi caratteristiche di resistenza al fuoco EI 120.",
+                  "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "77-lt-porta-autoclave",
+              "titolo": "Porta locale autoclave da sostituire (EI 120)",
+              "testo": "Si provveda a sostituire il serramento di accesso del locale autoclave in quanto non resistente al fuoco come prescritto dal parere di conformità condizionato. La nuova porta, avente stesse dimensioni di quella esistente, dovrà possedere caratteristiche di resistenza al fuoco non inferiori a EI 120.",
+              "didascalia": "Porta di accesso al locale autoclave.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Rimozione portone del locale autoclave.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Fornitura e posa portone tagliafuoco EI 120, dimensioni come esistenti, dotato di congegno di autochiusura e cilindretto.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Chiusura del sopraluce del portone con materiali EI 120.",
+                  "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "77-lt-porta-solaio",
+              "titolo": "Porte locali solaio e macchine ascensore da sostituire (EI 120)",
+              "testo": "Al momento del sopralluogo le porte dei locali macchine ascensori e solai sui [tre] vani scale risultavano non conformi alle normative vigenti in materia di prevenzione incendi; pertanto sono da sostituire con porte tagliafuoco aventi caratteristiche di resistenza al fuoco EI 120.",
+              "didascalia": "Porte locali solaio e locale macchine ascensore.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Rimozione porte dei locali solaio e macchine ascensore.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Fornitura e posa porta tagliafuoco EI 120, dimensioni foro muro [80 x 210 cm].",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Tinteggiature aree oggetto d’intervento.",
+                  "um": "a corpo",
+                  "inclusa": false
+                }
+              ]
+            },
+            {
+              "id": "77-lt-solaio-estintori",
+              "titolo": "Piano solaio: estintori da integrare",
+              "testo": "Si provveda ad integrare n° [2] estintori nel piano solaio: n° 1 estintore a biossido di carbonio CO2 in prossimità della centralina TV e delle derivazioni elettriche; n° 1 estintore a polvere nella zona di ingresso.",
+              "didascalia": "Piano solaio.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa estintore a biossido di carbonio CO2.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Fornitura e posa estintore in polvere da 6 KG.",
+                  "um": "cad"
+                }
+              ]
+            },
+            {
+              "id": "77-lt-solaio-cartelli",
+              "titolo": "Piano solaio: cartelli di divieto e passaggi ribassati",
+              "testo": "Si provveda a segnalare, mediante idonea cartellonistica, il divieto di deposito di sostanze infiammabili e i passaggi di altezza ridotta.",
+              "didascalia": "Piano solaio.",
               "lavorazioni": [
                 {
                   "descrizione": "Fornitura e posa nuova cartellonistica.",
@@ -1421,6 +1559,14 @@
     },
     {
       "descrizione": "Apprestamento di cantiere, copertura a protezione dell’impianto termico, formazione piani di lavoro e pulizia finale.",
+      "um": "a corpo"
+    },
+    {
+      "descrizione": "Fornitura e posa collari termoespandenti EI 120 su tubazioni combustibili.",
+      "um": "cad"
+    },
+    {
+      "descrizione": "Chiusura forometrie con materiali certificati EI 120.",
       "um": "a corpo"
     }
   ],
