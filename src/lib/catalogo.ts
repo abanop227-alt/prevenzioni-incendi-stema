@@ -59,6 +59,7 @@ export function validaCatalogo(dati: unknown): Catalogo {
           didascalia: str(z.didascalia),
           lavorazioni: arr(z.lavorazioni).map(lav),
           ...(z.nonAggravio ? { nonAggravio: true } : {}),
+          ...(str(z.gruppoEsclusivo).trim() ? { gruppoEsclusivo: str(z.gruppoEsclusivo).trim() } : {}),
         };
       });
       return { id: sid, titolo: str(y.titolo), voci };
@@ -361,6 +362,22 @@ export function sincronizza(s: Sopralluogo, catalogo: Catalogo): Sopralluogo {
     voci: nuoveVoci.length ? [...voci, ...nuoveVoci] : voci,
     righeExtra: nuoveExtra.length ? [...s.righeExtra, ...nuoveExtra] : s.righeExtra,
   };
+}
+
+/**
+ * Spuntando una frase di un gruppo "esclusivo" (es. esito della prova) le altre del gruppo, nella stessa sezione,
+ * vengono tolte: ne resta una sola. Le frasi senza gruppo non cambiano.
+ */
+export function applicaEsclusivita(s: Sopralluogo, catalogo: Catalogo, key: string): Sopralluogo {
+  const v = s.voci.find((x) => x.key === key);
+  if (!v?.selezionata || !v.voceId) return s;
+  const gruppi = new Map<string, string>();
+  for (const f of catalogo.famiglie) for (const sc of f.sezioni) for (const x of sc.voci) if (x.gruppoEsclusivo) gruppi.set(x.id, x.gruppoEsclusivo);
+  const g = gruppi.get(v.voceId);
+  if (!g) return s;
+  const altre = s.voci.filter((x) => x !== v && x.sezioneKey === v.sezioneKey && x.selezionata && x.voceId && gruppi.get(x.voceId) === g);
+  if (!altre.length) return s;
+  return { ...s, voci: s.voci.map((x) => (altre.includes(x) ? { ...x, selezionata: false } : x)) };
 }
 
 /** Scambia due elementi di un array (copia). */

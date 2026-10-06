@@ -541,9 +541,25 @@
             },
             {
               "id": "75-fv-porta-guaina",
-              "titolo": "Porta REI con guaina termo-espandente mancante o coperta",
-              "testo": "Al momento del sopralluogo la porta di collegamento tra [il corsello ed il vano scala A], sebbene fosse REI e costantemente revisionata da parte della ditta manutentrice, non sembrava essere in ottimo stato in quanto [completamente priva della guaina termo-espandente / verniciata con una pittura che ha coperto la guaina termo-espandente, non garantendone più le prestazioni di reazione al fuoco, e che ha inoltre cancellato le informazioni del produttore per poter risalire alle dichiarazioni di conformità]. Si provveda alla sostituzione della stessa con un modello simile avente caratteristiche di resistenza al fuoco non inferiori a REI [60].",
+              "titolo": "Porta REI priva di guaina termo-espandente",
+              "testo": "Al momento del sopralluogo la porta di collegamento tra il corsello ed il vano scala [A], sebbene fosse REI e costantemente revisionata da parte della ditta manutentrice non sembrava essere in ottimo stato in quanto completamente priva della guaina termo – espandente. Si provveda alla sostituzione della stessa con un modello simile avente caratteristiche di resistenza al fuoco non inferiori a REI [60].",
               "didascalia": "Porta di accesso al filtro – vano scala [A].",
+              "lavorazioni": [
+                {
+                  "descrizione": "Rimozione porte non a norma.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Fornitura e posa porte con resistenza al fuoco non inferiori a REI [60] (dimensioni [0,80 x 2,00] m), compresa assistenza muraria.",
+                  "um": "cad"
+                }
+              ]
+            },
+            {
+              "id": "75-fv-porta-verniciata",
+              "titolo": "Porta REI verniciata (guaina coperta)",
+              "testo": "Al momento del sopralluogo la porta di collegamento tra [il corsello ed il vano scala C], sebbene fosse REI e costantemente revisionata da parte della ditta manutentrice non sembrava essere in ottimo stato.\nLa porta è stata verniciata con una pittura che ha coperto la guaina termo-espandente, non garantendone più le prestazioni di reazione al fuoco ed ha inoltre cancellato le informazioni del produttore per poter risalire alle dichiarazioni di conformità.\nSi provveda pertanto alla sostituzione della stessa con un modello simile avente caratteristiche di resistenza al fuoco non inferiori a REI [60].",
+              "didascalia": "Porta di accesso al filtro – vano scala [C].",
               "lavorazioni": [
                 {
                   "descrizione": "Rimozione porte non a norma.",
@@ -568,27 +584,30 @@
               ]
             },
             {
-              "id": "75-fv-porta-sostituire",
-              "titolo": "Porta REI/EI da sostituire e chiusura del sopraluce",
-              "testo": "La porta di [accesso al locale / collegamento tra il filtro ed il vano scala / collegamento tra il corsello ed il vano scala] [in ferro / metallica / grigliata] non rispetta le caratteristiche di resistenza al fuoco richieste[, come previsto dal punto § 8.0 della normativa vigente]. Si provveda alla sostituzione della porta con modello avente caratteristiche di resistenza al fuoco non inferiori a [REI 30 / REI 60 / REI 120 / EI 120], dotato di dispositivo di autochiusura[ e di maniglione antipanico], e alla chiusura del sopraluce con materiali aventi le medesime caratteristiche.",
-              "didascalia": "Porta da sostituire.",
+              "id": "75-fv-porta-locale",
+              "titolo": "Porta di locale tecnico interna al filtro",
+              "testo": "La porta di accesso al [locale contatori], essendo all’interno del filtro da realizzare dovrà essere sostituita con modello avente caratteristiche di resistenza al fuoco non inferiori a REI [60].",
+              "didascalia": "Porta di accesso al [locale contatori].",
               "lavorazioni": [
                 {
-                  "descrizione": "Rimozione porte non a norma, compreso sopraluce.",
+                  "descrizione": "Rimozione porte non a norma.",
                   "um": "cad"
                 },
                 {
-                  "descrizione": "Fornitura e posa porta [REI/EI classe], dimensioni [80 x 205 cm] filo muro, in sostituzione dell’esistente, completa di dispositivo di autochiusura [e maniglione antipanico] e assistenza muraria.",
+                  "descrizione": "Fornitura e posa porte con resistenza al fuoco non inferiori a REI [60] (dimensioni [0,80 x 2,00] m), compresa assistenza muraria.",
                   "um": "cad"
-                },
+                }
+              ]
+            },
+            {
+              "id": "75-fv-porta-nuova",
+              "titolo": "Nuova porta REI e chiusura sopraluce",
+              "testo": "Al fine di realizzare il suddetto filtro sarà necessario installare una porta avente caratteristiche almeno pari a REI [60], prevedendo alla chiusura del sopraluce con materiali aventi le medesime caratteristiche di resistenza al fuoco.",
+              "didascalia": "Porta REI da installare.",
+              "lavorazioni": [
                 {
-                  "descrizione": "Chiusura del sopraluce con materiali aventi caratteristiche di resistenza al fuoco [REI/EI classe].",
-                  "um": "a corpo"
-                },
-                {
-                  "descrizione": "Tinteggiature aree oggetto d’intervento.",
-                  "um": "a corpo",
-                  "inclusa": false
+                  "descrizione": "Fornitura e posa porte con resistenza al fuoco non inferiori a REI [60] (dimensioni [0,80 x 2,00] m), compresa assistenza muraria.",
+                  "um": "cad"
                 }
               ]
             },
@@ -598,6 +617,22 @@
               "testo": "La porta dovrà essere apribile nel senso di fuga, pertanto essendo presente un lieve dislivello, sarà necessario installarla immediatamente dopo il gradino presente.",
               "didascalia": "Porta REI da installare.",
               "lavorazioni": []
+            },
+            {
+              "id": "75-fv-porta-ferro",
+              "titolo": "Porta in ferro filtro – vano scala da sostituire",
+              "testo": "La porta in ferro di collegamento tra il filtro ed il vano scala [C] dovrà essere sostituita con modello avente caratteristiche di resistenza al fuoco non inferiore a REI [60]. Si provveda inoltre alla chiusura del sopraluce con materiale avente le medesime caratteristiche di resistenza al fuoco.",
+              "didascalia": "Porta di collegamento con il vano scala [C].",
+              "lavorazioni": [
+                {
+                  "descrizione": "Rimozione porte non a norma.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Fornitura e posa porte con resistenza al fuoco non inferiori a REI [60] (dimensioni [0,80 x 2,00] m), compresa assistenza muraria.",
+                  "um": "cad"
+                }
+              ]
             },
             {
               "id": "75-fv-pvc-collari",
@@ -752,6 +787,37 @@
                   "um": "cad"
                 }
               ]
+            },
+            {
+              "id": "75-ar-attacco-nuovo",
+              "titolo": "Attacco autopompa UNI 70 da installare",
+              "testo": "Dovrà essere installato un attacco autopompa UNI 70, internamente in prossimità dell’entrata del passo carrabile, correlato da apposito cartello d’identificazione, a servizio esclusivo dell’autorimessa, ben visibile e facilmente raggiungibile. Sarà cura del manutentore dell’impianto, accertarsi della presenza del disconnettore e filtro idraulico come da normativa vigente.",
+              "didascalia": "Entrata passo carrabile.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa di attacco autopompa UNI 70, completo di cartello d’identificazione.",
+                  "um": "cad"
+                }
+              ]
+            },
+            {
+              "id": "75-ar-rete-requisiti",
+              "titolo": "Rete idranti: requisiti di pressione e portata",
+              "testo": "L’impianto sarà collegato direttamente all’acquedotto comunale e tenuto costantemente sotto pressione. Inoltre, lo stesso dovrà garantire una pressione di 2 BAR ed una portata non inferiore ai 120 l/min. misurati all’idrante idraulicamente più sfavorito in condizioni di altimetria e distanza, con la contemporanea apertura dei 2 idranti idraulicamente più sfavoriti.",
+              "didascalia": "",
+              "lavorazioni": []
+            },
+            {
+              "id": "75-ar-coibentazione",
+              "titolo": "Tubazioni della rete idranti da coibentare",
+              "testo": "Sarà necessaria la coibentazione delle tubazioni scoperte presenti in autorimessa, per evitare che, in basse temperature, l’acqua al suo interno congeli, impossibilitando in caso di incendio il corretto funzionamento degli idranti.",
+              "didascalia": "Tubazioni da coibentare.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Coibentazione delle tubazioni scoperte della rete idranti in autorimessa.",
+                  "um": "ml"
+                }
+              ]
             }
           ]
         },
@@ -778,106 +844,64 @@
               "testo": "Il numero degli estintori presenti nell’autorimessa non dovrà mai essere inferiore a n°[8], come previsto dal progetto approvato. Al momento del sopralluogo è stata riscontrata la presenza di n°[19] presidi.",
               "didascalia": "Alcuni estintori presenti nel corsello box.",
               "lavorazioni": []
-            }
-          ]
-        },
-        {
-          "id": "75-ia",
-          "titolo": "Impianto idrico antincendio",
-          "voci": [
+            },
             {
-              "id": "75-ia-descrizione",
-              "titolo": "Impianto idrico antincendio: descrizione e requisiti",
-              "testo": "L’impianto idrico antincendio è costituito da n° [5] idranti UNI 45, inseriti in apposite cassette con vetro trasparente tipo “safe – crash”, corredati di manichette e lance erogatrici mantenute costantemente collegate.\nOgni idrante dovrà possedere tubazione flessibile lunga [20 m] in nylon UNI 45 e lancia d’erogazione UNI [45] mm, corredati da apposita cartellonistica di ampiezza sufficiente per consentirne un’immediata individuazione. L’impianto sarà collegato direttamente all’acquedotto comunale e tenuto costantemente sotto pressione, e dovrà garantire una pressione di 2,0 bar ed una portata non inferiore a 120 l/min misurati all’idrante idraulicamente più sfavorito, in condizioni di altimetria e distanza, con la contemporanea apertura [dei 2 idranti idraulicamente più sfavoriti / del 50% degli idranti][, per un tempo di 30 min].\nCompleta l’impianto n° [1] attacco di mandata per motopompa dei VV.F. di tipo UNI 70, posto [nei pressi della rampa carrabile di accesso all’autorimessa / dell’entrata del passo carrabile].",
-              "didascalia": "Idranti dell’autorimessa.",
+              "id": "75-ds-manutenzione-ok",
+              "titolo": "Presidi con manutenzione semestrale",
+              "testo": "Al momento del sopralluogo, i presidi si presentavano provvisti di manutenzione semestrale obbligatoria.",
+              "didascalia": "Cartellini di manutenzione.",
               "lavorazioni": []
             },
             {
-              "id": "75-ia-prova-positiva",
-              "titolo": "Prova di pressione e portata: esito positivo",
-              "testo": "Durante il sopralluogo è stata eseguita la prova di pressione e portata dell’impianto idrico antincendio, con esito positivo.",
-              "didascalia": "Prova di pressione.",
-              "lavorazioni": [],
-              "gruppoEsclusivo": "esito-prova"
+              "id": "75-ds-manutenzione-ok-2",
+              "titolo": "Estintori e idranti correttamente manutenuti",
+              "testo": "Durante il sopralluogo, è stata riscontrata la corretta manutenzione semestrale di estintori e idranti.",
+              "didascalia": "Estintori e idranti mantenuti correttamente.",
+              "lavorazioni": []
             },
             {
-              "id": "75-ia-prova-negativa",
-              "titolo": "Prova di pressione e portata: esito negativo",
-              "testo": "Durante il sopralluogo è stata eseguita la prova idrostatica, la quale ha avuto esito negativo.",
-              "didascalia": "Pressione minore di 2 BAR.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Verifica dell’impianto idrico antincendio da parte di un impiantista a seguito dell’esito negativo della prova idrostatica.",
-                  "um": "a corpo"
-                }
-              ],
-              "gruppoEsclusivo": "esito-prova"
+              "id": "75-ds-idranti",
+              "titolo": "Rete idranti: numero di idranti",
+              "testo": "L’impianto idrico antincendio è costituito da n° [5] idranti, inseriti in apposite cassette con vetro trasparente tipo “safe – crash”, corredati di manichette e lance erogatrici mantenute costantemente collegate.",
+              "didascalia": "Alcuni idranti a muro UNI 45 presenti nel corsello.",
+              "lavorazioni": []
             },
             {
-              "id": "75-ia-prova",
-              "titolo": "Prova di pressione e portata: non eseguita",
-              "testo": "Durante il sopralluogo non è stato possibile eseguire la prova di pressione dell’impianto idrico antincendio.\nSarà necessario effettuare la verifica di efficienza dell’impianto, rilevando la pressione residua al bocchello della lancia in condizioni più sfavorevoli per altimetria e distanza.\nL’esito della prova dovrà garantire una portata di 120 l/m necessari, ovvero una pressione pari almeno a 2 bar, con la contemporanea apertura dei due presidi idraulicamente più sfavoriti.\nQualora la prova darà esito negativo sarà necessario effettuare ulteriori verifiche da parte di un impiantista al fine di definire le eventuali lavorazioni da eseguire, ad oggi impossibili da prevedere e computare.",
+              "id": "75-ds-idranti-requisiti",
+              "titolo": "Idranti: requisiti idraulici",
+              "testo": "Ogni idrante dovrà possedere tubazione flessibile lunga [20 m] in nylon UNI 45 e lancia d’erogazione UNI [45] corredati da apposita cartellonistica di ampiezza sufficiente per consentirne un’immediata individuazione. L’impianto dovrà inoltre possedere caratteristiche idrauliche tali da garantire al bocchello della lancia, nelle condizioni più sfavorevoli di altimetria e di distanza, una portata non inferiore ai 120 l/min primo ed una pressione di almeno 2,0 BAR ed essere dimensionato per una portata totale determinata considerando la probabilità di contemporaneo funzionamento [di N. 2 idranti / del 50% degli idranti].",
               "didascalia": "",
-              "lavorazioni": [
-                {
-                  "descrizione": "Prova di pressione e portata dell’impianto idrico antincendio.",
-                  "um": "a corpo"
-                }
-              ],
-              "gruppoEsclusivo": "esito-prova"
+              "lavorazioni": []
+            },
+            {
+              "id": "75-ds-uni10779",
+              "titolo": "Promemoria UNI 10779 (manutenzione manichette)",
+              "testo": "Si rammenta, inoltre, che la norma UNI 10779-2014 – RETE IDRANTI – stabilisce che:\n- La manutenzione degli idranti a muro deve essere svolta almeno due volte all’anno, in conformità alla UNI EN 671-3, da personale competente e qualificato.\n- Tutte le manichette devono essere verificate annualmente sottoponendole alla pressione di rete per verificarne l’integrità.\n- In ogni caso, ogni 5 anni deve essere eseguita la prova idraulica delle manichette (12 bar) come previsto dalla UNI EN 671-3. Se la prova dà esito positivo non vi è l’obbligo di sostituire la manichetta.",
+              "didascalia": "",
+              "lavorazioni": []
             },
             {
               "id": "75-ds-manichette",
-              "titolo": "Manichette obsolete o prive di manutenzione e collaudo",
-              "testo": "Al momento del sopralluogo le manichette si presentavano [obsolete,] prive del collaudo e della manutenzione semestrale da parte dell’impresa manutentrice. Si provveda pertanto alla loro sostituzione, ovvero al collaudo delle stesse, contattando la ditta manutentrice dei presidi.",
-              "didascalia": "Manichette scadute e manutenzione semestrale assente.",
+              "titolo": "Manichette prive di manutenzione",
+              "testo": "Al momento del sopralluogo le manichette risultavano tuttavia prive di manutenzione e/o collaudo.\nSi provveda a contattare la ditta manutentrice dei presidi per effettuare le verifiche necessarie.",
+              "didascalia": "Manichette scadute.",
               "lavorazioni": [
                 {
-                  "descrizione": "Sostituzione ovvero collaudo delle manichette.",
-                  "um": "cad"
+                  "descrizione": "Verifica e collaudo delle manichette da parte della ditta manutentrice.",
+                  "um": "a corpo"
                 }
               ]
             },
             {
-              "id": "75-ia-idranti-mancanti",
-              "titolo": "Idranti mancanti da installare",
-              "testo": "È altresì necessario procedere, in conformità con il progetto, all’installazione degli idranti mancanti ai piani [primo e terzo], al fine di garantire la sicurezza e il rispetto delle normative vigenti.",
-              "didascalia": "",
-              "lavorazioni": [
-                {
-                  "descrizione": "Fornitura e posa di idranti UNI 45 completi di cassetta, manichetta e lancia ai piani [primo e terzo].",
-                  "um": "cad"
-                }
-              ]
-            },
-            {
-              "id": "75-ia-safecrash",
-              "titolo": "Idranti con vetro safe crash danneggiato",
-              "testo": "In fase di sopralluogo sono stati riscontrati presidi che presentavano il vetro “safe crash” danneggiato o mancante nel corpo scale [A]: si provveda alla sostituzione dei vetri.",
-              "didascalia": "Presidio con vetro safe crash rotto.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Sostituzione vetri safe crash entro cassette idranti UNI 45.",
-                  "um": "cad"
-                }
-              ]
-            },
-            {
-              "id": "75-ar-attacco-nuovo",
-              "titolo": "Attacco motopompa: da installare",
-              "testo": "Dovrà essere installato un attacco autopompa UNI 70, internamente in prossimità dell’entrata del passo carrabile, correlato da apposito cartello d’identificazione, a servizio esclusivo dell’autorimessa, ben visibile e facilmente raggiungibile. Sarà cura del manutentore dell’impianto, accertarsi della presenza del disconnettore e filtro idraulico come da normativa vigente.",
-              "didascalia": "Entrata passo carrabile.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Fornitura e posa di attacco autopompa UNI 70, completo di cartello d’identificazione.",
-                  "um": "cad"
-                }
-              ],
-              "gruppoEsclusivo": "attacco-motopompa"
+              "id": "75-ds-attacchi",
+              "titolo": "Attacchi di mandata per motopompa presenti",
+              "testo": "Completa l’impianto n° [1] attacco di mandata per motopompa dei VV.F. di tipo UNI 70 posto [nei pressi della rampa carrabile di accesso all’autorimessa].",
+              "didascalia": "Attacco di mandata per motopompa.",
+              "lavorazioni": []
             },
             {
               "id": "75-ds-attacco-ammalorato",
-              "titolo": "Attacco motopompa: ammalorato o senza cartellino",
+              "titolo": "Attacco motopompa ammalorato / senza cartellino",
               "testo": "Al momento del sopralluogo il presidio si presentava sprovvisto di cartellino di manutenzione semestrale ed ammalorato. Contattare la ditta manutentrice per provvedere al suo corretto mantenimento. Corredarlo di idonea cartellonistica conforme al D.lgs. 81/08 per una più rapida individuazione.",
               "didascalia": "Attacco di mandata per motopompa.",
               "lavorazioni": [
@@ -885,34 +909,7 @@
                   "descrizione": "Manutenzione dell’attacco di mandata per motopompa e fornitura e posa del relativo cartello.",
                   "um": "a corpo"
                 }
-              ],
-              "gruppoEsclusivo": "attacco-motopompa"
-            },
-            {
-              "id": "75-ar-coibentazione",
-              "titolo": "Tubazioni della rete idranti da coibentare",
-              "testo": "Sarà necessaria la coibentazione delle tubazioni scoperte presenti in autorimessa, per evitare che, in basse temperature, l’acqua al suo interno congeli, impossibilitando in caso di incendio il corretto funzionamento degli idranti.",
-              "didascalia": "Tubazioni da coibentare.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Coibentazione delle tubazioni scoperte della rete idranti in autorimessa.",
-                  "um": "ml"
-                }
               ]
-            },
-            {
-              "id": "75-ds-manutenzione-ok",
-              "titolo": "Manutenzione semestrale regolare",
-              "testo": "Durante il sopralluogo è stata riscontrata la corretta manutenzione semestrale di estintori e idranti.",
-              "didascalia": "Presidi antincendio.",
-              "lavorazioni": []
-            },
-            {
-              "id": "75-ds-uni10779",
-              "titolo": "Promemoria UNI 10779 (manutenzione idranti e manichette)",
-              "testo": "Si rammenta, inoltre, che la norma UNI 10779-2014 – RETE IDRANTI – stabilisce che:\n- La manutenzione degli idranti a muro deve essere svolta almeno due volte all’anno, in conformità alla UNI EN 671-3, da personale competente e qualificato.\n- Tutte le tubazioni flessibili e semirigide (manichette) devono essere verificate annualmente sottoponendole alla pressione di rete per verificarne l’integrità.\n- In ogni caso, ogni 5 anni deve essere eseguita la prova di tenuta delle tubazioni flessibili e semirigide (12 bar) come previsto dalla UNI EN 671-3. Se la prova dà esito positivo non vi è l’obbligo di sostituire la tubazione.",
-              "didascalia": "",
-              "lavorazioni": []
             }
           ]
         },
@@ -1192,21 +1189,42 @@
             },
             {
               "id": "77-vs-lma-porta-80",
-              "titolo": "Porta REI/EI da sostituire e chiusura del sopraluce",
-              "testo": "La porta di [accesso al locale / collegamento tra il filtro ed il vano scala / collegamento tra il corsello ed il vano scala] [in ferro / metallica / grigliata] non rispetta le caratteristiche di resistenza al fuoco richieste[, come previsto dal punto § 8.0 della normativa vigente]. Si provveda alla sostituzione della porta con modello avente caratteristiche di resistenza al fuoco non inferiori a [REI 30 / REI 60 / REI 120 / EI 120], dotato di dispositivo di autochiusura[ e di maniglione antipanico], e alla chiusura del sopraluce con materiali aventi le medesime caratteristiche.",
+              "titolo": "Porta e sopraluce locale macchine da sostituire (§ 8.0)",
+              "testo": "La comunicazione con il locale macchine ascensore, così come previsto dal punto § 8.0 della normativa vigente, dovrà avvenire tramite porte e strutture aventi caratteristiche di resistenza al fuoco non inferiori a REI 30. Al momento del sopralluogo la porta ed il sopraluce non rispettavano tali caratteristiche, pertanto, sarà necessario provvedere alla sostituzione della porta con modello avente caratteristiche di resistenza al fuoco almeno pari a REI 30 e provvisto del dispositivo di autochiusura, e la chiusura del sopraluce con materiali aventi caratteristiche di resistenza al fuoco almeno pari a REI 30.",
+              "didascalia": "Porta di accesso al locale macchine ascensore.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Rimozione porte locali ascensori non a norma, compreso sopraluce.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Fornitura e posa porta REI 30 di accesso al locale macchine ascensore, dimensioni [65 cm x 200 cm] filo muro, in sostituzione dell’esistente, completa di dispositivo di autochiusura e assistenza muraria.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Chiusura del sopraluce del locale macchine ascensore con materiali aventi caratteristiche di resistenza al fuoco REI 30.",
+                  "um": "a corpo"
+                },
+                {
+                  "descrizione": "Tinteggiature aree oggetto d’intervento.",
+                  "um": "a corpo",
+                  "inclusa": false
+                }
+              ]
+            },
+            {
+              "id": "77-vs-lma-porta-metallica",
+              "titolo": "Porta metallica locale macchine da sostituire",
+              "testo": "La porta metallica di accesso al locale macchina ascensore, comunicante con il vano scala, andrà sostituita con una porta tagliafuoco avente proprietà ≥ REI30 per garantire la giusta compartimentazione del locale in caso di incendio.",
               "didascalia": "Porta da sostituire.",
               "lavorazioni": [
                 {
-                  "descrizione": "Rimozione porte non a norma di accesso al locale macchine ascensore, compreso sopraluce.",
+                  "descrizione": "Rimozione porte non a norma del locale macchine ascensore.",
                   "um": "cad"
                 },
                 {
-                  "descrizione": "Fornitura e posa porta [REI/EI classe] di accesso al locale macchine ascensore, dimensioni [80 x 205 cm] filo muro, in sostituzione dell’esistente, completa di dispositivo di autochiusura [e maniglione antipanico] e assistenza muraria.",
+                  "descrizione": "Fornitura e posa porte REI 30, compresa assistenza muraria.",
                   "um": "cad"
-                },
-                {
-                  "descrizione": "Chiusura del sopraluce con materiali aventi caratteristiche di resistenza al fuoco [REI/EI classe].",
-                  "um": "a corpo"
                 },
                 {
                   "descrizione": "Tinteggiature aree oggetto d’intervento.",
@@ -1233,60 +1251,21 @@
         },
         {
           "id": "77-me",
-          "titolo": "Impianto idrico antincendio",
+          "titolo": "Mezzi di estinzione",
           "voci": [
             {
-              "id": "77-ia-descrizione",
-              "titolo": "Impianto idrico antincendio: descrizione e requisiti",
-              "testo": "Il vano scala è dotato di rete idranti costituita da una colonna montante dal piano [rialzato] al piano [ottavo] [oppure: con idranti presenti ai piani rialzato, 1°, 3°, 5°, 6° e 7°].\nOgni idrante dovrà possedere tubazione flessibile lunga [20 m] in nylon UNI 45 e lancia d’erogazione UNI [45] mm, corredati da apposita cartellonistica di ampiezza sufficiente per consentirne un’immediata individuazione. L’impianto sarà collegato direttamente all’acquedotto comunale e tenuto costantemente sotto pressione, e dovrà garantire una pressione di 2,0 bar ed una portata non inferiore a 120 l/min misurati all’idrante idraulicamente più sfavorito, in condizioni di altimetria e distanza, con la contemporanea apertura [dei 2 idranti idraulicamente più sfavoriti / del 50% degli idranti][, per un tempo di 30 min].\nCompleta l’impianto n° [1] attacco di mandata per motopompa dei VV.F. di tipo UNI 70, posto [nei pressi della rampa carrabile di accesso all’autorimessa / dell’entrata del passo carrabile].",
-              "didascalia": "Rete idranti del vano scala.",
+              "id": "77-me-rete",
+              "titolo": "Rete idranti: colonna montante e requisiti",
+              "testo": "Il vano scala è dotato di rete idranti costituita da una colonna montante dal piano [rialzato] al piano [ottavo]. Gli idranti dovranno essere provvisti di tubazione flessibile lunga 20 m in nylon UNI 45 e lancia d’erogazione UNI 45 mm, corredati da apposita cartellonistica di ampiezza sufficiente per consentirne un’immediata individuazione. L’impianto sarà collegato direttamente all’acquedotto comunale e tenuto costantemente sotto pressione. Inoltre, lo stesso dovrà garantire una pressione di 2 BAR ed una portata non inferiore ai 120 l/min. misurati all’idrante idraulicamente più sfavorito in condizioni di altimetria e distanza, con la contemporanea apertura dei 2 idranti idraulicamente più sfavoriti.",
+              "didascalia": "Alcuni idranti presenti nel vano scala.",
               "lavorazioni": []
             },
             {
-              "id": "77-ia-prova-positiva",
-              "titolo": "Prova di pressione e portata: esito positivo",
-              "testo": "Durante il sopralluogo è stata eseguita la prova di pressione e portata dell’impianto idrico antincendio, con esito positivo.",
-              "didascalia": "Prova di pressione.",
-              "lavorazioni": [],
-              "gruppoEsclusivo": "esito-prova"
-            },
-            {
-              "id": "77-me-prova-negativa",
-              "titolo": "Prova di pressione e portata: esito negativo",
-              "testo": "Durante il sopralluogo è stata eseguita la prova idrostatica, la quale ha avuto esito negativo.",
-              "didascalia": "Pressione minore di 2 BAR.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Verifica dell’impianto idrico antincendio da parte di un impiantista a seguito dell’esito negativo della prova idrostatica.",
-                  "um": "a corpo"
-                }
-              ],
-              "gruppoEsclusivo": "esito-prova"
-            },
-            {
-              "id": "77-me-prova",
-              "titolo": "Prova di pressione e portata: non eseguita",
-              "testo": "Durante il sopralluogo non è stato possibile eseguire la prova di pressione dell’impianto idrico antincendio.\nSarà necessario effettuare la verifica di efficienza dell’impianto, rilevando la pressione residua al bocchello della lancia in condizioni più sfavorevoli per altimetria e distanza.\nL’esito della prova dovrà garantire una portata di 120 l/m necessari, ovvero una pressione pari almeno a 2 bar, con la contemporanea apertura dei due presidi idraulicamente più sfavoriti.\nQualora la prova darà esito negativo sarà necessario effettuare ulteriori verifiche da parte di un impiantista al fine di definire le eventuali lavorazioni da eseguire, ad oggi impossibili da prevedere e computare.",
-              "didascalia": "",
-              "lavorazioni": [
-                {
-                  "descrizione": "Prova di pressione e portata dell’impianto idrico antincendio.",
-                  "um": "a corpo"
-                }
-              ],
-              "gruppoEsclusivo": "esito-prova"
-            },
-            {
-              "id": "77-me-manichette",
-              "titolo": "Manichette obsolete o prive di manutenzione e collaudo",
-              "testo": "Al momento del sopralluogo le manichette si presentavano [obsolete,] prive del collaudo e della manutenzione semestrale da parte dell’impresa manutentrice. Si provveda pertanto alla loro sostituzione, ovvero al collaudo delle stesse, contattando la ditta manutentrice dei presidi.",
-              "didascalia": "Manichette scadute e manutenzione semestrale assente.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Sostituzione ovvero collaudo delle manichette.",
-                  "um": "cad"
-                }
-              ]
+              "id": "77-me-rete-piani",
+              "titolo": "Rete idranti con idranti a piani alterni",
+              "testo": "Il vano scala è dotato di rete idranti costituita da una colonna montante con idranti presenti ai piani [rialzato, 1°, 3°, 5°, 6° e 7°]. Ogni idrante dovrà possedere tubazione flessibile lunga 20 m in nylon UNI 45 e lancia d’erogazione UNI 45 mm corredati da apposita cartellonistica di ampiezza sufficiente per consentirne un’immediata individuazione.\nL’impianto dovrà garantire una pressione di 2 BAR ed una portata non inferiore ai 120 l/min. per ogni idrante per un tempo di 30 min., con l’apertura dell’idrante nelle condizioni più sfavorevoli di distanza.",
+              "didascalia": "Alcuni idranti.",
+              "lavorazioni": []
             },
             {
               "id": "77-me-idranti-mancanti",
@@ -1301,9 +1280,77 @@
               ]
             },
             {
+              "id": "77-me-prova",
+              "titolo": "Prova di pressione non eseguita",
+              "testo": "Durante il sopralluogo non è stato possibile eseguire la prova di pressione dell’impianto idrico antincendio.\nSarà necessario effettuare la verifica di efficienza dell’impianto, rilevando la pressione residua al bocchello della lancia in condizioni più sfavorevoli per altimetria e distanza.\nL’esito della prova dovrà garantire una portata di 120 l/m necessari, ovvero una pressione pari almeno a 2 bar, con la contemporanea apertura dei due presidi idraulicamente più sfavoriti.\nQualora la prova darà esito negativo sarà necessario effettuare ulteriori verifiche da parte di un impiantista al fine di definire le eventuali lavorazioni da eseguire, ad oggi impossibili da prevedere e computare.",
+              "didascalia": "",
+              "lavorazioni": [
+                {
+                  "descrizione": "Prova di pressione e portata dell’impianto idrico antincendio.",
+                  "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "77-me-prova-negativa",
+              "titolo": "Prova idrostatica con esito negativo",
+              "testo": "Durante il sopralluogo è stata eseguita la prova idrostatica, la quale ha avuto esito negativo.",
+              "didascalia": "Pressione minore di 2 BAR.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Verifica dell’impianto idrico antincendio da parte di un impiantista a seguito dell’esito negativo della prova idrostatica.",
+                  "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "77-me-manichette",
+              "titolo": "Manichette obsolete, senza manutenzione",
+              "testo": "Al momento del sopralluogo le manichette si presentavano obsolete, prive del collaudo e della manutenzione semestrale da parte dell’impresa manutentrice.\nSi provveda pertanto alla loro sostituzione, ovvero al collaudo delle stesse.",
+              "didascalia": "Manichette scadute e manutenzione semestrale assente.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Sostituzione ovvero collaudo delle manichette.",
+                  "um": "cad"
+                }
+              ]
+            },
+            {
+              "id": "77-me-attacco",
+              "titolo": "Attacco di mandata per motopompa VV.F.",
+              "testo": "Completa l’impianto antincendio n. 1 attacco di mandata per motopompa dei VV.F., posto [nei pressi dell’entrata del passo carrabile], corredato da idonea cartellonistica conforme D.lgs. 81/08[, da porre fuori dalla cassetta per una più rapida individuazione, e da cartellino di manutenzione semestrale].",
+              "didascalia": "Attacco di mandata per motopompa VV.F.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa cartello per attacco di mandata per motopompa VV.F.",
+                  "um": "cad",
+                  "inclusa": false
+                }
+              ]
+            },
+            {
+              "id": "77-me-attacco-unico",
+              "titolo": "Attacco UNI 70 a servizio di più colonne",
+              "testo": "A completare l’impianto idrico antincendio è presente n°1 attacco di mandata per autopompa dei VV.F. di tipo UNI 70, posto a servizio di entrambe le colonne montanti. Corredarlo di cartellonistica conforme al D.lgs. 81/08.",
+              "didascalia": "Attacco di mandata per motopompa.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa cartello per attacco di mandata per motopompa VV.F.",
+                  "um": "cad"
+                }
+              ]
+            },
+            {
+              "id": "77-me-attacco-safecrash",
+              "titolo": "Attacco autopompa con vetro safe crash",
+              "testo": "È stata verificata la presenza dell’attacco autopompa posto al piano [rialzato] dotato di vetro safe crash.",
+              "didascalia": "Attacco autopompa.",
+              "lavorazioni": []
+            },
+            {
               "id": "77-me-safecrash-danneggiati",
               "titolo": "Idranti con vetro safe crash danneggiato",
-              "testo": "In fase di sopralluogo sono stati riscontrati presidi che presentavano il vetro “safe crash” danneggiato o mancante nel corpo scale [A]: si provveda alla sostituzione dei vetri.",
+              "testo": "In ciascuno dei vani scala sono presenti idranti UNI 45 con lancia d’erogazione UNI 45 corredati da apposita cartellonistica. In fase di sopralluogo sono stati riscontrati presidi che presentavano il vetro “safe crash” danneggiato o mancante nel corpo scale [A]: si provveda alla sostituzione dei vetri.",
               "didascalia": "Presidio con vetro safe crash rotto.",
               "lavorazioni": [
                 {
@@ -1313,51 +1360,9 @@
               ]
             },
             {
-              "id": "77-me-attacco",
-              "titolo": "Attacco motopompa: cartellonistica da integrare",
-              "testo": "Completa l’impianto antincendio n. 1 attacco di mandata per motopompa dei VV.F., posto [nei pressi dell’entrata del passo carrabile], corredato da idonea cartellonistica conforme D.lgs. 81/08[, da porre fuori dalla cassetta per una più rapida individuazione, e da cartellino di manutenzione semestrale].",
-              "didascalia": "Attacco di mandata per motopompa VV.F.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Fornitura e posa cartello per attacco di mandata per motopompa VV.F.",
-                  "um": "cad",
-                  "inclusa": false
-                }
-              ],
-              "gruppoEsclusivo": "attacco-motopompa"
-            },
-            {
-              "id": "77-me-attacco-unico",
-              "titolo": "Attacco motopompa: a servizio di più colonne",
-              "testo": "A completare l’impianto idrico antincendio è presente n°1 attacco di mandata per autopompa dei VV.F. di tipo UNI 70, posto a servizio di entrambe le colonne montanti. Corredarlo di cartellonistica conforme al D.lgs. 81/08.",
-              "didascalia": "Attacco di mandata per motopompa.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Fornitura e posa cartello per attacco di mandata per motopompa VV.F.",
-                  "um": "cad"
-                }
-              ],
-              "gruppoEsclusivo": "attacco-motopompa"
-            },
-            {
-              "id": "77-me-attacco-safecrash",
-              "titolo": "Attacco motopompa: presente con vetro safe crash",
-              "testo": "È stata verificata la presenza dell’attacco autopompa posto al piano [rialzato] dotato di vetro safe crash.",
-              "didascalia": "Attacco autopompa.",
-              "lavorazioni": [],
-              "gruppoEsclusivo": "attacco-motopompa"
-            },
-            {
-              "id": "77-me-manutenzione-ok",
-              "titolo": "Manutenzione semestrale regolare",
-              "testo": "Durante il sopralluogo è stata riscontrata la corretta manutenzione semestrale di estintori e idranti.",
-              "didascalia": "Presidi antincendio.",
-              "lavorazioni": []
-            },
-            {
               "id": "77-me-uni10779",
-              "titolo": "Promemoria UNI 10779 (manutenzione idranti e manichette)",
-              "testo": "Si rammenta, inoltre, che la norma UNI 10779-2014 – RETE IDRANTI – stabilisce che:\n- La manutenzione degli idranti a muro deve essere svolta almeno due volte all’anno, in conformità alla UNI EN 671-3, da personale competente e qualificato.\n- Tutte le tubazioni flessibili e semirigide (manichette) devono essere verificate annualmente sottoponendole alla pressione di rete per verificarne l’integrità.\n- In ogni caso, ogni 5 anni deve essere eseguita la prova di tenuta delle tubazioni flessibili e semirigide (12 bar) come previsto dalla UNI EN 671-3. Se la prova dà esito positivo non vi è l’obbligo di sostituire la tubazione.",
+              "titolo": "Promemoria UNI 10779 (manutenzione idranti)",
+              "testo": "Si rammenta, inoltre, che la norma UNI 10779-2014 – RETE IDRANTI – stabilisce che:\n- La manutenzione degli idranti a muro deve essere svolta almeno due volte all’anno, in conformità alla UNI EN 671-3, da personale competente e qualificato.\n- Tutte le tubazioni flessibili e semirigide devono essere verificate annualmente sottoponendole alla pressione di rete per verificarne l’integrità.\n- In ogni caso, ogni 5 anni deve essere eseguita la prova di tenuta delle tubazioni flessibili e semirigide (12 bar) come previsto dalla UNI EN 671-3. Se la prova dà esito positivo non vi è l’obbligo di sostituire la tubazione.",
               "didascalia": "",
               "lavorazioni": []
             }
@@ -1398,22 +1403,58 @@
           "titolo": "Porte dei locali tecnici (contatori, autoclave, solai)",
           "voci": [
             {
-              "id": "77-lt-porta-sostituire",
-              "titolo": "Porta REI/EI da sostituire e chiusura del sopraluce",
-              "testo": "La porta di [accesso al locale / collegamento tra il filtro ed il vano scala / collegamento tra il corsello ed il vano scala] [in ferro / metallica / grigliata] non rispetta le caratteristiche di resistenza al fuoco richieste[, come previsto dal punto § 8.0 della normativa vigente]. Si provveda alla sostituzione della porta con modello avente caratteristiche di resistenza al fuoco non inferiori a [REI 30 / REI 60 / REI 120 / EI 120], dotato di dispositivo di autochiusura[ e di maniglione antipanico], e alla chiusura del sopraluce con materiali aventi le medesime caratteristiche.",
-              "didascalia": "Porta da sostituire.",
+              "id": "77-lt-porta-contatori",
+              "titolo": "Porta locale contatori da sostituire (EI 120)",
+              "testo": "Al fine di garantire la compartimentazione del locale contatori, sarà necessario sostituire la porta in ferro grigliata con modello tagliafuoco EI 120, inoltre sarà necessario procedere con la chiusura della parte superiore del muro in quanto comunicante con il locale.",
+              "didascalia": "Porta del locale contatori.",
               "lavorazioni": [
                 {
-                  "descrizione": "Rimozione porte non a norma del locale, compreso sopraluce.",
+                  "descrizione": "Rimozione porta grigliata in ferro del locale contatori.",
                   "um": "cad"
                 },
                 {
-                  "descrizione": "Fornitura e posa porta [REI/EI classe] del locale, dimensioni [80 x 205 cm] filo muro, in sostituzione dell’esistente, completa di dispositivo di autochiusura [e maniglione antipanico] e assistenza muraria.",
+                  "descrizione": "Fornitura e posa porta tagliafuoco EI 120, dimensioni minime [80 cm x 205 cm].",
                   "um": "cad"
                 },
                 {
-                  "descrizione": "Chiusura del sopraluce con materiali aventi caratteristiche di resistenza al fuoco [REI/EI classe].",
+                  "descrizione": "Chiusura della parte superiore del muro e dei sopraluci con materiali aventi caratteristiche di resistenza al fuoco EI 120.",
                   "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "77-lt-porta-autoclave",
+              "titolo": "Porta locale autoclave da sostituire (EI 120)",
+              "testo": "Si provveda a sostituire il serramento di accesso del locale autoclave in quanto non resistente al fuoco come prescritto dal parere di conformità condizionato. La nuova porta, avente stesse dimensioni di quella esistente, dovrà possedere caratteristiche di resistenza al fuoco non inferiori a EI 120.",
+              "didascalia": "Porta di accesso al locale autoclave.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Rimozione portone del locale autoclave.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Fornitura e posa portone tagliafuoco EI 120, dimensioni come esistenti, dotato di congegno di autochiusura e cilindretto.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Chiusura del sopraluce del portone con materiali EI 120.",
+                  "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "77-lt-porta-solaio",
+              "titolo": "Porte locali solaio e macchine ascensore da sostituire (EI 120)",
+              "testo": "Al momento del sopralluogo le porte dei locali macchine ascensori e solai sui [tre] vani scale risultavano non conformi alle normative vigenti in materia di prevenzione incendi; pertanto sono da sostituire con porte tagliafuoco aventi caratteristiche di resistenza al fuoco EI 120.",
+              "didascalia": "Porte locali solaio e locale macchine ascensore.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Rimozione porte dei locali solaio e macchine ascensore.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Fornitura e posa porta tagliafuoco EI 120, dimensioni foro muro [80 x 210 cm].",
+                  "um": "cad"
                 },
                 {
                   "descrizione": "Tinteggiature aree oggetto d’intervento.",

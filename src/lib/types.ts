@@ -18,6 +18,8 @@ export interface VoceCatalogo {
   lavorazioni: Lavorazione[];
   /** la voce comporta la dichiarazione di non aggravio in conclusione */
   nonAggravio?: boolean;
+  /** voci con lo stesso gruppo nella stessa sezione si escludono a vicenda (es. esito della prova: positivo / negativo) */
+  gruppoEsclusivo?: string;
 }
 
 export interface SezioneCatalogo {

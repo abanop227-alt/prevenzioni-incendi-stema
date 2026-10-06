@@ -1,10 +1,13 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
+  applicaEsclusivita,
   duplicaSezione,
   famigliaDi,
   gruppiDocumento,
   migraSopralluogo,
   nuovaAttivita,
+  nuovoSopralluogo,
   nuovaVocePersonalizzata,
   numerazioneFoto,
   nonAggravioEffettivo,
@@ -29,7 +32,7 @@ describe('libreria', () => {
     expect(cat.famiglie.find((f) => f.id === '77')!.sezioni.map((s) => s.titolo)).toEqual([
       'Vano scala',
       'Locale macchine ascensore',
-      'Mezzi di estinzione',
+      'Impianto idrico antincendio',
       'Cartelli e segnaletica di sicurezza',
       'Porte dei locali tecnici (contatori, autoclave, solai)',
     ]);
@@ -121,7 +124,7 @@ describe('istanziazione per attività', () => {
       'Vano scala',
       'Vano scala B',
       'Locale macchine ascensore',
-      'Mezzi di estinzione',
+      'Impianto idrico antincendio',
       'Cartelli e segnaletica di sicurezza',
       'Porte dei locali tecnici (contatori, autoclave, solai)',
     ]);
@@ -137,7 +140,7 @@ describe('istanziazione per attività', () => {
     const s = sopralluogoCon(['74.1.A', '77.1.A']);
     const a = voce(s, '74-ct-aer-ok');
     const b = voce(s, '77-vs-aer-ok');
-    const c = voce(s, '77-me-rete');
+    const c = voce(s, '77-ia-descrizione');
     [a, b, c].forEach((v) => (v.selezionata = true));
     a.fotoIds = ['f1'];
     b.fotoIds = ['f2', 'f3'];
@@ -146,7 +149,7 @@ describe('istanziazione per attività', () => {
     const g = gruppiDocumento(s);
     expect(g.map((x) => x.sezioni.map((y) => y.sezione.titolo))).toEqual([
       ['Locale centrale termica'],
-      ['Vano scala', 'Mezzi di estinzione', 'Cartelli e segnaletica di sicurezza'],
+      ['Vano scala', 'Impianto idrico antincendio', 'Cartelli e segnaletica di sicurezza'],
     ]);
     const n = numerazioneFoto(s);
     expect(n.get(a.key)).toEqual([1]);
@@ -221,7 +224,7 @@ describe('istanziazione per attività', () => {
     };
     const dopo = sincronizza(s, cat);
     const sez = sezioniDiAttivita(dopo, '77.1.A');
-    expect(sez.map((x) => x.titolo)).toEqual(['Vano scala', 'Locale macchine ascensore', 'Mezzi di estinzione', 'Cartelli e segnaletica di sicurezza', 'Porte dei locali tecnici (contatori, autoclave, solai)']);
+    expect(sez.map((x) => x.titolo)).toEqual(['Vano scala', 'Locale macchine ascensore', 'Impianto idrico antincendio', 'Cartelli e segnaletica di sicurezza', 'Porte dei locali tecnici (contatori, autoclave, solai)']);
     const porta = dopo.voci.filter((v) => v.voceId === '77-vs-lma-porta-80');
     expect(porta).toHaveLength(1);
     expect(porta[0].sezioneKey).toBe('77-lm@77.1.A');
@@ -229,5 +232,88 @@ describe('istanziazione per attività', () => {
     expect(porta[0].fotoIds).toEqual(['f1']);
     expect(vociDiSezione(dopo, '77-vs@77.1.A').some((v) => v.voceId?.startsWith('77-vs-lma'))).toBe(false);
     expect(sincronizza(dopo, cat)).toBe(dopo);
+  });
+});
+
+describe('impianto idrico antincendio: una voce, un esito, i rilievi', () => {
+  it('c’è una sola voce di descrizione per tipo e le voci sugli idranti sono tutte nella sezione dell’impianto', () => {
+    for (const [fam, sez] of [['77', '77-me'], ['75', '75-ia']] as const) {
+      const f = cat.famiglie.find((x) => x.id === fam)!;
+      const impianto = f.sezioni.find((x) => x.id === sez)!;
+      expect(impianto.titolo).toBe('Impianto idrico antincendio');
+      expect(impianto.voci.filter((v) => v.id.endsWith('-ia-descrizione'))).toHaveLength(1);
+      // fuori dalla sezione non resta nessuna frase sugli idranti, né duplicati del promemoria UNI 10779
+      const altrove = f.sezioni.filter((x) => x.id !== sez).flatMap((x) => x.voci);
+      expect(altrove.filter((v) => /idrant|manichett|UNI 10779|motopompa/i.test(v.testo))).toEqual([]);
+    }
+    const uni = cat.famiglie.flatMap((f) => f.sezioni.flatMap((x) => x.voci)).filter((v) => v.testo.includes('UNI 10779'));
+    expect(uni).toHaveLength(2); // una per tipo (75 e 77), con lo stesso testo
+    expect(uni[0].testo).toBe(uni[1].testo);
+  });
+
+  it('l’esito della prova è uno solo: spuntarne uno toglie l’altro', () => {
+    let s = sopralluogoCon(['77.1.A']);
+    voce(s, '77-me-prova-negativa').selezionata = true;
+    s = applicaEsclusivita(s, cat, voce(s, '77-me-prova-negativa').key);
+    voce(s, '77-ia-prova-positiva').selezionata = true;
+    s = applicaEsclusivita(s, cat, voce(s, '77-ia-prova-positiva').key);
+    expect(voce(s, '77-ia-prova-positiva').selezionata).toBe(true);
+    expect(voce(s, '77-me-prova-negativa').selezionata).toBe(false);
+    expect(voce(s, '77-me-prova').selezionata).toBe(false);
+  });
+
+  it('i rilievi senza gruppo si spuntano insieme alla descrizione', () => {
+    let s = sopralluogoCon(['77.1.A']);
+    for (const id of ['77-ia-descrizione', '77-me-manichette', '77-me-idranti-mancanti']) {
+      voce(s, id).selezionata = true;
+      s = applicaEsclusivita(s, cat, voce(s, id).key);
+    }
+    expect(['77-ia-descrizione', '77-me-manichette', '77-me-idranti-mancanti'].every((id) => voce(s, id).selezionata)).toBe(true);
+  });
+
+  it('i tre attacchi motopompa si escludono a vicenda', () => {
+    let s = sopralluogoCon(['77.1.A']);
+    for (const id of ['77-me-attacco', '77-me-attacco-unico']) {
+      voce(s, id).selezionata = true;
+      s = applicaEsclusivita(s, cat, voce(s, id).key);
+    }
+    expect(voce(s, '77-me-attacco').selezionata).toBe(false);
+    expect(voce(s, '77-me-attacco-unico').selezionata).toBe(true);
+  });
+
+  it('una sola voce per le porte REI/EI da sostituire in ogni sezione', () => {
+    const porte = cat.famiglie.flatMap((f) => f.sezioni.flatMap((x) => x.voci)).filter((v) => v.id.includes('porta-sostituire') || v.id === '77-vs-lma-porta-80');
+    expect(porte.map((v) => v.id).sort()).toEqual(['75-fv-porta-sostituire', '77-lt-porta-sostituire', '77-vs-lma-porta-80']);
+    for (const v of porte) {
+      expect(v.lavorazioni.map((l) => l.inclusa !== false)).toEqual([true, true, true, false]);
+    }
+  });
+});
+
+describe('pratiche salvate prima della riorganizzazione', () => {
+  it('conservano frasi e testi già compilati e ricevono le voci nuove senza perdite', () => {
+    const vecchia = validaCatalogo(JSON.parse(readFileSync(new URL('./fixtures/roa-dati-prima-riorganizzazione.json', import.meta.url), 'utf8')));
+    let s = nuovoSopralluogo();
+    s.attivita = ['75.2.B', '77.1.A'].map((c) => nuovaAttivita(vecchia, c));
+    s = sincronizza(s, vecchia);
+    const rete = voce(s, '77-me-rete');
+    rete.selezionata = true;
+    rete.testo = 'Testo già modificato dal tecnico.';
+    rete.fotoIds = ['f1'];
+    voce(s, '75-ds-idranti').selezionata = true;
+
+    const dopo = sincronizza(s, cat);
+    // le frasi vecchie, spuntate e modificate, restano
+    expect(voce(dopo, '77-me-rete').testo).toBe('Testo già modificato dal tecnico.');
+    expect(voce(dopo, '77-me-rete').fotoIds).toEqual(['f1']);
+    expect(voce(dopo, '75-ds-idranti').selezionata).toBe(true);
+    // e arrivano le voci nuove, non spuntate
+    expect(voce(dopo, '77-ia-descrizione').selezionata).toBe(false);
+    expect(voce(dopo, '75-ia-descrizione').selezionata).toBe(false);
+    // la sezione nuova dell'autorimessa c'è
+    expect(dopo.sezioni.some((x) => x.sezioneId === '75-ia')).toBe(true);
+    // nessuna chiave doppia
+    const chiavi = dopo.voci.map((v) => v.key);
+    expect(new Set(chiavi).size).toBe(chiavi.length);
   });
 });

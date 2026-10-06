@@ -570,6 +570,122 @@ for fam in libreria["famiglie"]:
       v["lavorazioni"].extend(LAVORAZIONI_AGGIUNTIVE.pop(v["id"], []))
 assert not LAVORAZIONI_AGGIUNTIVE, f"voci inesistenti: {list(LAVORAZIONI_AGGIUNTIVE)}"
 
+
+# ---------------------------------------------------------------------------------------------
+# Riorganizzazione delle voci (ottobre 2026): una voce di descrizione + esito + rilievi spuntabili.
+# Le voci con "gruppoEsclusivo" si escludono a vicenda dentro la stessa sezione (es. esito della prova).
+# I testi sono quelli delle voci precedenti, unificati dove erano quasi uguali.
+# ---------------------------------------------------------------------------------------------
+import copy
+_tutte = {v["id"]: v for f in libreria["famiglie"] for sez in f["sezioni"] for v in sez["voci"]}
+def _voce(id_vecchio, nuovo_id=None, **mod):
+  v = copy.deepcopy(_tutte[id_vecchio])
+  if nuovo_id: v["id"] = nuovo_id
+  v.update(mod)
+  return v
+def _togli(famiglia, ids):
+  for sez in famiglia["sezioni"]:
+    sez["voci"] = [v for v in sez["voci"] if v["id"] not in ids]
+
+REQUISITI_IDRANTI = ("Ogni idrante dovrà possedere tubazione flessibile lunga [20 m] in nylon UNI 45 e lancia d’erogazione UNI [45] mm, corredati da apposita cartellonistica di ampiezza sufficiente per consentirne un’immediata individuazione. "
+  "L’impianto sarà collegato direttamente all’acquedotto comunale e tenuto costantemente sotto pressione, e dovrà garantire una pressione di 2,0 bar ed una portata non inferiore a 120 l/min misurati all’idrante idraulicamente più sfavorito, in condizioni di altimetria e distanza, "
+  "con la contemporanea apertura [dei 2 idranti idraulicamente più sfavoriti / del 50% degli idranti][, per un tempo di 30 min].")
+ATTACCO_BASE = "Completa l’impianto n° [1] attacco di mandata per motopompa dei VV.F. di tipo UNI 70, posto [nei pressi della rampa carrabile di accesso all’autorimessa / dell’entrata del passo carrabile]."
+UNI10779_UNICO = ("Si rammenta, inoltre, che la norma UNI 10779-2014 – RETE IDRANTI – stabilisce che:\n"
+  "- La manutenzione degli idranti a muro deve essere svolta almeno due volte all’anno, in conformità alla UNI EN 671-3, da personale competente e qualificato.\n"
+  "- Tutte le tubazioni flessibili e semirigide (manichette) devono essere verificate annualmente sottoponendole alla pressione di rete per verificarne l’integrità.\n"
+  "- In ogni caso, ogni 5 anni deve essere eseguita la prova di tenuta delle tubazioni flessibili e semirigide (12 bar) come previsto dalla UNI EN 671-3. Se la prova dà esito positivo non vi è l’obbligo di sostituire la tubazione.")
+MANICHETTE = ("Al momento del sopralluogo le manichette si presentavano [obsolete,] prive del collaudo e della manutenzione semestrale da parte dell’impresa manutentrice. "
+  "Si provveda pertanto alla loro sostituzione, ovvero al collaudo delle stesse, contattando la ditta manutentrice dei presidi.")
+SAFECRASH = "In fase di sopralluogo sono stati riscontrati presidi che presentavano il vetro “safe crash” danneggiato o mancante nel corpo scale [A]: si provveda alla sostituzione dei vetri."
+MANUT_OK = "Durante il sopralluogo è stata riscontrata la corretta manutenzione semestrale di estintori e idranti."
+PROVA_POSITIVA = "Durante il sopralluogo è stata eseguita la prova di pressione e portata dell’impianto idrico antincendio, con esito positivo."
+
+TITOLI_IDRICO = {
+  "77-me-prova-negativa": "Prova di pressione e portata: esito negativo", "75-ia-prova-negativa": "Prova di pressione e portata: esito negativo",
+  "77-me-prova": "Prova di pressione e portata: non eseguita", "75-ia-prova": "Prova di pressione e portata: non eseguita",
+  "77-me-manichette": "Manichette obsolete o prive di manutenzione e collaudo", "75-ds-manichette": "Manichette obsolete o prive di manutenzione e collaudo",
+  "77-me-attacco": "Attacco motopompa: cartellonistica da integrare", "77-me-attacco-unico": "Attacco motopompa: a servizio di più colonne",
+  "77-me-attacco-safecrash": "Attacco motopompa: presente con vetro safe crash", "75-ar-attacco-nuovo": "Attacco motopompa: da installare",
+  "75-ds-attacco-ammalorato": "Attacco motopompa: ammalorato o senza cartellino",
+}
+def _impianto_idrico(t, descrizione, didascalia, ids_proprie):
+  """Voci dell'impianto idrico per il tipo t (75 o 77): descrizione, esito della prova, rilievi."""
+  nuova = lambda nome: f"{t}-ia-{nome}"
+  il = lambda i, n, **m: _voce(i, n, **m)
+  voci = [
+    V(nuova("descrizione"), "Impianto idrico antincendio: descrizione e requisiti", descrizione, didascalia),
+    V(nuova("prova-positiva"), "Prova di pressione e portata: esito positivo", PROVA_POSITIVA, "Prova di pressione.", gruppoEsclusivo="esito-prova"),
+    il("77-me-prova-negativa", ids_proprie.get("negativa"), gruppoEsclusivo="esito-prova"),
+    il("77-me-prova", ids_proprie.get("nonEseguita"), gruppoEsclusivo="esito-prova"),
+    il("77-me-manichette", ids_proprie.get("manichette"), testo=MANICHETTE, lavorazioni=[L("Sostituzione ovvero collaudo delle manichette.", "cad")]),
+    il("77-me-idranti-mancanti", ids_proprie.get("mancanti")),
+    il("77-me-safecrash-danneggiati", ids_proprie.get("safecrash"), testo=SAFECRASH),
+  ]
+  voci.extend(ids_proprie["attacchi"])
+  voci.extend(ids_proprie.get("extra", []))
+  voci.append(V(ids_proprie["manut"], "Manutenzione semestrale regolare", MANUT_OK, "Presidi antincendio."))
+  voci.append(V(ids_proprie["uni"], "Promemoria UNI 10779 (manutenzione idranti e manichette)", UNI10779_UNICO))
+  for v in voci:
+    v["titolo"] = TITOLI_IDRICO.get(v["id"], v["titolo"])
+  return voci
+
+_att = lambda v: {**v, "gruppoEsclusivo": "attacco-motopompa"}
+f75 = next(f for f in libreria["famiglie"] if f["id"] == "75")
+f77 = next(f for f in libreria["famiglie"] if f["id"] == "77")
+
+# --- 77: la sezione "Mezzi di estinzione" diventa "Impianto idrico antincendio"
+voci77 = _impianto_idrico("77",
+  "Il vano scala è dotato di rete idranti costituita da una colonna montante dal piano [rialzato] al piano [ottavo] [oppure: con idranti presenti ai piani rialzato, 1°, 3°, 5°, 6° e 7°].\n" + REQUISITI_IDRANTI + "\n" + ATTACCO_BASE,
+  "Rete idranti del vano scala.",
+  {"negativa": None, "nonEseguita": None, "manichette": None, "mancanti": None, "safecrash": None,
+   "attacchi": [_att(_voce("77-me-attacco")), _att(_voce("77-me-attacco-unico")), _att(_voce("77-me-attacco-safecrash"))],
+   "manut": "77-me-manutenzione-ok", "uni": "77-me-uni10779"})
+sez77 = next(sz for sz in f77["sezioni"] if sz["id"] == "77-me")
+sez77["titolo"] = "Impianto idrico antincendio"
+sez77["voci"] = voci77
+
+# --- 75: nuova sezione "Impianto idrico antincendio" dopo "Dispositivi di sicurezza"
+voci75 = _impianto_idrico("75",
+  "L’impianto idrico antincendio è costituito da n° [5] idranti UNI 45, inseriti in apposite cassette con vetro trasparente tipo “safe – crash”, corredati di manichette e lance erogatrici mantenute costantemente collegate.\n" + REQUISITI_IDRANTI + "\n" + ATTACCO_BASE,
+  "Idranti dell’autorimessa.",
+  {"negativa": "75-ia-prova-negativa", "nonEseguita": "75-ia-prova", "manichette": "75-ds-manichette", "mancanti": "75-ia-idranti-mancanti", "safecrash": "75-ia-safecrash",
+   "attacchi": [_att(_voce("75-ar-attacco-nuovo")), _att(_voce("75-ds-attacco-ammalorato"))],
+   "extra": [_voce("75-ar-coibentazione")],
+   "manut": "75-ds-manutenzione-ok", "uni": "75-ds-uni10779"})
+_togli(f75, {"75-ar-rete-requisiti", "75-ar-coibentazione", "75-ar-attacco-nuovo", "75-ds-idranti", "75-ds-idranti-requisiti", "75-ds-uni10779",
+             "75-ds-manichette", "75-ds-attacchi", "75-ds-attacco-ammalorato", "75-ds-manutenzione-ok", "75-ds-manutenzione-ok-2"})
+_pos = [sz["id"] for sz in f75["sezioni"]].index("75-ds") + 1
+f75["sezioni"].insert(_pos, {"id": "75-ia", "titolo": "Impianto idrico antincendio", "voci": voci75})
+
+# --- Porte REI/EI: una voce generica al posto di quelle che differivano solo per locale e classe
+PORTA_LAV = lambda locale: [
+  L(f"Rimozione porte non a norma{locale}, compreso sopraluce.", "cad"),
+  L(f"Fornitura e posa porta [REI/EI classe]{locale}, dimensioni [80 x 205 cm] filo muro, in sostituzione dell’esistente, completa di dispositivo di autochiusura [e maniglione antipanico] e assistenza muraria.", "cad"),
+  L("Chiusura del sopraluce con materiali aventi caratteristiche di resistenza al fuoco [REI/EI classe].", "a corpo"),
+  L("Tinteggiature aree oggetto d’intervento.", "a corpo", False)]
+PORTA_TESTO = ("La porta di [accesso al locale / collegamento tra il filtro ed il vano scala / collegamento tra il corsello ed il vano scala] [in ferro / metallica / grigliata] non rispetta le caratteristiche di resistenza al fuoco richieste[, come previsto dal punto § 8.0 della normativa vigente]. "
+  "Si provveda alla sostituzione della porta con modello avente caratteristiche di resistenza al fuoco non inferiori a [REI 30 / REI 60 / REI 120 / EI 120], dotato di dispositivo di autochiusura[ e di maniglione antipanico], e alla chiusura del sopraluce con materiali aventi le medesime caratteristiche.")
+def _porta(id_, locale=""):
+  return V(id_, "Porta REI/EI da sostituire e chiusura del sopraluce", PORTA_TESTO, "Porta da sostituire.", PORTA_LAV(locale))
+GUAINA = ("Al momento del sopralluogo la porta di collegamento tra [il corsello ed il vano scala A], sebbene fosse REI e costantemente revisionata da parte della ditta manutentrice, non sembrava essere in ottimo stato in quanto "
+  "[completamente priva della guaina termo-espandente / verniciata con una pittura che ha coperto la guaina termo-espandente, non garantendone più le prestazioni di reazione al fuoco, e che ha inoltre cancellato le informazioni del produttore per poter risalire alle dichiarazioni di conformità]. "
+  "Si provveda alla sostituzione della stessa con un modello simile avente caratteristiche di resistenza al fuoco non inferiori a REI [60].")
+def _sostituisci(famiglia, ids, nuove):
+  """toglie le voci vecchie e mette le nuove al posto della prima trovata"""
+  for sez in famiglia["sezioni"]:
+    posti = [i for i, v in enumerate(sez["voci"]) if v["id"] in ids]
+    if not posti: continue
+    primo = posti[0]
+    resto = [v for v in sez["voci"] if v["id"] not in ids]
+    sez["voci"] = resto[:primo] + nuove + resto[primo:]
+    return
+  raise AssertionError(ids)
+_sostituisci(f75, {"75-fv-porta-guaina", "75-fv-porta-verniciata"}, [V("75-fv-porta-guaina", "Porta REI con guaina termo-espandente mancante o coperta", GUAINA, _tutte["75-fv-porta-guaina"]["didascalia"], [RIM_PORTE, PORTA_REI])])
+_sostituisci(f75, {"75-fv-porta-locale", "75-fv-porta-nuova", "75-fv-porta-ferro"}, [_porta("75-fv-porta-sostituire")])
+_sostituisci(f77, {"77-vs-lma-porta-80", "77-vs-lma-porta-metallica"}, [_porta("77-vs-lma-porta-80", " di accesso al locale macchine ascensore")])
+_sostituisci(f77, {"77-lt-porta-contatori", "77-lt-porta-autoclave", "77-lt-porta-solaio"}, [_porta("77-lt-porta-sostituire", " del locale")])
+
 out = os.path.join(os.path.dirname(__file__), '..', 'src', 'data', 'roa-dati.json')
 with open(out, 'w', encoding='utf-8') as f:
     json.dump(libreria, f, ensure_ascii=False, indent=2)

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  applicaEsclusivita,
   duplicaSezione,
   famigliaDi,
   spostaSezione,
@@ -61,7 +62,7 @@ function Sezione({
   const eliminabile = !sezione.sezioneId || sezione.key.includes('#');
 
   function modificaVoce(key: string, f: (v: VoceIstanza) => VoceIstanza) {
-    aggiorna((x) => ({ ...x, voci: x.voci.map((v) => (v.key === key ? f(v) : v)) }));
+    aggiorna((x) => applicaEsclusivita({ ...x, voci: x.voci.map((v) => (v.key === key ? f(v) : v)) }, catalogo, key));
   }
 
   function rinomina() {

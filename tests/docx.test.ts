@@ -108,7 +108,7 @@ describe('generazione del .docx', () => {
       '2.1.2.1 Vano scala',
       'Foto 2 – Foto 3 – Apertura di aerazione del vano scala.',
       '2.1.2.2 Vano scala B',
-      '2.1.2.3 Mezzi di estinzione',
+      '2.1.2.3 Impianto idrico antincendio',
       'UNI 10779-2014',
       '2.2 ORDINE CARTELLI E SEGNALETICA DI SICUREZZA',
       'n° 8 cartelli da applicare in tutti i piani',
