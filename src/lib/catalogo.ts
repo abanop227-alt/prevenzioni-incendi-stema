@@ -12,6 +12,7 @@ import type {
   Sopralluogo,
   Tecnico,
   VoceCatalogo,
+  VoceCatalogoComputo,
   VoceIstanza,
 } from './types';
 import { dataItaliana, nuovoId, oggiISO } from './util';
@@ -107,6 +108,21 @@ export function validaCatalogo(dati: unknown): Catalogo {
     famiglie,
     umOptions: umOptions.length ? umOptions : ['a corpo', 'cad'],
     lavorazioniComuni: arr(d.lavorazioniComuni).map(lav),
+    ...(arr(d.catalogoComputo).length
+      ? {
+          catalogoComputo: arr(d.catalogoComputo).map((c, i) => {
+            const y = (c ?? {}) as Record<string, unknown>;
+            return {
+              cod: str(y.cod).trim() || `V.${String(i + 1).padStart(2, '0')}`,
+              area: str(y.area, 'Altre voci'),
+              descrizione: str(y.descrizione),
+              um: str(y.um, 'a corpo'),
+              tipi: arr(y.tipi).map((t) => str(t)),
+              ...(y.suRichiesta ? { suRichiesta: true } : {}),
+            };
+          }),
+        }
+      : {}),
     cartelliSuggeriti: arr(d.cartelliSuggeriti).map((c) => str(c)),
     notaBeneSuggerimenti: arr(d.notaBeneSuggerimenti).map((c) => str(c)),
     testi: {
@@ -378,6 +394,21 @@ export function applicaEsclusivita(s: Sopralluogo, catalogo: Catalogo, key: stri
   const altre = s.voci.filter((x) => x !== v && x.sezioneKey === v.sezioneKey && x.selezionata && x.voceId && gruppi.get(x.voceId) === g);
   if (!altre.length) return s;
   return { ...s, voci: s.voci.map((x) => (altre.includes(x) ? { ...x, selezionata: false } : x)) };
+}
+
+/**
+ * Voci tipo del computo proponibili per un'attività, per area (A, B, C…); quelle "su richiesta del progetto" in coda.
+ * Senza prezzi: la riga entra nel computo con quantità e prezzo vuoti.
+ */
+export function catalogoComputoPer(catalogo: Catalogo, codiceAttivita: string): { area: string; voci: VoceCatalogoComputo[] }[] {
+  const tipo = codiceAttivita.slice(0, 2);
+  const voci = (catalogo.catalogoComputo ?? []).filter((v) => !v.tipi.length || v.tipi.includes(tipo));
+  const aree = new Map<string, VoceCatalogoComputo[]>();
+  for (const v of voci.filter((x) => !x.suRichiesta)) aree.set(v.area, [...(aree.get(v.area) ?? []), v]);
+  const gruppi = [...aree].map(([area, vv]) => ({ area, voci: vv }));
+  const richieste = voci.filter((x) => x.suRichiesta);
+  if (richieste.length) gruppi.push({ area: 'Solo se richieste dal progetto', voci: richieste });
+  return gruppi;
 }
 
 /** Scambia due elementi di un array (copia). */

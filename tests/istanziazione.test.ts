@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   applicaEsclusivita,
+  catalogoComputoPer,
   duplicaSezione,
   famigliaDi,
   gruppiDocumento,
@@ -315,5 +316,67 @@ describe('pratiche salvate prima della riorganizzazione', () => {
     // nessuna chiave doppia
     const chiavi = dopo.voci.map((v) => v.key);
     expect(new Set(chiavi).size).toBe(chiavi.length);
+  });
+});
+
+describe('catalogo del computo (voci tipo delle ROA)', () => {
+  const voci = cat.catalogoComputo ?? [];
+
+  it('ha le 56 voci tipo, con codici unici, aree A-H e senza prezzi', () => {
+    expect(voci).toHaveLength(56);
+    expect(new Set(voci.map((v) => v.cod)).size).toBe(56);
+    expect([...new Set(voci.map((v) => v.cod[0]))].sort().join('')).toBe('ABCDEFGH');
+    for (const v of voci) {
+      expect(Object.keys(v).sort().join()).toMatch(/^area,cod,descrizione(,suRichiesta)?,tipi,um$/);
+      expect(cat.umOptions).toContain(v.um);
+      expect(v.descrizione.length).toBeGreaterThan(10);
+    }
+  });
+
+  it('propone per attività le voci del suo tipo, con quelle "su richiesta" in coda', () => {
+    const ct = catalogoComputoPer(cat, '74.1.A');
+    const codici74 = ct.flatMap((g) => g.voci.map((v) => v.cod));
+    expect(codici74).toContain('F.01'); // pulsante di sgancio: centrale termica
+    expect(codici74).not.toContain('G.03'); // illuminazione autorimessa: solo 75
+    expect(ct[ct.length - 1].area).toBe('Solo se richieste dal progetto');
+    expect(ct[ct.length - 1].voci.map((v) => v.cod)).toContain('F.06');
+    const ct75 = catalogoComputoPer(cat, '75.2.B').flatMap((g) => g.voci.map((v) => v.cod));
+    expect(ct75).toContain('G.03');
+    expect(ct75).not.toContain('F.01');
+  });
+
+  it('una libreria caricata senza catalogo continua a funzionare', () => {
+    const senza = validaCatalogo({ attivita: [], famiglie: [] });
+    expect(catalogoComputoPer(senza, '74.1.A')).toEqual([]);
+  });
+});
+
+describe('alternative che si escludono', () => {
+  it('ogni gruppo ha almeno due voci, tutte nella stessa sezione', () => {
+    for (const f of cat.famiglie) {
+      for (const sez of f.sezioni) {
+        const gruppi = new Map<string, string[]>();
+        for (const v of sez.voci) if (v.gruppoEsclusivo) gruppi.set(v.gruppoEsclusivo, [...(gruppi.get(v.gruppoEsclusivo) ?? []), v.id]);
+        for (const [g, ids] of gruppi) expect(ids.length, `${f.id}/${sez.id}/${g}`).toBeGreaterThan(1);
+      }
+      // lo stesso gruppo non compare in sezioni diverse della stessa famiglia
+      const perGruppo = new Map<string, Set<string>>();
+      for (const sez of f.sezioni) for (const v of sez.voci) if (v.gruppoEsclusivo) perGruppo.set(v.gruppoEsclusivo, (perGruppo.get(v.gruppoEsclusivo) ?? new Set()).add(sez.id));
+      for (const [g, sezioni] of perGruppo) expect(sezioni.size, g).toBe(1);
+    }
+  });
+
+  it('potenzialità: una sola alternativa alla volta', () => {
+    let s = sopralluogoCon(['74.1.A']);
+    for (const id of ['74-ct-pot-ok', '74-ct-pot-diff']) {
+      voce(s, id).selezionata = true;
+      s = applicaEsclusivita(s, cat, voce(s, id).key);
+    }
+    expect(voce(s, '74-ct-pot-ok').selezionata).toBe(false);
+    expect(voce(s, '74-ct-pot-diff').selezionata).toBe(true);
+    // la voce di aerazione, di un altro gruppo, non viene toccata
+    voce(s, '74-ct-aer-334').selezionata = true;
+    s = applicaEsclusivita(s, cat, voce(s, '74-ct-aer-334').key);
+    expect(voce(s, '74-ct-pot-diff').selezionata).toBe(true);
   });
 });

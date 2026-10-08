@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { nonAggravioEffettivo, nuovaRigaExtra, testoConclusioni, vociSelezionate } from '../lib/catalogo';
+import { catalogoComputoPer, nonAggravioEffettivo, nuovaRigaExtra, testoConclusioni, vociSelezionate } from '../lib/catalogo';
 import { totaleComplessivo, zoneComputo, type RigaCalcolata } from '../lib/computo';
 import { controlliPreGenerazione } from '../lib/controlli';
 import { condividi, scarica } from '../lib/condividi';
@@ -79,6 +79,11 @@ export default function Step4Riepilogo(p: Props) {
     );
     aggiorna((x) => ({ ...x, righeExtra: [...x.righeExtra, nuovaRigaExtra(codice, { descrizione: d, um: nota?.um ?? 'a corpo' })] }));
     setNuovaRiga({ ...nuovaRiga, [codice]: '' });
+  }
+
+  /** Aggiunge al computo di una zona una voce tipo del catalogo (descrizione modificabile dalla riga, nessun prezzo). */
+  function aggiungiDalCatalogo(codice: string, descrizione: string, um: string) {
+    aggiorna((x) => ({ ...x, righeExtra: [...x.righeExtra, nuovaRigaExtra(codice, { descrizione, um })] }));
   }
 
   // righe tolte (inclusa = false) restano visibili per poterle rimettere
@@ -228,6 +233,27 @@ export default function Step4Riepilogo(p: Props) {
                   + {l.descrizione}
                 </button>
               ))}
+            </details>
+          )}
+          {catalogoComputoPer(catalogo, codice).length > 0 && (
+            <details className="catalogo-computo">
+              <summary className="muto piccolo">Aggiungi dal catalogo del computo</summary>
+              {catalogoComputoPer(catalogo, codice).map((g) => (
+                <div key={g.area} className="catalogo-area">
+                  <strong className="piccolo">{g.area}</strong>
+                  {g.voci.map((v) => (
+                    <button
+                      key={v.cod}
+                      className="chip-testo"
+                      title={`${v.cod} · ${v.um}`}
+                      onClick={() => aggiungiDalCatalogo(codice, v.descrizione, v.um)}
+                    >
+                      + {v.descrizione}
+                    </button>
+                  ))}
+                </div>
+              ))}
+              <p className="muto piccolo">La riga entra nel computo senza prezzo: completa ubicazione, classe REI e dimensioni nella descrizione.</p>
             </details>
           )}
           <div className="aggiungi-riga">

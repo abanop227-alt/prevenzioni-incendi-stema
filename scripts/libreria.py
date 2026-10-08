@@ -686,6 +686,83 @@ _sostituisci(f75, {"75-fv-porta-locale", "75-fv-porta-nuova", "75-fv-porta-ferro
 _sostituisci(f77, {"77-vs-lma-porta-80", "77-vs-lma-porta-metallica"}, [_porta("77-vs-lma-porta-80", " di accesso al locale macchine ascensore")])
 _sostituisci(f77, {"77-lt-porta-contatori", "77-lt-porta-autoclave", "77-lt-porta-solaio"}, [_porta("77-lt-porta-sostituire", " del locale")])
 
+
+# --- Alternative che si escludono (nella stessa sezione) e titoli con l'argomento davanti, così le voci dello stesso tema si leggono insieme
+ESCLUSIVI = {
+  "potenzialita": ["74-ct-pot-ok", "74-ct-pot-diff", "74-ct-pot-scia"],
+  "aerazione-centrale": ["74-ct-aer-ok", "74-ct-aer-fin"],
+  "terminale-canna-fumaria": ["74-cf-altezza-ok", "74-cf-altezza-nv"],
+  "sgancio": ["74-ds-sgancio-nuovo", "74-ds-sgancio-ok"],
+  "estintore-centrale": ["74-ds-estintore-ok", "74-ds-estintore-noman"],
+  "aerazione-vano-scala": ["77-vs-aer-ok", "77-vs-aer-no", "77-vs-aer-altezza"],
+  "aerazione-locale-macchine": ["77-vs-lma-aer-ok", "77-vs-lma-aer-no", "77-lm-aer-naturale"],
+  "porta-locale-macchine": ["77-vs-lma-porta-80", "77-lm-porta-terrazza"],
+  "griglie-autorimessa": ["75-ar-griglie", "75-ar-griglia-ascensore"],
+  "segnaletica-esodo": ["75-cs-integrare", "75-cs-installare"],
+}
+TITOLI = {
+  "74-ct-pot-ok": "Potenzialità: conforme al progetto", "74-ct-pot-diff": "Potenzialità: diversa dal progetto (non aggravio)", "74-ct-pot-scia": "Potenzialità: conforme a progetto e S.C.I.A.",
+  "74-ct-aer-ok": "Aerazione: presente e dimensionata", "74-ct-aer-fin": "Aerazione: tramite finestre con griglie", "74-ct-aer-334": "Aerazione: aperture senza sacche di gas (§ 3.3.4)",
+  "74-ct-autochiusura": "Porta: senza dispositivo di autochiusura",
+  "74-ct-murature": "Compartimentazione: murature REI 120 non certificabili", "74-ct-controsoffitto": "Compartimentazione: controsoffitto REI/EI 120",
+  "74-ct-canna-disimpegno": "Compartimentazione: canna fumaria nel disimpegno (EI 60)", "74-ct-chiusura-muratura": "Compartimentazione: chiusura muratura della canna fumaria",
+  "74-ct-materiale": "Vie libere: materiale depositato nel disimpegno", "74-ct-condizionatori": "Vie libere: macchine per il condizionamento nel disimpegno",
+  "74-ct-sfiato": "Vie libere: vecchio tubo di sfiato e materiali ingombranti", "74-ct-sgancio-doppione": "Sgancio: pulsante doppione da rimuovere",
+  "74-ds-estintore-ok": "Estintore: presente e manutenuto", "74-ds-estintore-noman": "Estintore: privo di manutenzione", "74-ds-cartellino": "Estintore: cartellino di manutenzione da compilare",
+  "74-ds-rilevatore": "Gas: rilevatore fughe collegato all’elettrovalvola", "74-ds-contatore-aerato": "Gas: contatore, alloggiamento aerato", "74-ds-gas-giallo": "Gas: linea da colorare di giallo",
+  "74-ds-valvola": "Gas: valvola di intercettazione presente", "74-ds-area-libera": "Vie libere: area di contatore, sgancio ed estintore",
+  "74-ds-sgancio-nuovo": "Sgancio: pulsante da installare", "74-ds-sgancio-ok": "Sgancio: pulsante presente e segnalato",
+  "74-cf-termometro": "Canna fumaria: termometro presente", "74-cf-camera": "Canna fumaria: camera di raccolta presente",
+  "74-cf-altezza-ok": "Canna fumaria: terminale oltre 1 m dal colmo", "74-cf-altezza-nv": "Canna fumaria: terminale non verificabile",
+  "74-cs-contatore": "Cartellonistica: contatore gas", "74-cs-integrare": "Cartellonistica: integrare sgancio e valvola gas",
+  "75-fv-realizzare": "Filtro: da realizzare", "75-fv-esistenti": "Filtro: verifica porte e autochiusure",
+  "75-fv-porta-guaina": "Porta REI: guaina termo-espandente mancante o coperta", "75-fv-porta-sostituire": "Porta REI/EI: filtro o locale tecnico da sostituire, con sopraluce",
+  "75-fv-aerazione-ostruita": "Aerazione: filtro ostruito", "75-fv-senso-fuga": "Porta: apribile nel senso di fuga (dislivello)",
+  "75-fv-pvc-collari": "Compartimentazione: PVC nel filtro, collari", "75-fv-pvc-cartongesso": "Compartimentazione: PVC nel filtro, cartongesso REI",
+  "75-fv-griglia-lma": "Aerazione: griglia del locale macchine sul corsello",
+  "75-ar-griglia-ascensore": "Aerazione: griglia del locale ascensore sul corsello", "75-ar-griglie": "Aerazione: griglie presenti",
+  "75-ar-corrimano": "Vie d’esodo: corrimano su scala e rampa", "75-ar-cancello": "Vie d’esodo: cancello apribile nel senso di fuga",
+  "75-ar-posacenere": "Vie d’esodo: posacenere da rimuovere (divieto di fumo)", "75-ar-portone": "Porta: portone tagliafuoco non più necessario",
+  "75-ar-plafoni": "Compartimentazione: plafoni ammalorati", "75-ar-pvc-collari": "Compartimentazione: PVC cantine e retro box, collari",
+  "75-ar-foro": "Compartimentazione: foro da chiudere con materiali REI",
+  "75-ds-estintori": "Estintori: numero e requisiti", "75-ds-estintori-progetto": "Estintori: numero minimo da progetto",
+  "75-cs-integrare": "Cartellonistica: vie d’esodo da integrare", "75-cs-installare": "Cartellonistica: vie d’esodo da installare", "75-cs-sgancio": "Cartellonistica: pulsante di sgancio da segnalare",
+  "77-vs-aer-ok": "Aerazione: vano scala, presente in sommità", "77-vs-aer-no": "Aerazione: vano scala, assente (rimozione vetri)", "77-vs-aer-altezza": "Aerazione: vano scala, assente con altezza antincendio",
+  "77-vs-porta-copertura": "Porta: REI al piano copertura non in progetto", "77-vs-filtro-autorimessa": "Filtro: edificio / autorimessa da realizzare",
+  "77-vs-porta-filtro-vano": "Porta: filtro / vano scala da sostituire con REI 120", "77-vs-porte-contrario": "Porta: montate al contrario rispetto all’esodo",
+  "77-vs-oggetti": "Vie d’esodo: oggetti lungo le vie",
+  "77-vs-lma-aer-ok": "Aerazione: locale macchine, presente", "77-vs-lma-aer-no": "Aerazione: locale macchine, assente", "77-lm-aer-naturale": "Aerazione: locale macchine, naturale permanentemente aperta",
+  "77-vs-lma-porta-rei30": "Porta: promemoria REI 30 del locale macchine", "77-vs-lma-porta-80": "Porta REI/EI: locale macchine ascensore, sostituzione e sopraluce (§ 8.0)",
+  "77-lm-porta-terrazza": "Porta: non conforme ma accesso da terrazza",
+  "77-cs-vie": "Cartellonistica: vie d’esodo a ogni piano", "77-cs-presidi": "Cartellonistica: presidi da corredare",
+  "77-lt-porta-sostituire": "Porta REI/EI: locale tecnico (contatori, autoclave, solaio) da sostituire, con sopraluce",
+  "77-lt-solaio-estintori": "Estintori: piano solaio da integrare", "77-lt-solaio-cartelli": "Cartellonistica: divieto di deposito e passaggi ribassati (solaio)",
+}
+_per_id = {v["id"]: (sz["id"], v) for f in libreria["famiglie"] for sz in f["sezioni"] for v in sz["voci"]}
+for _g, _ids in ESCLUSIVI.items():
+  assert len({_per_id[i][0] for i in _ids}) == 1, f"{_g}: le voci devono stare nella stessa sezione"
+  for _i in _ids: _per_id[_i][1]["gruppoEsclusivo"] = _g
+for _i, _t in TITOLI.items():
+  assert _i in _per_id, f"voce inesistente: {_i}"
+  _per_id[_i][1]["titolo"] = _t
+
+# ---------------------------------------------------------------------------------------------
+# Catalogo del computo: 56 voci tipo delle ROA 2024-2026 (codice, area A-H, descrizione, U.M.), senza prezzi.
+# Fonte: scripts/dati/voci_tipo.json. Si aggiungono al computo di una zona dal passo "Riepilogo".
+# ---------------------------------------------------------------------------------------------
+_TIPI_AREA = {"A": ["74", "75", "77"], "B": ["74", "75", "77"], "C": ["74", "75", "77"], "D": ["75", "77"], "E": ["75", "77"], "F": ["74"], "G": ["75"], "H": ["74", "75", "77"]}
+_SU_RICHIESTA = {"F.06", "F.07", "G.05", "G.06", "G.07", "H.07", "H.08"}  # poche occorrenze: solo se richieste dal progetto
+def _um(t):
+  """"cad." -> "cad"; dove nel computo compaiono due unità ("a corpo / mq") si propone la prima: si cambia dalla riga."""
+  t = t.split("/")[0].strip().rstrip(".").lower()
+  return t if t in ("cad", "mq", "ml", "kg", "h") else "a corpo"
+with open(os.path.join(os.path.dirname(__file__), 'dati', 'voci_tipo.json'), encoding='utf-8') as _f:
+  _voci_tipo = json.load(_f)
+libreria["catalogoComputo"] = [
+  {"cod": v["cod"], "area": v["area"], "descrizione": v["descrizione"], "um": _um(v["um"]),
+   "tipi": _TIPI_AREA[v["cod"][0]], **({"suRichiesta": True} if v["cod"] in _SU_RICHIESTA else {})}
+  for v in _voci_tipo]
+
 out = os.path.join(os.path.dirname(__file__), '..', 'src', 'data', 'roa-dati.json')
 with open(out, 'w', encoding='utf-8') as f:
     json.dump(libreria, f, ensure_ascii=False, indent=2)

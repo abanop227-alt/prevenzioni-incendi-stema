@@ -74,12 +74,27 @@ export interface TestiFissi {
   chiusura: string;
 }
 
+/** Voce tipo del computo metrico (catalogo delle ROA): senza prezzi, si completa nella riga del computo. */
+export interface VoceCatalogoComputo {
+  cod: string;
+  /** area, es. "B. Porte, portoni e dispositivi di esodo" */
+  area: string;
+  descrizione: string;
+  um: string;
+  /** famiglie di attività a cui si propone (74, 75, 77) */
+  tipi: string[];
+  /** poche occorrenze: da usare solo se richiesta dal progetto */
+  suRichiesta?: boolean;
+}
+
 export interface Catalogo {
   versione: 2;
   attivita: AttivitaCatalogo[];
   famiglie: FamigliaCatalogo[];
   umOptions: string[];
   lavorazioniComuni: Lavorazione[];
+  /** voci tipo del computo, raggruppate per area; assente nelle librerie caricate dall'utente più vecchie */
+  catalogoComputo?: VoceCatalogoComputo[];
   cartelliSuggeriti: string[];
   notaBeneSuggerimenti: string[];
   testi: TestiFissi;

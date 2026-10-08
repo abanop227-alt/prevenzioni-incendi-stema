@@ -1,0 +1,338 @@
+[
+ {
+  "cod": "A.01",
+  "area": "A. Opere generali di cantiere",
+  "descrizione": "Apprestamento di cantiere, copertura a protezione dell'impianto termico, formazione piani di lavoro e pulizia finale.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "A.02",
+  "area": "A. Opere generali di cantiere",
+  "descrizione": "Trasporto di materiali di qualsiasi natura all'esterno del fabbricato e conferimento alle PP.DD.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "A.03",
+  "area": "A. Opere generali di cantiere",
+  "descrizione": "Assistenze murarie per ripristini murature e tinteggiature a seguito delle lavorazioni eseguite (sostituzione porte, installazioni, chiusure).",
+  "um": "a corpo"
+ },
+ {
+  "cod": "A.04",
+  "area": "A. Opere generali di cantiere",
+  "descrizione": "Ripristini e tinteggiature delle aree oggetto di intervento.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "B.01",
+  "area": "B. Porte, portoni e dispositivi di esodo",
+  "descrizione": "Rimozione di porta non a norma / in ferro / ammalorata (indicare l'ubicazione: vano scala, corsello autorimessa, locale macchine ascensore, locale immondizia, locale contatori, centrale termica, piano cantinato), compresa rimozione dell'imbotte e assistenza muraria.",
+  "um": "cad."
+ },
+ {
+  "cod": "B.02",
+  "area": "B. Porte, portoni e dispositivi di esodo",
+  "descrizione": "Rimozione di portone tagliafuoco ammalorato o non conforme al progetto approvato.",
+  "um": "cad."
+ },
+ {
+  "cod": "B.03",
+  "area": "B. Porte, portoni e dispositivi di esodo",
+  "descrizione": "Fornitura e posa di porta tagliafuoco REI 30 (locali macchine ascensore, accesso al solaio) completa di dispositivo di autochiusura e assistenza muraria.",
+  "um": "cad."
+ },
+ {
+  "cod": "B.04",
+  "area": "B. Porte, portoni e dispositivi di esodo",
+  "descrizione": "Fornitura e posa di porta tagliafuoco REI/EI 60 (accessi ai locali tecnici, deposito, piano cantinato) completa di autochiusura.",
+  "um": "cad."
+ },
+ {
+  "cod": "B.05",
+  "area": "B. Porte, portoni e dispositivi di esodo",
+  "descrizione": "Fornitura e posa di porta tagliafuoco REI 90 (corsello autorimessa, ripostigli, percorso di esodo) completa di autochiusura, maniglione antipanico, chiusura di sopraluce e spallette.",
+  "um": "cad."
+ },
+ {
+  "cod": "B.06",
+  "area": "B. Porte, portoni e dispositivi di esodo",
+  "descrizione": "Fornitura e posa di porta tagliafuoco REI 120 (comunicazione filtro-autorimessa, filtro-vano scala, centrale termica), completa di autochiusura e maniglione antipanico.",
+  "um": "cad."
+ },
+ {
+  "cod": "B.07",
+  "area": "B. Porte, portoni e dispositivi di esodo",
+  "descrizione": "Fornitura e posa di portone tagliafuoco o portone carraio REI 90/120, dotato di porta pedonale.",
+  "um": "cad."
+ },
+ {
+  "cod": "B.08",
+  "area": "B. Porte, portoni e dispositivi di esodo",
+  "descrizione": "Fornitura e posa di congegno di autochiusura su porta esistente, oppure ripristino del dispositivo di autochiusura.",
+  "um": "cad."
+ },
+ {
+  "cod": "B.09",
+  "area": "B. Porte, portoni e dispositivi di esodo",
+  "descrizione": "Fornitura e posa di maniglione antipanico su uscita di emergenza.",
+  "um": "cad."
+ },
+ {
+  "cod": "B.10",
+  "area": "B. Porte, portoni e dispositivi di esodo",
+  "descrizione": "Smontaggio e rimontaggio di porte con inversione del senso di apertura secondo il verso dell'esodo, compresa la regolazione.",
+  "um": "cad."
+ },
+ {
+  "cod": "B.11",
+  "area": "B. Porte, portoni e dispositivi di esodo",
+  "descrizione": "Fornitura e posa di porta grigliata in ferro con maniglione antipanico sulle uscite di emergenza (scale esterne).",
+  "um": "cad."
+ },
+ {
+  "cod": "C.01",
+  "area": "C. Compartimentazione e resistenza al fuoco",
+  "descrizione": "Chiusura di forometrie, fori e botole con materiali certificati REI/EI 90 o 120, per garantire la compartimentazione (autorimessa, centrale termica, locali confinanti).",
+  "um": "a corpo"
+ },
+ {
+  "cod": "C.02",
+  "area": "C. Compartimentazione e resistenza al fuoco",
+  "descrizione": "Sigillatura degli attraversamenti di tubazioni e cavi in pareti e solai con collari termoespandenti, sacchetti e/o schiume termoespandenti.",
+  "um": "a corpo / cad."
+ },
+ {
+  "cod": "C.03",
+  "area": "C. Compartimentazione e resistenza al fuoco",
+  "descrizione": "Rimozione di intonaco ammalorato e ripristino con prodotti certificati REI 90/120.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "C.04",
+  "area": "C. Compartimentazione e resistenza al fuoco",
+  "descrizione": "Riqualificazione antincendio REI/EI 120 di solaio o orizzontamento (locale caldaia, soletta c.a.) con lastre di calcio fibrosilicato in classe A1 o in gesso rivestito, complete di fissaggi e stuccatura.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "C.05",
+  "area": "C. Compartimentazione e resistenza al fuoco",
+  "descrizione": "Demolizione localizzata del calcestruzzo degradato, trattamento dei ferri e ripristino strutturale per garantire resistenza al fuoco R 90 (con pulitura delle aree interessate).",
+  "um": "a corpo"
+ },
+ {
+  "cod": "C.06",
+  "area": "C. Compartimentazione e resistenza al fuoco",
+  "descrizione": "Chiusura di sopraluce e spallette di porte REI da installare, con muratura o materiali di classe adeguata (almeno REI 60/90).",
+  "um": "a corpo"
+ },
+ {
+  "cod": "C.07",
+  "area": "C. Compartimentazione e resistenza al fuoco",
+  "descrizione": "Rimozione di finestre, infissi, inferriate o elementi non conformi e chiusura con materiale certificato REI 90/120.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "C.08",
+  "area": "C. Compartimentazione e resistenza al fuoco",
+  "descrizione": "Compartimentazione di cabina e quadro generale con pareti e porte REI 90.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "C.09",
+  "area": "C. Compartimentazione e resistenza al fuoco",
+  "descrizione": "Rivestimento REI 120 della tubazione gas o compartimentazione della canna fumaria nei locali confinanti.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "D.01",
+  "area": "D. Filtri a prova di fumo",
+  "descrizione": "Realizzazione di pareti in muratura REI 90 o 120 per separare il filtro dal comparto, comprese chiusure di sopraluce e spallette (come da progetto approvato).",
+  "um": "a corpo / mq"
+ },
+ {
+  "cod": "D.02",
+  "area": "D. Filtri a prova di fumo",
+  "descrizione": "Fornitura e posa di sistema di aerazione del filtro a prova di fumo tramite camino, con condotto, pezzi speciali, staffaggi, griglie e bocchette.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "D.03",
+  "area": "D. Filtri a prova di fumo",
+  "descrizione": "Installazione di punti luce di emergenza e segnaletica di sicurezza all'interno del filtro.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "D.04",
+  "area": "D. Filtri a prova di fumo",
+  "descrizione": "Rimozione di ostruzioni dell'aerazione del filtro.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "E.01",
+  "area": "E. Aerazione vani scala e locali macchine ascensore",
+  "descrizione": "Rimozione di vetrata o di vetri di aerazione (vano scala, locale macchine ascensore) fino a ottenere la superficie di aerazione prescritta (es. non inferiore a 1 mq).",
+  "um": "a corpo / cad."
+ },
+ {
+  "cod": "E.02",
+  "area": "E. Aerazione vani scala e locali macchine ascensore",
+  "descrizione": "Fornitura e posa di alette in lamiera o griglia antincendio per l'aerazione del vano scala e del locale macchine ascensore, compresa assistenza muraria.",
+  "um": "a corpo / cad."
+ },
+ {
+  "cod": "E.03",
+  "area": "E. Aerazione vani scala e locali macchine ascensore",
+  "descrizione": "Rimozione di griglia di aerazione del locale macchine ascensore non conforme.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "E.04",
+  "area": "E. Aerazione vani scala e locali macchine ascensore",
+  "descrizione": "Taglio e rifinitura di finestra per aerazione permanente.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "E.05",
+  "area": "E. Aerazione vani scala e locali macchine ascensore",
+  "descrizione": "Uscita del serramentista per verifica dell'apertura delle lamelle di aerazione in vetro (eventuali interventi successivi da quantificare).",
+  "um": "cad."
+ },
+ {
+  "cod": "F.01",
+  "area": "F. Centrale termica",
+  "descrizione": "Fornitura e posa in opera di pulsante di sgancio di emergenza in scatola isolante rossa IP65, azionabile con rottura del vetro di protezione.",
+  "um": "cad."
+ },
+ {
+  "cod": "F.02",
+  "area": "F. Centrale termica",
+  "descrizione": "Segnalazione luminosa a corredo del pulsante di sgancio.",
+  "um": "cad."
+ },
+ {
+  "cod": "F.03",
+  "area": "F. Centrale termica",
+  "descrizione": "Fornitura e installazione di linea in PVC dalla distribuzione principale al pulsante, con assistenza muraria per installazione e tracciamento.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "F.04",
+  "area": "F. Centrale termica",
+  "descrizione": "Rimozione del pulsante di sgancio non idoneo.",
+  "um": "cad."
+ },
+ {
+  "cod": "F.05",
+  "area": "F. Centrale termica",
+  "descrizione": "Tinteggiatura o verniciatura gialla della linea gas, dal contatore al bruciatore.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "F.06",
+  "area": "F. Centrale termica",
+  "descrizione": "Rimozione della ex valvola di intercettazione del gasolio e fornitura di vetro safe crash con cartellonistica per la valvola di intercettazione.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "F.07",
+  "area": "F. Centrale termica",
+  "descrizione": "Realizzazione di filtro nell'intercapedine della centrale termica con caratteristiche di resistenza al fuoco REI.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "F.08",
+  "area": "F. Centrale termica",
+  "descrizione": "Chiusura dei fori nella muratura tra centrale termica e locali confinanti, ripristino di muratura in centrale termica e disimpegno.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "G.01",
+  "area": "G. Autorimessa e cantine",
+  "descrizione": "Sostituzione delle porte esistenti lungo il corsello con nuove porte REI 90 complete di autochiusura e accessori a norma (vedi B.05).",
+  "um": "cad."
+ },
+ {
+  "cod": "G.02",
+  "area": "G. Autorimessa e cantine",
+  "descrizione": "Chiusura delle aperture non conformi nel corsello con elementi REI 90 per mantenere la compartimentazione.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "G.03",
+  "area": "G. Autorimessa e cantine",
+  "descrizione": "Realizzazione di sistema di illuminazione di emergenza a servizio dell'autorimessa.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "G.04",
+  "area": "G. Autorimessa e cantine",
+  "descrizione": "Realizzazione di attacchi di mandata per motopompa VV.F. in prossimità degli accessi, in cassette safe crash.",
+  "um": "cad."
+ },
+ {
+  "cod": "G.05",
+  "area": "G. Autorimessa e cantine",
+  "descrizione": "Realizzazione di scala (sulla rampa carraia o in ferro dal piano interrato al piano rialzato) per il collegamento di uscite di sicurezza.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "G.06",
+  "area": "G. Autorimessa e cantine",
+  "descrizione": "Chiusura e muratura REI 90 dell'accesso non conforme alle cantine dal corsello; ove previsto dal progetto, nuovo corridoio di distribuzione REI 90 (con demolizione del locale immondizia e nuovo varco).",
+  "um": "a corpo"
+ },
+ {
+  "cod": "G.07",
+  "area": "G. Autorimessa e cantine",
+  "descrizione": "Rimozione di lastre in plexiglass e di elementi non conformi nell'autorimessa.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "H.01",
+  "area": "H. Presidi antincendio e segnaletica",
+  "descrizione": "Fornitura e posa di nuova cartellonistica di sicurezza (vie d'esodo, presidi, locali tecnici).",
+  "um": "cad."
+ },
+ {
+  "cod": "H.02",
+  "area": "H. Presidi antincendio e segnaletica",
+  "descrizione": "Fornitura e posa di estintore a polvere da 6 kg (34A 233BC) con gancio a muro e cartellonistica.",
+  "um": "cad."
+ },
+ {
+  "cod": "H.03",
+  "area": "H. Presidi antincendio e segnaletica",
+  "descrizione": "Rimozione di estintori scaduti o non idonei.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "H.04",
+  "area": "H. Presidi antincendio e segnaletica",
+  "descrizione": "Installazione di idrante completo di cassetta con vetro safe crash, manichetta, lancia, cartellonistica e cartellino di manutenzione, collegato all'impianto esistente.",
+  "um": "cad."
+ },
+ {
+  "cod": "H.05",
+  "area": "H. Presidi antincendio e segnaletica",
+  "descrizione": "Rimozione di idranti o cassette non conformi, con relativa cartellonistica, e posa di tappo UNI 45.",
+  "um": "a corpo"
+ },
+ {
+  "cod": "H.06",
+  "area": "H. Presidi antincendio e segnaletica",
+  "descrizione": "Installazione di vetro safe crash su cassetta o idrante danneggiato.",
+  "um": "cad."
+ },
+ {
+  "cod": "H.07",
+  "area": "H. Presidi antincendio e segnaletica",
+  "descrizione": "Progetto e dimensionamento dell'impianto idrico antincendio per carenza di pressione (solo se previsto).",
+  "um": "a corpo"
+ },
+ {
+  "cod": "H.08",
+  "area": "H. Presidi antincendio e segnaletica",
+  "descrizione": "Installazione di impianto IRAI (solo se previsto).",
+  "um": "a corpo"
+ }
+]

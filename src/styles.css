@@ -1019,8 +1019,21 @@ textarea:focus {
   padding-top: 12px;
   color: var(--muto);
 }
-.escluse {
+.escluse,
+.catalogo-computo {
   margin: 6px 0;
+}
+.catalogo-computo summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.catalogo-area {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0;
 }
 .escluse summary {
   min-height: 44px;

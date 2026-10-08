@@ -76,3 +76,9 @@ con una libreria neutra o con la loro.
   senza vedere la cartella. L'indice non è mai nel repository del codice.
 - I moduli rimasti in `.doc` si convertono con `scripts/archivio/converti_moduli_doc.ps1` (richiede Word): le copie `.docx` vanno in
   `_AGGIORNAMENTI\Moduli convertiti\<amministratore>\<cartella pratica>` e gli originali non si toccano.
+
+
+## Libreria voci e catalogo del computo
+- La libreria delle frasi si genera da `scripts/libreria.py` (`python3 scripts/libreria.py` riscrive `src/data/roa-dati.json`): si modifica lo script, non il JSON.
+- Le voci con lo stesso `gruppoEsclusivo` nella stessa sezione si escludono a vicenda (es. esito della prova idranti, potenzialità, aerazione presente/assente).
+- **Catalogo del computo**: 56 voci tipo delle ROA 2024-2026 (codice, area A-H, descrizione, U.M., nessun prezzo) in `scripts/dati/voci_tipo.json`. Nel passo "Riepilogo", "Aggiungi dal catalogo del computo" le propone per tipo di attività; la riga entra nel computo senza prezzo e la descrizione si completa (ubicazione, classe REI, dimensioni).
