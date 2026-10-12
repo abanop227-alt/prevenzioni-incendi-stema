@@ -478,10 +478,13 @@ libreria = {
   "attivita": [
     {"codice": "74.1.A", "descrizione": "Impianti per la produzione di calore alimentati a combustibile solido, liquido o gassoso con potenzialità superiore a 116 kW (fino a 350 kW)"},
     {"codice": "74.2.B", "descrizione": "Impianti per la produzione di calore alimentati a combustibile solido, liquido o gassoso con potenzialità superiore a 350 kW (fino a 700 kW)"},
+    {"codice": "74.3.C", "descrizione": "Impianti per la produzione di calore alimentati a combustibile solido, liquido o gassoso con potenzialità superiore a 700 kW"},
     {"codice": "75.1.A", "descrizione": "Autorimesse pubbliche e private, parcheggi pluriplano e meccanizzati, con superficie compresa tra 300 mq e 1.000 mq"},
     {"codice": "75.2.B", "descrizione": "Autorimesse pubbliche e private, parcheggi pluriplano e meccanizzati, con superficie compresa tra 1.000 mq e 3.000 mq"},
     {"codice": "75.4.C", "descrizione": "Autorimesse pubbliche e private, parcheggi pluriplano e meccanizzati, con superficie superiore a 3.000 mq"},
     {"codice": "77.1.A", "descrizione": "Edifici destinati ad uso civile, con altezza antincendio superiore a 24 m. (fino a 32 m)"},
+    {"codice": "77.2.B", "descrizione": "Edifici destinati ad uso civile, con altezza antincendio superiore a 32 m. (fino a 54 m)"},
+    {"codice": "77.3.C", "descrizione": "Edifici destinati ad uso civile, con altezza antincendio superiore a 54 m. (fino a 80 m)"},
   ],
   "famiglie": [f74, f75, f77],
   "umOptions": ["a corpo", "cad", "mq", "ml", "kg", "h"],

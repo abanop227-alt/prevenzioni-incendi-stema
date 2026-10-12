@@ -14,3 +14,6 @@ export function dataItaliana(iso: string): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
   return m ? `${m[3]}/${m[2]}/${m[1]}` : iso || '';
 }
+
+/** "CONDOMINIO CARAVAGGIO" → "CARAVAGGIO": il nome come nell'Excel, senza la parola "Condominio" che i titoli aggiungono da soli. */
+export const nomeSenzaCondominio = (nome: string) => nome.replace(/^\s*(condominio|cond\.?)\s+/i, '').trim();

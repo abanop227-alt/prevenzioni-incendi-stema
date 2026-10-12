@@ -3,7 +3,7 @@
 // compilare contengono {{chiave}}; le caselle di controllo hanno w:val="{{chiave}}" (1/0).
 import JSZip from 'jszip';
 import type { DatiModuli, IndirizzoModulo, ProfessionistaVvf, Sopralluogo, Tecnico } from './types';
-import { dataItaliana } from './util';
+import { dataItaliana, nomeSenzaCondominio } from './util';
 
 export type Valori = Record<string, string | boolean>;
 
@@ -98,7 +98,7 @@ export function moduliPredefiniti(s: Sopralluogo): DatiModuli {
       email: '',
       pec: '',
     },
-    ragione: `CONDOMINIO ${[c.nome.trim(), c.indirizzo.trim()].filter(Boolean).join(' – ')}${cf ? ` – C.F: ${cf}` : ''}`.trim(),
+    ragione: `CONDOMINIO ${[nomeSenzaCondominio(c.nome), c.indirizzo.trim()].filter(Boolean).join(' – ')}${cf ? ` – C.F: ${cf}` : ''}`.trim(),
     sede: { indirizzo: imm.indirizzo, civico: imm.civico, cap: c.cap, comune: c.comune.toUpperCase(), provincia: 'MI', telefono: c.telefono },
     attivita: {
       ...vuotoIndirizzo(),

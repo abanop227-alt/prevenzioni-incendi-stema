@@ -139,6 +139,8 @@ export interface DatiCondominio {
   indirizzoAmministrazione: string;
   telefono: string;
   commessa: string;
+  /** amministrazione scelta dall'elenco stabili (es. "PASQUALI"): serve a ricordarne i dati; vuoto se scritta a mano */
+  amministrazioneChiave?: string;
 }
 
 export interface RigaComputo {

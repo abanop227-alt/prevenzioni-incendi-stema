@@ -203,10 +203,16 @@ function stabiliDaFoglio(f: Foglio, nomeFile: string): Stabile[] {
   return out;
 }
 
+/** L'elenco rinnovi (colonna AMMINISTRATORI, SCADENZA…) ha un'altra struttura: si importa da "Importa elenco rinnovi", non come elenco stabili. */
+export const eElencoRinnovi = (origine: string) => /rinnovi/i.test(origine);
+
 /** Legge un elenco stabili (tutti i fogli con intestazione riconoscibile, esclusi quelli "PERSI"). */
 export async function leggiStabiliXlsx(dati: ArrayBuffer | Uint8Array | Blob, nomeFile = ''): Promise<Stabile[]> {
   const fogli = (await leggiFogli(dati)).filter((f) => !/persi/i.test(f.nome));
   const conIntestazione = fogli.filter((f) => colonne(f.righe));
+  if (conIntestazione.length && conIntestazione.every((f) => [...(f.righe.get(colonne(f.righe)!.riga)?.values() ?? [])].some((t) => /^amministrator/i.test(t)))) {
+    throw new Error('Questo è l’elenco rinnovi: importalo da “Importa elenco rinnovi (Excel)”, non come elenco stabili.');
+  }
   if (!conIntestazione.length) throw new Error('Non riconosco l’elenco: cerco una riga di intestazione con “CIV” e “CAP”.');
   const stabili = conIntestazione.flatMap((f) => stabiliDaFoglio(f, nomeFile));
   // i fogli senza titolo (es. un secondo elenco dello stesso cliente) ereditano l'amministrazione del primo
@@ -217,7 +223,7 @@ export async function leggiStabiliXlsx(dati: ArrayBuffer | Uint8Array | Blob, no
 // ---------------- uso nel sopralluogo ----------------
 
 /** "VIA DEGLI ODESCALCHI" → "Via Degli Odescalchi" (numeri romani e sigle con punto restano maiuscoli). */
-function iniziali(t: string): string {
+export function iniziali(t: string): string {
   return t
     .toLowerCase()
     .split(/(\s+)/)
@@ -237,6 +243,7 @@ export function cercaStabili(elenco: Stabile[], testo: string, limite = 8): Stab
   const parole = senzaAccenti(testo).split(/[\s,]+/).filter(Boolean);
   if (!parole.length) return [];
   return elenco
+    .filter((s) => !eElencoRinnovi(s.origine))
     .filter((s) => {
       const pagliaio = senzaAccenti([s.nome, s.tipoVia, s.via, s.civico, s.comune, s.amministrazione, s.cap].join(' '));
       return parole.every((p) => pagliaio.includes(p));

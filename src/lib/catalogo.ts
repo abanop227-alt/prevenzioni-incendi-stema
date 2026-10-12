@@ -15,7 +15,7 @@ import type {
   VoceCatalogoComputo,
   VoceIstanza,
 } from './types';
-import { dataItaliana, nuovoId, oggiISO } from './util';
+import { dataItaliana, nomeSenzaCondominio, nuovoId, oggiISO } from './util';
 
 // ======================= validazione libreria =======================
 
@@ -569,13 +569,13 @@ export function committente(s: Sopralluogo): string {
   const c = s.condominio;
   if (c.committente.trim()) return c.committente.trim();
   const luogo = [c.cap.trim(), c.comune.trim()].filter(Boolean).join(' ');
-  const parti = [c.nome.trim(), c.indirizzo.trim(), luogo].filter(Boolean);
+  const parti = [nomeSenzaCondominio(c.nome), c.indirizzo.trim(), luogo].filter(Boolean);
   return parti.length ? `Condominio ${parti.join(' – ')}` : '';
 }
 
 export function titoloBreve(s: Sopralluogo): string {
   const c = s.condominio;
-  return [c.nome && `Condominio ${c.nome}`, c.indirizzo, c.comune].filter(Boolean).join(' – ') || c.committente || '';
+  return [c.nome && `Condominio ${nomeSenzaCondominio(c.nome)}`, c.indirizzo, c.comune].filter(Boolean).join(' – ') || c.committente || '';
 }
 
 export const tecnicoVuoto: Tecnico = {

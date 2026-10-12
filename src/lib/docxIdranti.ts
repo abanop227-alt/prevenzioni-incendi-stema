@@ -24,14 +24,14 @@ import {
 import { formatPortata, valutaProva, type ValutazioneProva } from './idranti';
 import { formatNumero } from './numeri';
 import type { Catalogo, ProvaIdranti, Sopralluogo, Tecnico } from './types';
-import { dataItaliana } from './util';
+import { dataItaliana, nomeSenzaCondominio } from './util';
 
 const S = AlignmentType.LEFT;
 
 function frontespizioIdranti(s: Sopralluogo): Paragraph[] {
   const c = s.condominio;
   const indirizzo = [c.indirizzo.trim(), c.comune.trim()].filter(Boolean).join(' – ').toUpperCase() || '[INDIRIZZO – COMUNE]';
-  const testo = ['VERIFICA FUNZIONALITA’ RETE IDRANTI', `CONDOMINIO${c.nome.trim() ? ' ' + c.nome.trim().toUpperCase() : ''}`, indirizzo].join(' ');
+  const testo = ['VERIFICA FUNZIONALITA’ RETE IDRANTI', `CONDOMINIO${nomeSenzaCondominio(c.nome) ? ' ' + nomeSenzaCondominio(c.nome).toUpperCase() : ''}`, indirizzo].join(' ');
   return [paragrafiTitolo(testo)];
 }
 

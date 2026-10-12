@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { elencaStabili } from '../lib/db';
-import { cercaStabili, indirizzoStabile, type Stabile } from '../lib/stabili';
+import { cercaStabili, eElencoRinnovi, indirizzoStabile, type Stabile } from '../lib/stabili';
 
 interface Props {
-  onScegli: (s: Stabile) => void;
+  onScegli: (s: Stabile) => void | Promise<void>;
 }
 
 /** Cerca tra gli stabili importati dagli Excel e precompila i dati del condominio. */
@@ -17,10 +17,12 @@ export default function RicercaStabile({ onScegli }: Props) {
     return elenco ? <p className="muto piccolo">Nessun elenco stabili importato: puoi farlo dalla schermata iniziale (sezione “Stabili”).</p> : null;
   }
   const risultati = cercaStabili(elenco, testo);
+  // l'elenco rinnovi (importato per errore come stabili) non ha nomi di condomini
+  const quanti = elenco.filter((s) => !eElencoRinnovi(s.origine)).length;
   return (
     <div className="card ricerca-stabile">
       <label className="campo">
-        <span className="campo-etichetta">Cerca tra i tuoi stabili ({elenco.length})</span>
+        <span className="campo-etichetta">Cerca tra i tuoi stabili ({quanti})</span>
         <input type="search" value={testo} onChange={(e) => setTesto(e.target.value)} placeholder="es. Aosta 21, Pasquali, Settimo…" autoComplete="off" />
       </label>
       {testo.trim() && !risultati.length && <p className="muto piccolo">Nessuno stabile trovato.</p>}

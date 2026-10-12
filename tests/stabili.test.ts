@@ -1,7 +1,9 @@
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
 import { applicaStabile } from '../src/components/Step2Condominio';
+import { committente, titoloBreve } from '../src/lib/catalogo';
 import { cercaStabili, indirizzoStabile, leggiStabiliXlsx } from '../src/lib/stabili';
+import { nomeSenzaCondominio } from '../src/lib/util';
 import { cat, sopralluogoCon } from './aiuti';
 
 type Cella = [string, string | number];
@@ -100,9 +102,41 @@ describe('precompilazione da uno stabile', () => {
     const s = sopralluogoCon(['77.1.A']);
     s.condominio.cap = '99999';
     const x = applicaStabile(s, caravaggio, cat);
-    expect(x.condominio).toMatchObject({ nome: 'CARAVAGGIO', indirizzo: 'Via Aosta, 21', cap: '20155', comune: 'MILANO', codiceFiscale: '95710710153', pressoAmministrazione: 'Amministrazione ROSSI' });
+    expect(x.condominio).toMatchObject({ nome: 'CONDOMINIO CARAVAGGIO', indirizzo: 'Via Aosta, 21', cap: '20155', comune: 'MILANO', codiceFiscale: '95710710153', pressoAmministrazione: 'Amministrazione ROSSI' });
     expect(x.attivita.map((a) => a.codice)).toEqual(['77.1.A', '75.2.B']);
     // una seconda applicazione non duplica le attività
     expect(applicaStabile(x, caravaggio, cat).attivita).toHaveLength(2);
+  });
+
+  it('il nome è quello dell’Excel e nei titoli non si ripete "Condominio"', async () => {
+    const [caravaggio] = await leggiStabiliXlsx(await esempio());
+    const x = applicaStabile(sopralluogoCon(['77.1.A']), caravaggio, cat);
+    expect(x.condominio.nome).toBe('CONDOMINIO CARAVAGGIO');
+    expect(committente(x)).toBe('Condominio CARAVAGGIO – Via Aosta, 21 – 20155 MILANO');
+    expect(titoloBreve(x)).toBe('Condominio CARAVAGGIO – Via Aosta, 21 – MILANO');
+    expect(nomeSenzaCondominio('Cond. Rada')).toBe('Rada');
+    expect(nomeSenzaCondominio('RADA')).toBe('RADA');
+  });
+
+  it('compila c/o, indirizzo e telefono dell’amministrazione dai dati ricordati, senza toccare ciò che c’è già', async () => {
+    const [caravaggio] = await leggiStabiliXlsx(await esempio());
+    const ufficio = { presso: 'Amministrazione Stabili Rossi Mario', indirizzo: 'Via Emanuele Filiberto, 6 – 20149 Milano', telefono: '02/347514' };
+    const x = applicaStabile(sopralluogoCon(['77.1.A']), caravaggio, cat, ufficio);
+    expect(x.condominio).toMatchObject({ ...{ pressoAmministrazione: ufficio.presso, indirizzoAmministrazione: ufficio.indirizzo, telefono: ufficio.telefono }, amministrazioneChiave: 'ROSSI' });
+    // un valore già scritto dall'utente resta
+    const s = sopralluogoCon(['77.1.A']);
+    s.condominio.telefono = '333';
+    expect(applicaStabile(s, caravaggio, cat, ufficio).condominio.telefono).toBe('333');
+    // senza dati ricordati: come prima, "Amministrazione <nome dell'elenco>"
+    expect(applicaStabile(sopralluogoCon(['77.1.A']), caravaggio, cat).condominio.pressoAmministrazione).toBe('Amministrazione ROSSI');
+  });
+
+  it('l’elenco rinnovi non si importa come elenco stabili e non compare nella ricerca', async () => {
+    const rinnovi = await xlsx([
+      { nome: 'Foglio1', righe: { 1: [['A', 'SCADENZA'], ['B', 'AMMINISTRATORI'], ['C', 'VIA/V.LE/P.ZZA/P.LE'], ['D', 'CIVICO'], ['E', 'CAP']], 2: [['A', 'SCADUTI'], ['B', 'BONAFFINI'], ['C', 'FACCIOLI'], ['D', '4'], ['E', '20152']] } },
+    ]);
+    await expect(leggiStabiliXlsx(rinnovi, 'ELENCO RINNOVI.xlsx')).rejects.toThrow(/elenco rinnovi/i);
+    const finto = { id: 'x', nome: 'SCADUTI', tipoVia: '', via: 'FACCIOLI', civico: '4', cap: '', comune: '', contatto: '', telefono: '', nop: '', kw: '', attivita: [], progetto: '', scadenza: '', codiceFiscale: '', note: '', amministrazione: '', origine: 'ELENCO_RINNOVI.xlsx' };
+    expect(cercaStabili([finto], 'faccioli')).toEqual([]);
   });
 });

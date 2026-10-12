@@ -10,6 +10,10 @@
       "descrizione": "Impianti per la produzione di calore alimentati a combustibile solido, liquido o gassoso con potenzialità superiore a 350 kW (fino a 700 kW)"
     },
     {
+      "codice": "74.3.C",
+      "descrizione": "Impianti per la produzione di calore alimentati a combustibile solido, liquido o gassoso con potenzialità superiore a 700 kW"
+    },
+    {
       "codice": "75.1.A",
       "descrizione": "Autorimesse pubbliche e private, parcheggi pluriplano e meccanizzati, con superficie compresa tra 300 mq e 1.000 mq"
     },
@@ -24,6 +28,14 @@
     {
       "codice": "77.1.A",
       "descrizione": "Edifici destinati ad uso civile, con altezza antincendio superiore a 24 m. (fino a 32 m)"
+    },
+    {
+      "codice": "77.2.B",
+      "descrizione": "Edifici destinati ad uso civile, con altezza antincendio superiore a 32 m. (fino a 54 m)"
+    },
+    {
+      "codice": "77.3.C",
+      "descrizione": "Edifici destinati ad uso civile, con altezza antincendio superiore a 54 m. (fino a 80 m)"
     }
   ],
   "famiglie": [

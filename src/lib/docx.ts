@@ -41,7 +41,7 @@ import { STUDIO } from '../config/studio';
 import { totaleComplessivo, zoneComputo } from './computo';
 import { formatNumero, formatQuantita, parseNumero } from './numeri';
 import type { Catalogo, Sopralluogo, Tecnico } from './types';
-import { dataItaliana } from './util';
+import { dataItaliana, nomeSenzaCondominio } from './util';
 
 export interface FotoDati {
   data: Uint8Array;
@@ -396,7 +396,7 @@ function frontespizio(s: Sopralluogo): Paragraph[] {
   const testo = [
     'VERIFICA DELLO STATO DEI LUOGHI PER L’ADEGUAMENTO DELLO STABILE',
     ...attivita,
-    `RELATIVAMENTE AL CONDOMINIO${c.nome.trim() ? ' ' + c.nome.trim().toUpperCase() : ''}`,
+    `RELATIVAMENTE AL CONDOMINIO${nomeSenzaCondominio(c.nome) ? ' ' + nomeSenzaCondominio(c.nome).toUpperCase() : ''}`,
     indirizzo,
     'AI FINI DELLA PREVENZIONE INCENDI.',
   ].join(' ');

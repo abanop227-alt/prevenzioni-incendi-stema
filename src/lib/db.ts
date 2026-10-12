@@ -213,6 +213,19 @@ export async function eliminaStabiliDi(origine: string): Promise<void> {
 // ---- rubrica degli amministratori (titolare dei moduli VV.F., solo su questo dispositivo) ----
 
 type Titolare = DatiModuli['titolare'];
+
+/** Dati di studio dell'amministrazione, ricordati da quando si compila un sopralluogo (c/o, indirizzo, telefono). */
+export interface UfficioAmministrazione {
+  presso: string;
+  indirizzo: string;
+  telefono: string;
+}
+type VoceRubrica = Titolare & { ufficio?: UfficioAmministrazione };
+
+const titolareVuoto = (): Titolare => ({
+  cognome: '', nome: '', indirizzo: '', civico: '', cap: '', comune: '', provincia: 'MI', telefono: '', codiceFiscale: '', qualifica: 'AMMINISTRATORE PRO TEMPORE', email: '', pec: '',
+});
+
 const chiaveAmministratore = (nome: string) => nome.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
 
 /** Chiave canonica di un'amministrazione: il nome breve ("Amministrazione PASQUALI" e la cartella "PASQUALI" → "alias:pasquali"). */
@@ -221,21 +234,55 @@ const chiaveCanonica = (nome: string) => {
   return breve ? `alias:${breve}` : '';
 };
 
-export async function leggiAmministratore(nome: string): Promise<Titolare | undefined> {
-  const r = (await (await db()).get('impostazioni', 'amministratori')) as Record<string, Titolare> | undefined;
+async function voceRubrica(nome: string): Promise<{ k: string; voce: VoceRubrica | undefined; rubrica: Record<string, VoceRubrica> }> {
+  const rubrica = ((await (await db()).get('impostazioni', 'amministratori')) as Record<string, VoceRubrica> | undefined) ?? {};
   // prima la chiave canonica, poi quella per nome intero (voci ricordate dalle versioni precedenti)
-  for (const k of [chiaveCanonica(nome), chiaveAmministratore(nome)]) if (k && r?.[k]) return r[k];
-  return undefined;
+  const trovata = [chiaveCanonica(nome), chiaveAmministratore(nome)].find((k) => k && rubrica[k]);
+  const k = trovata ?? (chiaveCanonica(nome) || chiaveAmministratore(nome));
+  return { k, voce: rubrica[k], rubrica };
+}
+
+export async function leggiAmministratore(nome: string): Promise<Titolare | undefined> {
+  const { voce } = await voceRubrica(nome);
+  if (!voce) return undefined;
+  const { ufficio: _ufficio, ...titolare } = voce;
+  return titolare;
 }
 
 /** Ricorda il titolare per l'amministrazione. Con `soloSeMancante` non sostituisce un titolare già ricordato (importazione dall'archivio). */
 export async function salvaAmministratore(nome: string, titolare: Titolare, soloSeMancante = false): Promise<void> {
-  const k = chiaveCanonica(nome) || chiaveAmministratore(nome);
-  if (!k || !titolare.cognome.trim()) return;
-  const d = await db();
-  const r = ((await d.get('impostazioni', 'amministratori')) as Record<string, Titolare> | undefined) ?? {};
-  if (soloSeMancante && (r[k] || r[chiaveAmministratore(nome)])) return;
-  await d.put('impostazioni', { ...r, [k]: titolare }, 'amministratori');
+  if (!titolare.cognome.trim()) return;
+  const { k, voce, rubrica } = await voceRubrica(nome);
+  if (!k) return;
+  // una voce con i soli dati di studio (senza titolare) non conta come "già ricordato"
+  if (soloSeMancante && voce?.cognome.trim()) return;
+  await (await db()).put('impostazioni', { ...rubrica, [k]: { ...titolare, ...(voce?.ufficio ? { ufficio: voce.ufficio } : {}) } }, 'amministratori');
+  await segnaModificaDati('amministratori');
+}
+
+/**
+ * Dati di studio dell'amministrazione per precompilare ROA, SCIA e rinnovo quando si sceglie il condominio:
+ * quelli ricordati dall'ultimo sopralluogo; in mancanza, indirizzo e telefono del titolare letto dai moduli in archivio.
+ */
+export async function leggiUfficioAmministrazione(nome: string): Promise<UfficioAmministrazione | undefined> {
+  const { voce } = await voceRubrica(nome);
+  if (!voce) return undefined;
+  if (voce.ufficio && (voce.ufficio.presso || voce.ufficio.indirizzo || voce.ufficio.telefono)) return voce.ufficio;
+  if (!voce.indirizzo.trim() && !voce.telefono.trim()) return undefined;
+  const via = [voce.indirizzo.trim(), voce.civico.trim()].filter(Boolean).join(', ');
+  const luogo = [voce.cap.trim(), voce.comune.trim()].filter(Boolean).join(' ');
+  return { presso: '', indirizzo: [via, luogo].filter(Boolean).join(' – '), telefono: voce.telefono.trim() };
+}
+
+/** Ricorda c/o, indirizzo e telefono dell'amministrazione, così alla prossima pratica si compilano da soli. */
+export async function salvaUfficioAmministrazione(nome: string, ufficio: UfficioAmministrazione): Promise<void> {
+  if (!ufficio.presso.trim() && !ufficio.indirizzo.trim() && !ufficio.telefono.trim()) return;
+  const { k, voce, rubrica } = await voceRubrica(nome);
+  if (!k) return;
+  const nuovo: UfficioAmministrazione = { presso: ufficio.presso.trim(), indirizzo: ufficio.indirizzo.trim(), telefono: ufficio.telefono.trim() };
+  const attuale = voce?.ufficio;
+  if (attuale && attuale.presso === nuovo.presso && attuale.indirizzo === nuovo.indirizzo && attuale.telefono === nuovo.telefono) return;
+  await (await db()).put('impostazioni', { ...rubrica, [k]: { ...(voce ?? titolareVuoto()), ufficio: nuovo } }, 'amministratori');
   await segnaModificaDati('amministratori');
 }
 

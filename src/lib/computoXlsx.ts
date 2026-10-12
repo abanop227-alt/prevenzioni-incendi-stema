@@ -6,7 +6,7 @@ import JSZip from 'jszip';
 import { zoneComputo } from './computo';
 import { parseNumero } from './numeri';
 import type { Catalogo, Sopralluogo } from './types';
-import { dataItaliana } from './util';
+import { dataItaliana, nomeSenzaCondominio } from './util';
 
 const COL_CHIAVE = 'H';
 
@@ -48,7 +48,7 @@ export async function esportaComputoXlsx(s: Sopralluogo, catalogo: Catalogo): Pr
     return n;
   };
 
-  riga([testoCella(`A${n + 1}`, `COMPUTO METRICO – ${[c.nome && `Condominio ${c.nome}`, c.indirizzo, c.comune].filter(Boolean).join(' – ')}`, 2)], 22);
+  riga([testoCella(`A${n + 1}`, `COMPUTO METRICO – ${[c.nome && `Condominio ${nomeSenzaCondominio(c.nome)}`, c.indirizzo, c.comune].filter(Boolean).join(' – ')}`, 2)], 22);
   riga([testoCella(`A${n + 1}`, `Commessa ${c.commessa || '—'} · relazione del ${dataItaliana(c.dataRelazione)} · compilare solo la colonna “Prezzo € (unitario)”`)]);
   n++; // riga vuota
 

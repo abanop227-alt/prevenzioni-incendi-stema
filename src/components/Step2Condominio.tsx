@@ -1,5 +1,6 @@
+import { useEffect } from 'react';
 import { committente, nuovaAttivita } from '../lib/catalogo';
-import { eliminaFoto } from '../lib/db';
+import { eliminaFoto, leggiUfficioAmministrazione, salvaUfficioAmministrazione, type UfficioAmministrazione } from '../lib/db';
 import { indirizzoStabile, type Stabile } from '../lib/stabili';
 import type { Catalogo, DatiCondominio, Sopralluogo } from '../lib/types';
 import { Campo } from './Campo';
@@ -12,10 +13,13 @@ interface Props {
   aggiorna: (f: (s: Sopralluogo) => Sopralluogo) => void;
 }
 
-/** Precompila condominio, amministrazione, NOP e attività da uno stabile importato (non tocca ciò che è già compilato). */
-export function applicaStabile(x: Sopralluogo, st: Stabile, catalogo: Catalogo): Sopralluogo {
+/**
+ * Precompila condominio, amministrazione (c/o, indirizzo e telefono, ricordati dalle pratiche precedenti), NOP e attività
+ * da uno stabile importato. Il nome è quello dell'Excel. Non tocca ciò che è già compilato.
+ */
+export function applicaStabile(x: Sopralluogo, st: Stabile, catalogo: Catalogo, ufficio?: UfficioAmministrazione): Sopralluogo {
   const c = x.condominio;
-  const nome = st.nome.replace(/^condominio\s+/i, '');
+  const nome = st.nome.trim();
   const nuove = st.attivita.filter((cod) => !x.attivita.some((a) => a.codice === cod)).map((cod) => nuovaAttivita(catalogo, cod));
   return {
     ...x,
@@ -27,13 +31,16 @@ export function applicaStabile(x: Sopralluogo, st: Stabile, catalogo: Catalogo):
       cap: st.cap || c.cap,
       comune: st.comune || c.comune,
       codiceFiscale: st.codiceFiscale || c.codiceFiscale,
-      pressoAmministrazione: c.pressoAmministrazione || (st.amministrazione ? `Amministrazione ${st.amministrazione}` : ''),
+      pressoAmministrazione: c.pressoAmministrazione || ufficio?.presso || (st.amministrazione ? `Amministrazione ${st.amministrazione}` : ''),
+      indirizzoAmministrazione: c.indirizzoAmministrazione || ufficio?.indirizzo || '',
+      telefono: c.telefono || ufficio?.telefono || '',
+      amministrazioneChiave: st.amministrazione || c.amministrazioneChiave,
     },
     ...(x.pratica && /^\d{4,}$/.test(st.nop) && !x.pratica.nPraticaVvf ? { pratica: { ...x.pratica, nPraticaVvf: st.nop } } : {}),
   };
 }
 
-type Def = { k: keyof DatiCondominio; etichetta: string; tipo?: string; inputMode?: 'tel' | 'numeric'; aiuto?: string };
+type Def = { k: Exclude<keyof DatiCondominio, 'amministrazioneChiave'>; etichetta: string; tipo?: string; inputMode?: 'tel' | 'numeric'; aiuto?: string };
 
 const CONDOMINIO: Def[] = [
   { k: 'nome', etichetta: 'Nome condominio (facoltativo)', aiuto: 'es. “Rada”: nel titolo diventa “RELATIVAMENTE AL CONDOMINIO RADA”' },
@@ -54,6 +61,17 @@ const INCARICO: Def[] = [
 ];
 
 export default function Step2Condominio({ s, catalogo, aggiorna }: Props) {
+  const c = s.condominio;
+  // ricorda c/o, indirizzo e telefono dell'amministrazione: alla prossima pratica per lo stesso amministratore si compilano da soli
+  useEffect(() => {
+    const nome = c.amministrazioneChiave || c.pressoAmministrazione;
+    if (!nome.trim() || (!c.indirizzoAmministrazione.trim() && !c.telefono.trim())) return;
+    const t = setTimeout(() => {
+      salvaUfficioAmministrazione(nome, { presso: c.pressoAmministrazione, indirizzo: c.indirizzoAmministrazione, telefono: c.telefono }).catch(() => undefined);
+    }, 800);
+    return () => clearTimeout(t);
+  }, [c.amministrazioneChiave, c.pressoAmministrazione, c.indirizzoAmministrazione, c.telefono]);
+
   const campo = (c: Def) => (
     <Campo
       key={c.k}
@@ -69,7 +87,12 @@ export default function Step2Condominio({ s, catalogo, aggiorna }: Props) {
   return (
     <section>
       <h2 className="titolo-passo">Dati condominio</h2>
-      <RicercaStabile onScegli={(st) => aggiorna((x) => applicaStabile(x, st, catalogo))} />
+      <RicercaStabile
+        onScegli={async (st) => {
+          const ufficio = st.amministrazione ? await leggiUfficioAmministrazione(st.amministrazione).catch(() => undefined) : undefined;
+          aggiorna((x) => applicaStabile(x, st, catalogo, ufficio));
+        }}
+      />
       <div className="card">
         {CONDOMINIO.map(campo)}
         <Campo
@@ -81,7 +104,10 @@ export default function Step2Condominio({ s, catalogo, aggiorna }: Props) {
         />
       </div>
       <h3 className="titolo-sezione">Amministrazione</h3>
-      <div className="card">{AMMINISTRAZIONE.map(campo)}</div>
+      <div className="card">
+        {AMMINISTRAZIONE.map(campo)}
+        <p className="muto piccolo">Si ricordano per l’amministratore: alla prossima pratica, scegliendo un suo condominio, si compilano da soli.</p>
+      </div>
       <h3 className="titolo-sezione">Incarico</h3>
       <div className="card">
         {INCARICO.map(campo)}
