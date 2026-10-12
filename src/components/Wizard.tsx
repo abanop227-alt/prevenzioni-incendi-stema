@@ -3,8 +3,8 @@ import { migraSopralluogo, sincronizza, titoloBreve } from '../lib/catalogo';
 import { condividi, fileDaBlob, isMobile, puoCondividere, scarica } from '../lib/condividi';
 import { impostaAperto, programmaSync } from '../lib/autosync';
 import { leggiCartaIntestata, leggiFoto, leggiSopralluogo, leggiTecnico, salvaSopralluogo } from '../lib/db';
-import { praticaDi } from '../lib/pratiche';
-import type { Catalogo, Sopralluogo, TipoPratica } from '../lib/types';
+import { passiWizard, type IdPasso } from '../lib/passi';
+import type { Catalogo, Sopralluogo } from '../lib/types';
 import Step1Attivita from './Step1Attivita';
 import Step2Condominio from './Step2Condominio';
 import Step3Voci, { TabsAttivita, CARTELLI } from './Step3Voci';
@@ -14,7 +14,6 @@ import StepIdranti from './StepIdranti';
 import StepModuli from './StepModuli';
 import StepPratica from './StepPratica';
 
-type IdPasso = 'attivita' | 'condominio' | 'voci' | 'idranti' | 'riepilogo' | 'pratica' | 'moduli';
 const NOME_PASSO: Record<IdPasso, string> = {
   attivita: 'Attività',
   condominio: 'Condominio',
@@ -24,13 +23,6 @@ const NOME_PASSO: Record<IdPasso, string> = {
   pratica: 'Pratica',
   moduli: 'Moduli',
 };
-/** Passi del wizard per tipo di pratica. */
-const PASSI_TIPO: Record<TipoPratica, IdPasso[]> = {
-  roa: ['attivita', 'condominio', 'voci', 'idranti', 'riepilogo'],
-  rinnovo: ['attivita', 'condominio', 'pratica', 'idranti', 'moduli'],
-  scia: ['attivita', 'condominio', 'pratica', 'moduli'],
-};
-
 type StatoSalvataggio = 'salvato' | 'modificato' | 'errore';
 
 export interface DocGenerato {
@@ -183,7 +175,7 @@ export default function Wizard({ id, passo, catalogo, onPasso, onEsci }: Props) 
     );
   }
 
-  const passi = PASSI_TIPO[praticaDi(s).tipo];
+  const passi = passiWizard(s);
   const corrente: IdPasso = passi[Math.min(passo, passi.length - 1)];
   const ultimo = passo >= passi.length - 1;
 
