@@ -34,7 +34,7 @@ describe('dati di studio dell’amministrazione', () => {
 
   it('in mancanza di dati ricordati usa indirizzo e telefono del titolare letto dai moduli', async () => {
     await salvaAmministratore('Studio CERUTI', titolare({ cognome: 'CERUTI', indirizzo: 'VIA STRAMBIO GAETANO', civico: '34', cap: '20133', telefono: '02/70124253' }));
-    expect(await leggiUfficioAmministrazione('CERUTI')).toEqual({ presso: '', indirizzo: 'VIA STRAMBIO GAETANO, 34 – 20133 MILANO', telefono: '02/70124253' });
+    expect(await leggiUfficioAmministrazione('CERUTI')).toEqual({ presso: '', indirizzo: 'Via Strambio Gaetano, 34 – 20133 Milano', telefono: '02/70124253' });
     expect(Object.keys(await leggiRubricaAmministratori())).toContain('alias:ceruti');
   });
 });

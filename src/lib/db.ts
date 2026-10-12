@@ -2,7 +2,7 @@ import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 import { clienteDa, type Commessa } from './commesse';
 import type { IndiceModuli } from './moduliInArchivio';
 import type { RinnoviImportati } from './rinnovi';
-import type { Stabile } from './stabili';
+import { iniziali, type Stabile } from './stabili';
 import type { Catalogo, DatiModuli, FotoRecord, Sopralluogo, Tecnico } from './types';
 import { tecnicoVuoto } from './catalogo';
 import { nuovoId } from './util';
@@ -269,8 +269,8 @@ export async function leggiUfficioAmministrazione(nome: string): Promise<Ufficio
   if (!voce) return undefined;
   if (voce.ufficio && (voce.ufficio.presso || voce.ufficio.indirizzo || voce.ufficio.telefono)) return voce.ufficio;
   if (!voce.indirizzo.trim() && !voce.telefono.trim()) return undefined;
-  const via = [voce.indirizzo.trim(), voce.civico.trim()].filter(Boolean).join(', ');
-  const luogo = [voce.cap.trim(), voce.comune.trim()].filter(Boolean).join(' ');
+  const via = [iniziali(voce.indirizzo.trim()), voce.civico.trim()].filter(Boolean).join(', ');
+  const luogo = [voce.cap.trim(), iniziali(voce.comune.trim())].filter(Boolean).join(' ');
   return { presso: '', indirizzo: [via, luogo].filter(Boolean).join(' – '), telefono: voce.telefono.trim() };
 }
 
