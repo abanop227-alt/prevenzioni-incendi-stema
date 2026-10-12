@@ -62,6 +62,28 @@
           "titolo": "Locale centrale termica",
           "voci": [
             {
+              "id": "74-ct-descrizione",
+              "titolo": "Impianto: descrizione",
+              "testo": "La centrale termica posta al piano [interrato], [nella volumetria dell’edificio ad uso civile servito / nel cortile interno dell’edificio], [con ingresso diretto dall’esterno,] è alimentata a [gas]. Ha una potenza nominale utile di [220,00] kW[; è composta da n° 4 unità di potenza 65,5 kW per una potenza totale di 262 kW]. [L’edificio non è soggetto ad attività ricompresa nel D.P.R. 1° agosto 2011 n° 151.]",
+              "didascalia": "Locale centrale termica.",
+              "lavorazioni": []
+            },
+            {
+              "id": "74-ct-nulla-osta",
+              "titolo": "Pratica VV.F.: nulla osta provvisorio",
+              "testo": "Dall’accesso atti presso il Comando VV.F. di [Milano] risulta un Nulla Osta Provvisorio del [9/04/93] per la centrale termica a [gasolio]. Attualmente risulta installata una centrale termica alimentata a [gas].",
+              "didascalia": "Nulla Osta Provvisorio.",
+              "lavorazioni": []
+            },
+            {
+              "id": "74-ct-pot-progetto",
+              "titolo": "Potenzialità: corrispondenza con il progetto approvato",
+              "testo": "Durante il sopralluogo è stata verificata la corretta corrispondenza con il progetto approvato della centrale termica.",
+              "didascalia": "Centrale termica.",
+              "lavorazioni": [],
+              "gruppoEsclusivo": "potenzialita"
+            },
+            {
               "id": "74-ct-pot-ok",
               "titolo": "Potenzialità: conforme al progetto",
               "testo": "Al momento del sopralluogo è stato possibile verificare la corretta corrispondenza della portata termica della caldaia presente, ovvero pari a [valore] kW, rispetto al progetto approvato dal Comando dei VV.F.",
@@ -118,8 +140,93 @@
                 {
                   "descrizione": "Ripristino dispositivi di autochiusura.",
                   "um": "cad"
+                },
+                {
+                  "descrizione": "Fornitura e posa di congegno di autochiusura.",
+                  "um": "cad",
+                  "inclusa": false
+                }
+              ],
+              "gruppoEsclusivo": "porta-centrale"
+            },
+            {
+              "id": "74-ct-porta-verificare",
+              "titolo": "Porta: tagliafuoco da verificare (resta aperta)",
+              "testo": "Il locale centrale termica è prospiciente [sull’intercapedine antincendio che comunica con le cantine dell’edificio attraverso un disimpegno]. Al fine di garantire la compartimentazione della centrale termica, [dovrà essere verificata la porta tagliafuoco / dovranno essere verificate le due porte tagliafuoco], affinché possano chiudersi liberamente. Al momento del sopralluogo [la porta rimaneva aperta / le porte rimanevano aperte], non garantendo così la delimitazione del comparto antincendio.",
+              "didascalia": "Porta tagliafuoco rimasta aperta.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa di congegno di autochiusura.",
+                  "um": "cad"
+                }
+              ],
+              "gruppoEsclusivo": "porta-centrale"
+            },
+            {
+              "id": "74-ct-porta-grigliata",
+              "titolo": "Porta: grigliata esente da requisiti REI",
+              "testo": "L’accesso al locale avviene tramite una porta grigliata, esente da requisiti REI in quanto il locale è raggiungibile direttamente da uno spazio scoperto, conformemente alle normative vigenti in materia di prevenzione incendi.",
+              "didascalia": "Porta di accesso al locale centrale termica.",
+              "lavorazioni": [],
+              "gruppoEsclusivo": "porta-centrale"
+            },
+            {
+              "id": "74-ct-aer-porta",
+              "titolo": "Aerazione: porta grigliata e ventole",
+              "testo": "Il locale è correttamente areato con porta grigliata avente superficie di griglia superiore ad [1 mq.] [e ventole di aerazione].",
+              "didascalia": "Porta di accesso / aerazione centrale termica.",
+              "lavorazioni": [],
+              "gruppoEsclusivo": "aerazione-centrale"
+            },
+            {
+              "id": "74-ct-collari",
+              "titolo": "Compartimentazione: collari su tubazioni in plastica",
+              "testo": "Si provveda nel dotare le tubazioni, in materiale plastico, [insediate nel muro e nella soletta,] con collari intumescenti aventi caratteristiche di resistenza al fuoco non inferiori a EI 120, ai fini di compartimentare correttamente il locale.",
+              "didascalia": "Tubazioni in plastica su cui installare i collari.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa collari termoespandenti EI 120.",
+                  "um": "cad"
                 }
               ]
+            },
+            {
+              "id": "74-ct-forometria",
+              "titolo": "Compartimentazione: forometria o fori da sigillare",
+              "testo": "Al fine di garantire la compartimentazione del locale centrale termica sarà necessario [sigillare la forometria esistente / ripristinare tutti i fori presenti nel locale].",
+              "didascalia": "Fori da ripristinare.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Ripristini forometrie esistenti con materiali certificati al fuoco almeno EI 120.",
+                  "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "74-ct-cartongesso",
+              "titolo": "Compartimentazione: cassonetto o controsoffitto in cartongesso",
+              "testo": "Al momento del sopralluogo è stata riscontrata la presenza di un cassonetto realizzato in cartongesso [e di parte del soffitto rivestito di cartongesso]. È necessario reperire tutta la documentazione del materiale impiegato (certificato di conformità del materiale e dichiarazioni di corretta posa), perché sono documenti da allegare alla presentazione della SCIA antincendio. Se tali documenti non sono più reperibili, [il cassonetto e la parte del controsoffitto vanno rimossi / il cassonetto va rimosso] e realizzati con materiale idoneo, ovvero non inferiore a EI 120.",
+              "didascalia": "Cassonetto in cartongesso.",
+              "lavorazioni": []
+            },
+            {
+              "id": "74-ct-intonaco",
+              "titolo": "Compartimentazione: intonaco ammalorato",
+              "testo": "Durante il sopralluogo è stato riscontrato in diverse parti della centrale termica l’intonaco ammalorato; pertanto si consiglia il rifacimento nelle porzioni più degradate.",
+              "didascalia": "Intonaco ammalorato.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Asportazione intonaco in fase di distacco. Formazione corpo d’intonaco nelle aree con mattoni a vista.",
+                  "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "74-ct-serbatoio",
+              "titolo": "Serbatoio a gasolio dismesso: maniglia a strappo",
+              "testo": "Si provveda alla rimozione della maniglia a strappo del vecchio serbatoio a gasolio, ormai rimosso.",
+              "didascalia": "Maniglia a strappo del vecchio serbatoio.",
+              "lavorazioni": []
             },
             {
               "id": "74-ct-murature",
@@ -238,6 +345,36 @@
               "gruppoEsclusivo": "estintore-centrale"
             },
             {
+              "id": "74-ds-estintori-gruppi",
+              "titolo": "Estintore: numero pari ai gruppi termici",
+              "testo": "Si ricorda che il numero degli estintori non dovrà mai essere inferiore al numero dei gruppi della centrale termica, nel caso specifico n° [2], posizionati in prossimità dell’impianto termico. [Al momento del sopralluogo è stato riscontrato un solo estintore.] L’estintore dovrà possedere capacità estinguente non inferiore a [34 A – 144 B], corredato da apposita cartellonistica. Gli estintori devono essere soggetti a manutenzione semestrale con firma e timbro su apposito cartellino, ai sensi del D.lgs. 81/08.",
+              "didascalia": "Estintori a servizio della centrale termica.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa estintore in acciaio, omologato, a polvere, 6 kg, 34A 233BC, con gancio a muro.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Fornitura e posa gancio per estintore.",
+                  "um": "cad",
+                  "inclusa": false
+                }
+              ],
+              "gruppoEsclusivo": "estintore-centrale"
+            },
+            {
+              "id": "74-ds-estintore-cartello",
+              "titolo": "Estintore: cartellonistica da installare",
+              "testo": "Si ricorda che ogni estintore presente deve essere munito di apposita cartellonistica. Durante il sopralluogo si è riscontrata la mancanza della cartellonistica dell’estintore posto [all’esterno del locale centrale termica], di conseguenza si richiede l’apposita installazione.",
+              "didascalia": "Cartellonistica da installare.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa nuova cartellonistica.",
+                  "um": "cad"
+                }
+              ]
+            },
+            {
               "id": "74-ds-estintore-noman",
               "titolo": "Estintore: privo di manutenzione",
               "testo": "Durante il sopralluogo è stata riscontrata l’assenza di manutenzione sull’estintore posizionato all’interno della centrale termica. Pertanto, si dovrà provvedere alla sua manutenzione e/o sostituzione, se necessario, da parte della ditta manutentrice dei presidi antincendio.\nInoltre, si ricorda che il numero degli estintori non dovrà mai essere inferiore a n°1, posizionato in prossimità del locale centrale termica. Inoltre, l’estintore dovrà possedere capacità estinguente non inferiore a [34 A – 144 B] corredato da apposita cartellonistica di ampiezza sufficiente per consentirne un’immediata individuazione.",
@@ -285,6 +422,11 @@
                 {
                   "descrizione": "Fornitura e posa cassonetto metallico aerato per contatore gas metano.",
                   "um": "cad"
+                },
+                {
+                  "descrizione": "Realizzazione forometrie alloggio contatore gas.",
+                  "um": "a corpo",
+                  "inclusa": false
                 }
               ]
             },
@@ -302,8 +444,47 @@
               "didascalia": "Linea gas da colorare di giallo.",
               "lavorazioni": [
                 {
-                  "descrizione": "Verniciatura gialla della linea del gas.",
-                  "um": "ml"
+                  "descrizione": "Tinteggiatura linea gas dal contatore al bruciatore in smalto giallo.",
+                  "um": "a corpo"
+                }
+              ],
+              "gruppoEsclusivo": "gas-giallo"
+            },
+            {
+              "id": "74-ds-gas-giallo-parz",
+              "titolo": "Gas: verniciatura gialla incompleta",
+              "testo": "È stata riscontrata durante il sopralluogo l’incompleta verniciatura del tubo gas, si provveda al suo restauro così da favorirne il riconoscimento.",
+              "didascalia": "Conduttura del gas da verniciare.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Tinteggiatura linea gas dal contatore al bruciatore in smalto giallo.",
+                  "um": "a corpo"
+                }
+              ],
+              "gruppoEsclusivo": "gas-giallo"
+            },
+            {
+              "id": "74-ds-valvola-cartello",
+              "titolo": "Gas: valvola di intercettazione, cartellonistica da installare",
+              "testo": "Si ricorda che la valvola d’intercettazione del gas deve essere ben segnalata con apposita cartellonistica conforme al D.lgs. 81/08, quindi provvedere alla sua installazione.",
+              "didascalia": "Cartellonistica da installare.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa nuova cartellonistica.",
+                  "um": "cad"
+                }
+              ],
+              "gruppoEsclusivo": "valvola-gas"
+            },
+            {
+              "id": "74-ds-presidi-cartello",
+              "titolo": "Cartellonistica: presidi e centrale termica",
+              "testo": "Installare apposita cartellonistica indicante i presidi e la centrale termica.",
+              "didascalia": "Presidi e centrale termica.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa nuova cartellonistica.",
+                  "um": "cad"
                 }
               ]
             },
@@ -345,7 +526,8 @@
               "titolo": "Gas: valvola di intercettazione presente",
               "testo": "Al momento del sopralluogo è stata riscontrata la presenza della valvola d’intercettazione del gas metano, corredata con apposita cartellonistica conforme al D.lgs. 81/08.",
               "didascalia": "Valvola intercettazione gas.",
-              "lavorazioni": []
+              "lavorazioni": [],
+              "gruppoEsclusivo": "valvola-gas"
             }
           ]
         },
@@ -400,7 +582,33 @@
               "titolo": "Cartellonistica: contatore gas",
               "testo": "È stata riscontrata la presenza del contatore gas, corredato da apposita cartellonistica conforme al D.lgs. 81/08.",
               "didascalia": "Contatore gas.",
-              "lavorazioni": []
+              "lavorazioni": [],
+              "gruppoEsclusivo": "cartello-contatore"
+            },
+            {
+              "id": "74-cs-contatore-nuovo",
+              "titolo": "Cartellonistica: contatore gas da installare",
+              "testo": "Si provveda a corredare il contatore gas con apposita cartellonistica conforme al D.lgs. 81/08.",
+              "didascalia": "Contatore gas.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa nuova cartellonistica.",
+                  "um": "cad"
+                }
+              ],
+              "gruppoEsclusivo": "cartello-contatore"
+            },
+            {
+              "id": "74-cs-interruttore",
+              "titolo": "Cartellonistica: interruttore generale",
+              "testo": "Si provveda a corredare l’interruttore generale con apposita cartellonistica.",
+              "didascalia": "Interruttore generale.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa nuova cartellonistica.",
+                  "um": "cad"
+                }
+              ]
             },
             {
               "id": "74-cs-integrare",
@@ -1381,6 +1589,18 @@
               "didascalia": "Attacco autopompa.",
               "lavorazioni": [],
               "gruppoEsclusivo": "attacco-motopompa"
+            },
+            {
+              "id": "77-ia-anomalie",
+              "titolo": "Anomalie segnalate dalla ditta manutentrice",
+              "testo": "Dal sopralluogo effettuato dalla ditta manutentrice incaricata sono emerse le seguenti ulteriori criticità:\n[Collegamento irregolare tra acquedotto e autoclave;]\n[Attacco motopompa VVF da 2” di linea non adoperabile;]\n[Rubinetti degli idranti non conformi alla normativa;]\nTutte le anomalie sopra riportate dovranno essere risolte mediante specifici interventi di adeguamento impiantistico, da realizzarsi nel rispetto delle normative antincendio vigenti.",
+              "didascalia": "Impianto idrico antincendio.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Interventi di adeguamento impiantistico della rete idranti a cura della ditta manutentrice.",
+                  "um": "a corpo"
+                }
+              ]
             },
             {
               "id": "77-me-manutenzione-ok",
