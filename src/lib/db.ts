@@ -267,7 +267,8 @@ export async function salvaAmministratore(nome: string, titolare: Titolare, solo
 export async function leggiUfficioAmministrazione(nome: string): Promise<UfficioAmministrazione | undefined> {
   const { voce } = await voceRubrica(nome);
   if (!voce) return undefined;
-  if (voce.ufficio && (voce.ufficio.presso || voce.ufficio.indirizzo || voce.ufficio.telefono)) return voce.ufficio;
+  // dati di studio registrati (anche vuoti, a dire "l'indirizzo del titolare è la residenza, non lo studio"): valgono solo quelli
+  if (voce.ufficio) return voce.ufficio.presso || voce.ufficio.indirizzo || voce.ufficio.telefono ? voce.ufficio : undefined;
   if (!voce.indirizzo.trim() && !voce.telefono.trim()) return undefined;
   const via = [iniziali(voce.indirizzo.trim()), voce.civico.trim()].filter(Boolean).join(', ');
   const luogo = [voce.cap.trim(), iniziali(voce.comune.trim())].filter(Boolean).join(' ');

@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto';
 import { describe, expect, it } from 'vitest';
 import { famigliaDi } from '../src/lib/catalogo';
-import { leggiAmministratore, leggiRubricaAmministratori, leggiUfficioAmministrazione, salvaAmministratore, salvaUfficioAmministrazione } from '../src/lib/db';
+import { leggiAmministratore, leggiRubricaAmministratori, unisciRubricaAmministratori, leggiUfficioAmministrazione, salvaAmministratore, salvaUfficioAmministrazione } from '../src/lib/db';
 import { cat } from './aiuti';
 
 const titolare = (campi: Record<string, string> = {}) => ({
@@ -36,6 +36,14 @@ describe('dati di studio dell’amministrazione', () => {
     await salvaAmministratore('Studio CERUTI', titolare({ cognome: 'CERUTI', indirizzo: 'VIA STRAMBIO GAETANO', civico: '34', cap: '20133', telefono: '02/70124253' }));
     expect(await leggiUfficioAmministrazione('CERUTI')).toEqual({ presso: '', indirizzo: 'Via Strambio Gaetano, 34 – 20133 Milano', telefono: '02/70124253' });
     expect(Object.keys(await leggiRubricaAmministratori())).toContain('alias:ceruti');
+  });
+});
+
+describe('titolare con la sola residenza', () => {
+  it('se i dati di studio sono registrati come vuoti, la residenza del titolare non diventa l’indirizzo dell’amministrazione', async () => {
+    await unisciRubricaAmministratori({ 'alias:rossi': { ...titolare({ cognome: 'ROSSI', indirizzo: 'VIA PRIVATA', civico: '1', telefono: '' }), ufficio: { presso: '', indirizzo: '', telefono: '' } } as never }, true);
+    expect((await leggiAmministratore('ROSSI'))?.cognome).toBe('ROSSI'); // il titolare serve ai moduli (domicilio)
+    expect(await leggiUfficioAmministrazione('ROSSI')).toBeUndefined(); // ma non si propone come studio
   });
 });
 
