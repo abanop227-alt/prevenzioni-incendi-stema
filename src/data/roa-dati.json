@@ -76,17 +76,30 @@
               "lavorazioni": []
             },
             {
-              "id": "74-ct-pot-progetto",
-              "titolo": "Potenzialità: corrispondenza con il progetto approvato",
-              "testo": "Durante il sopralluogo è stata verificata la corretta corrispondenza con il progetto approvato della centrale termica.",
-              "didascalia": "Centrale termica.",
-              "lavorazioni": [],
-              "gruppoEsclusivo": "potenzialita"
+              "id": "74-ct-difformita-area",
+              "titolo": "Difformità dell’area intorno alla centrale termica",
+              "testo": "L’area intorno alla centrale termica risulta difforme da quanto riportato nel progetto approvato: sarà necessario aggiornare il progetto prima della presentazione della S.C.I.A.",
+              "didascalia": "Area intorno alla centrale termica.",
+              "lavorazioni": []
+            },
+            {
+              "id": "74-ct-dismessa",
+              "titolo": "Centrale termica dismessa o cessata",
+              "testo": "La centrale termica risulta [dismessa (teleriscaldamento) / non più in uso]. Verrà presentata al Comando VV.F. la comunicazione di cessata attività[ e, in fase di S.C.I.A., la dichiarazione di non aggravio del rischio]. Occorrono il libretto d’impianto e i documenti dell’amministratore.",
+              "didascalia": "Centrale termica dismessa.",
+              "lavorazioni": []
+            },
+            {
+              "id": "74-ct-titolari",
+              "titolo": "Più centrali con titolari diversi",
+              "testo": "Sono presenti più locali o caldaie con titolari diversi: si valuti la presentazione di S.C.I.A. distinte per ciascun titolare.",
+              "didascalia": "Centrali termiche.",
+              "lavorazioni": []
             },
             {
               "id": "74-ct-pot-ok",
               "titolo": "Potenzialità: conforme al progetto",
-              "testo": "Al momento del sopralluogo è stato possibile verificare la corretta corrispondenza della portata termica della caldaia presente, ovvero pari a [valore] kW, rispetto al progetto approvato dal Comando dei VV.F.",
+              "testo": "[Al momento del sopralluogo / Durante il sopralluogo] è stato possibile verificare la corretta corrispondenza della portata termica della caldaia presente, ovvero pari a [valore] kW, rispetto al progetto approvato dal Comando dei VV.F.",
               "didascalia": "Portata termica riscontrata.",
               "lavorazioni": [],
               "gruppoEsclusivo": "potenzialita"
@@ -101,40 +114,35 @@
               "gruppoEsclusivo": "potenzialita"
             },
             {
-              "id": "74-ct-pot-scia",
-              "titolo": "Potenzialità: conforme a progetto e S.C.I.A.",
-              "testo": "Durante il sopralluogo è stata verificata la corretta posizione della centrale termica con la potenzialità dell’impianto che risulta essere pari a [valore] kW, come indicato nel progetto e nella S.C.I.A. approvati al Comando dei Vigili del Fuoco.",
-              "didascalia": "Potenzialità dell’impianto – Stralcio progetto approvato.",
-              "lavorazioni": [],
-              "gruppoEsclusivo": "potenzialita"
-            },
-            {
               "id": "74-ct-aer-ok",
               "titolo": "Aerazione: presente e dimensionata",
-              "testo": "È stata riscontrata l’aerazione permanente all’interno del locale centrale termica, correttamente dimensionata come previsto nel progetto approvato.",
-              "didascalia": "Areazione presente nel locale centrale termica.",
-              "lavorazioni": [],
-              "gruppoEsclusivo": "aerazione-centrale"
-            },
-            {
-              "id": "74-ct-aer-fin",
-              "titolo": "Aerazione: tramite finestre con griglie",
-              "testo": "Durante il sopralluogo, si è rilevato che l'aerazione del locale è assicurata da [due finestre, entrambe dotate di griglie metalliche e mantenute costantemente aperte].",
+              "testo": "Durante il sopralluogo è stata riscontrata l’aerazione permanente del locale centrale termica, correttamente dimensionata come previsto nel progetto approvato: [assicurata da due finestre, entrambe dotate di griglie metalliche e mantenute costantemente aperte / realizzata con porta grigliata avente superficie di griglia superiore ad 1 mq e ventole di aerazione / a filo soletta]. Il punto § 3.3.4 della Normativa stabilisce che le aperture di aerazione devono essere realizzate e collocate in modo da evitare la formazione di sacche di gas: al momento del sopralluogo è stata verificata tale prescrizione.",
               "didascalia": "Aerazione presente nel locale centrale termica.",
               "lavorazioni": [],
               "gruppoEsclusivo": "aerazione-centrale"
             },
             {
-              "id": "74-ct-aer-334",
-              "titolo": "Aerazione: aperture senza sacche di gas (§ 3.3.4)",
-              "testo": "Il punto § 3.3.4 della Normativa stabilisce che le aperture di aerazione devono essere realizzate e collocate in modo da evitare la formazione di sacche di gas. Al momento del sopralluogo è stata verificata tale prescrizione.",
-              "didascalia": "Porta metallica grigliata – Aerazione permanente.",
-              "lavorazioni": []
+              "id": "74-ct-aer-ostruita",
+              "titolo": "Aerazione: griglie ostruite da liberare",
+              "testo": "Durante il sopralluogo le griglie di aerazione del locale risultavano ostruite da [ante / bidoni / plastica / infissi vetrati]. Si provveda alla rimozione di quanto presente, per garantire l’aerazione permanente su parete esterna[, e alla posa di griglie con alette antipioggia o protezione metallica alettata, senza ridurre la superficie netta aerante].",
+              "didascalia": "Griglie di aerazione ostruite.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Rimozione delle ostruzioni dalle griglie di aerazione.",
+                  "um": "a corpo"
+                },
+                {
+                  "descrizione": "Fornitura e posa di griglie alettate per l’aerazione del locale.",
+                  "um": "a corpo",
+                  "inclusa": false
+                }
+              ],
+              "gruppoEsclusivo": "aerazione-centrale"
             },
             {
               "id": "74-ct-autochiusura",
-              "titolo": "Porta: senza dispositivo di autochiusura",
-              "testo": "Al momento del sopralluogo risultava assente il dispositivo di autochiusura della porta [in ferro] di accesso al locale centrale termica. Sarà necessario provvedere alla sua installazione, come previsto dalla normativa vigente.",
+              "titolo": "Porta: autochiusura mancante o da verificare",
+              "testo": "[Il locale centrale termica è prospiciente sull’intercapedine antincendio che comunica con le cantine dell’edificio attraverso un disimpegno.] Al momento del sopralluogo [risultava assente il dispositivo di autochiusura della porta in ferro di accesso al locale centrale termica / la porta tagliafuoco rimaneva aperta, non garantendo così la delimitazione del comparto antincendio / le porte tagliafuoco rimanevano aperte, non garantendo così la delimitazione del comparto antincendio]. Al fine di garantire la compartimentazione della centrale termica, [sarà necessario provvedere all’installazione del dispositivo di autochiusura, come previsto dalla normativa vigente / dovrà essere verificata la porta tagliafuoco, affinché possa chiudersi liberamente / dovranno essere verificate le due porte tagliafuoco, affinché possano chiudersi liberamente].",
               "didascalia": "Porta di accesso alla centrale termica.",
               "lavorazioni": [
                 {
@@ -150,13 +158,30 @@
               "gruppoEsclusivo": "porta-centrale"
             },
             {
-              "id": "74-ct-porta-verificare",
-              "titolo": "Porta: tagliafuoco da verificare (resta aperta)",
-              "testo": "Il locale centrale termica è prospiciente [sull’intercapedine antincendio che comunica con le cantine dell’edificio attraverso un disimpegno]. Al fine di garantire la compartimentazione della centrale termica, [dovrà essere verificata la porta tagliafuoco / dovranno essere verificate le due porte tagliafuoco], affinché possano chiudersi liberamente. Al momento del sopralluogo [la porta rimaneva aperta / le porte rimanevano aperte], non garantendo così la delimitazione del comparto antincendio.",
-              "didascalia": "Porta tagliafuoco rimasta aperta.",
+              "id": "74-ct-porta-sostituire",
+              "titolo": "Porta REI: da sostituire",
+              "testo": "La porta di accesso al locale centrale termica [in ferro] risulta [ammalorata / priva di certificazione REI / assente (telaio privo di porta)]. Sarà necessario sostituirla con porta avente caratteristiche di resistenza al fuoco non inferiori a REI [120], dimensioni minime [0,80 x 2,00] m, dotata di autochiusura, targhetta identificativa e apertura nel verso dell’esodo.",
+              "didascalia": "Porta di accesso alla centrale termica.",
               "lavorazioni": [
                 {
-                  "descrizione": "Fornitura e posa di congegno di autochiusura.",
+                  "descrizione": "Rimozione porte non a norma.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Fornitura e posa porte con resistenza al fuoco non inferiori a REI [60] (dimensioni [0,80 x 2,00] m), compresa assistenza muraria.",
+                  "um": "cad"
+                }
+              ],
+              "gruppoEsclusivo": "porta-centrale"
+            },
+            {
+              "id": "74-ct-porta-regola",
+              "titolo": "Porta tagliafuoco: posata non a regola d’arte",
+              "testo": "La porta tagliafuoco [di accesso al locale / dell’intercapedine] risulta posata non a regola d’arte ([telaio non conforme / anta non allineata]). Sarà necessario riposizionarla o sostituirla, con dichiarazione di corretta posa.",
+              "didascalia": "Porta tagliafuoco posata non a regola d’arte.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Riposizionamento o sostituzione della porta tagliafuoco posata non a regola d’arte.",
                   "um": "cad"
                 }
               ],
@@ -171,19 +196,15 @@
               "gruppoEsclusivo": "porta-centrale"
             },
             {
-              "id": "74-ct-aer-porta",
-              "titolo": "Aerazione: porta grigliata e ventole",
-              "testo": "Il locale è correttamente areato con porta grigliata avente superficie di griglia superiore ad [1 mq.] [e ventole di aerazione].",
-              "didascalia": "Porta di accesso / aerazione centrale termica.",
-              "lavorazioni": [],
-              "gruppoEsclusivo": "aerazione-centrale"
-            },
-            {
-              "id": "74-ct-collari",
-              "titolo": "Compartimentazione: collari su tubazioni in plastica",
-              "testo": "Si provveda nel dotare le tubazioni, in materiale plastico, [insediate nel muro e nella soletta,] con collari intumescenti aventi caratteristiche di resistenza al fuoco non inferiori a EI 120, ai fini di compartimentare correttamente il locale.",
-              "didascalia": "Tubazioni in plastica su cui installare i collari.",
+              "id": "74-ct-forometria",
+              "titolo": "Compartimentazione: forometrie e tubazioni in plastica",
+              "testo": "Al fine di garantire la compartimentazione del locale centrale termica sarà necessario [sigillare la forometria esistente / ripristinare tutti i fori presenti nel locale] con materiali aventi caratteristiche di resistenza al fuoco non inferiori a EI 120. Le tubazioni in materiale plastico [insediate nel muro e nella soletta] dovranno essere dotate di collari intumescenti aventi caratteristiche di resistenza al fuoco non inferiori a EI 120.",
+              "didascalia": "Fori e tubazioni da compartimentare.",
               "lavorazioni": [
+                {
+                  "descrizione": "Ripristini forometrie esistenti con materiali certificati al fuoco almeno EI 120.",
+                  "um": "a corpo"
+                },
                 {
                   "descrizione": "Fornitura e posa collari termoespandenti EI 120.",
                   "um": "cad"
@@ -191,23 +212,73 @@
               ]
             },
             {
-              "id": "74-ct-forometria",
-              "titolo": "Compartimentazione: forometria o fori da sigillare",
-              "testo": "Al fine di garantire la compartimentazione del locale centrale termica sarà necessario [sigillare la forometria esistente / ripristinare tutti i fori presenti nel locale].",
-              "didascalia": "Fori da ripristinare.",
+              "id": "74-ct-cartongesso",
+              "titolo": "Compartimentazione: cassonetto o controsoffitto in cartongesso",
+              "testo": "Al momento del sopralluogo è stata riscontrata la presenza di un cassonetto realizzato in cartongesso [e di parte del soffitto rivestito di cartongesso]. È necessario reperire tutta la documentazione del materiale impiegato (certificato di conformità del materiale e dichiarazioni di corretta posa), perché sono documenti da allegare alla presentazione della SCIA antincendio. Se tali documenti non sono più reperibili, [il cassonetto e la parte del controsoffitto vanno rimossi / il cassonetto va rimosso] e realizzati con materiale idoneo, ovvero non inferiore a EI 120.\n[Le tubazioni fognarie o pluviali non deviabili dovranno essere racchiuse in un cassonetto in cartongesso EI 120, con botola d’ispezione EI 120 e dichiarazione di corretta posa.]",
+              "didascalia": "Cassonetto in cartongesso.",
+              "lavorazioni": []
+            },
+            {
+              "id": "74-ct-linea-gas",
+              "titolo": "Compartimentazione: linea gas nelle cantine e nei corridoi",
+              "testo": "La tubazione di adduzione del gas attraversa [i locali cantinati comuni / i corridoi delle cantine] fino al gruppo di misura. Come da progetto approvato dovrà essere protetta con alloggiamento (coppelle o controtubo) avente resistenza al fuoco predeterminata non inferiore a REI [30 / 120] (§ 2.3.3.2), con certificazione dei materiali e dichiarazione di corretta posa.",
+              "didascalia": "Tubazione gas nei locali comuni.",
               "lavorazioni": [
                 {
-                  "descrizione": "Ripristini forometrie esistenti con materiali certificati al fuoco almeno EI 120.",
+                  "descrizione": "Rivestimento con materiale REI [120] della tubazione gas.",
                   "um": "a corpo"
                 }
               ]
             },
             {
-              "id": "74-ct-cartongesso",
-              "titolo": "Compartimentazione: cassonetto o controsoffitto in cartongesso",
-              "testo": "Al momento del sopralluogo è stata riscontrata la presenza di un cassonetto realizzato in cartongesso [e di parte del soffitto rivestito di cartongesso]. È necessario reperire tutta la documentazione del materiale impiegato (certificato di conformità del materiale e dichiarazioni di corretta posa), perché sono documenti da allegare alla presentazione della SCIA antincendio. Se tali documenti non sono più reperibili, [il cassonetto e la parte del controsoffitto vanno rimossi / il cassonetto va rimosso] e realizzati con materiale idoneo, ovvero non inferiore a EI 120.",
-              "didascalia": "Cassonetto in cartongesso.",
-              "lavorazioni": []
+              "id": "74-ct-soletta",
+              "titolo": "Compartimentazione: soletta o orizzontamento EI 120",
+              "testo": "Per garantire la compartimentazione della centrale termica sarà necessario riqualificare [la soletta in cemento armato / l’orizzontamento] del locale con caratteristiche non inferiori a EI 120, mediante lastre in calcio fibrosilicato o in gesso rivestito ad alte prestazioni, stuccatura dei giunti e finitura. Il tutto dovrà essere documentato con certificati di conformità dei materiali e dichiarazione di corretta posa.",
+              "didascalia": "Soletta della centrale termica.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Riqualificazione antincendio con certificazione REI 120 di soletta in cemento armato, costituita da lastra di calcio fibrosilicato ad alte prestazioni in classe A1. Stuccatura dei giunti, stesura di rete in fibra di vetro, mano di isolante inibente e due mani di pittura per interni lavabile bianca.",
+                  "um": "mq"
+                }
+              ]
+            },
+            {
+              "id": "74-ct-armatura",
+              "titolo": "Strutture: armatura a vista da risanare",
+              "testo": "Sono presenti armature a vista da risanare con trattamento protettivo e malte tissotropiche[; i fori lasciati dai vecchi passaggi dovranno essere chiusi con botole di ispezione EI 120].",
+              "didascalia": "Armatura a vista.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Risanamento delle armature a vista con trattamento protettivo e malte tissotropiche.",
+                  "um": "a corpo"
+                },
+                {
+                  "descrizione": "Chiusura dei fori con botole EI 120.",
+                  "um": "a corpo",
+                  "inclusa": false
+                }
+              ]
+            },
+            {
+              "id": "74-ct-disimpegno-ok",
+              "titolo": "Disimpegno: conforme",
+              "testo": "Il locale disimpegno ha superficie di almeno 2 mq ([valore] mq) e aerazione permanente di almeno 0,5 mq ([valore] mq).",
+              "didascalia": "Locale disimpegno.",
+              "lavorazioni": [],
+              "gruppoEsclusivo": "disimpegno"
+            },
+            {
+              "id": "74-ct-disimpegno-no",
+              "titolo": "Disimpegno o intercapedine: mancante o non conforme",
+              "testo": "[Il disimpegno risulta mancante / L’intercapedine non è ad uso esclusivo ed è comunicante con altri locali]. Sarà necessario [realizzare setti EI 120 con porte EI 120 (apertura nel verso corretto), spostando il pulsante di sgancio e gli interruttori che interferiscono / chiudere porta e finestre / realizzare una nuova parete EI 120 con porta EI 120].",
+              "didascalia": "Disimpegno o intercapedine.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Realizzazione di setti EI 120 con porta EI 120.",
+                  "um": "a corpo"
+                }
+              ],
+              "gruppoEsclusivo": "disimpegno"
             },
             {
               "id": "74-ct-intonaco",
@@ -223,8 +294,8 @@
             },
             {
               "id": "74-ct-serbatoio",
-              "titolo": "Serbatoio a gasolio dismesso: maniglia a strappo",
-              "testo": "Si provveda alla rimozione della maniglia a strappo del vecchio serbatoio a gasolio, ormai rimosso.",
+              "titolo": "Serbatoio a gasolio dismesso: bonifica e rimozione",
+              "testo": "Si provveda alla rimozione [della maniglia a strappo del vecchio serbatoio a gasolio, ormai rimosso / dei dispositivi di sicurezza del vecchio impianto a gasolio dismesso] e, ove presente il serbatoio, alla sua bonifica, inertizzazione e rimozione (divieto per le caldaie a gasolio in vigore a Milano dall’ottobre 2023).",
               "didascalia": "Maniglia a strappo del vecchio serbatoio.",
               "lavorazioni": []
             },
@@ -283,9 +354,9 @@
             },
             {
               "id": "74-ct-materiale",
-              "titolo": "Vie libere: materiale depositato nel disimpegno",
-              "testo": "Si ricorda inoltre che, all’interno del locale disimpegno è assolutamente vietato depositare qualsiasi tipo di materiale e/o sostanza. Si provveda pertanto alla rimozione di tutto il materiale rilevato in fase di sopralluogo.",
-              "didascalia": "Materiale presente nel disimpegno da rimuovere.",
+              "titolo": "Vie libere: divieto di deposito",
+              "testo": "Si ricorda che [all’interno del locale disimpegno / nelle vicinanze del contatore gas, del pulsante di sgancio e dell’estintore] è assolutamente vietato depositare qualsiasi tipo di materiale e/o sostanza, perché l’area deve essere sempre accessibile in caso di emergenza. Si provveda pertanto alla rimozione di tutto il materiale [e dei cassonetti dei rifiuti] rilevato in fase di sopralluogo.",
+              "didascalia": "Materiale presente da rimuovere.",
               "lavorazioni": [
                 {
                   "descrizione": "Rimozione del materiale depositato nel locale disimpegno.",
@@ -338,61 +409,33 @@
           "voci": [
             {
               "id": "74-ds-estintore-ok",
-              "titolo": "Estintore: presente e manutenuto",
-              "testo": "Si ricorda che il numero degli estintori non dovrà mai essere inferiore a n°1 posizionato in prossimità della centrale termica. Dovrà inoltre possedere capacità estinguente non inferiore a [21 A – 89 BC], corredato da apposita cartellonistica di ampiezza sufficiente per consentirne un’immediata individuazione. Si ricorda, inoltre, che gli estintori devono essere soggetti a manutenzione semestrale con firma e timbro da apporre su appositi cartellini, ai sensi del D.lgs. 81/08. Al momento del sopralluogo il presidio risultava presente e correttamente manutenuto, nonché segnalato.",
-              "didascalia": "Estintore presente a servizio della centrale termica.",
-              "lavorazioni": [],
-              "gruppoEsclusivo": "estintore-centrale"
-            },
-            {
-              "id": "74-ds-estintori-gruppi",
-              "titolo": "Estintore: numero pari ai gruppi termici",
-              "testo": "Si ricorda che il numero degli estintori non dovrà mai essere inferiore al numero dei gruppi della centrale termica, nel caso specifico n° [2], posizionati in prossimità dell’impianto termico. [Al momento del sopralluogo è stato riscontrato un solo estintore.] L’estintore dovrà possedere capacità estinguente non inferiore a [34 A – 144 B], corredato da apposita cartellonistica. Gli estintori devono essere soggetti a manutenzione semestrale con firma e timbro su apposito cartellino, ai sensi del D.lgs. 81/08.",
+              "titolo": "Estintori: numero e requisiti",
+              "testo": "Si ricorda che il numero degli estintori non dovrà mai essere inferiore a n° [1] [oppure: al numero dei gruppi della centrale termica], posizionati in prossimità della centrale termica. Gli estintori dovranno possedere capacità estinguente non inferiore a [21 A – 89 BC / 34 A – 144 B], corredati da apposita cartellonistica di ampiezza sufficiente per consentirne un’immediata individuazione e da cartellino per la manutenzione semestrale ai sensi del D.lgs. 81/08. [Al momento del sopralluogo il presidio risultava presente e correttamente manutenuto, nonché segnalato. / Al momento del sopralluogo è stato riscontrato un solo estintore.]",
               "didascalia": "Estintori a servizio della centrale termica.",
               "lavorazioni": [
                 {
                   "descrizione": "Fornitura e posa estintore in acciaio, omologato, a polvere, 6 kg, 34A 233BC, con gancio a muro.",
-                  "um": "cad"
+                  "um": "cad",
+                  "inclusa": false
                 },
                 {
                   "descrizione": "Fornitura e posa gancio per estintore.",
                   "um": "cad",
                   "inclusa": false
                 }
-              ],
-              "gruppoEsclusivo": "estintore-centrale"
-            },
-            {
-              "id": "74-ds-estintore-cartello",
-              "titolo": "Estintore: cartellonistica da installare",
-              "testo": "Si ricorda che ogni estintore presente deve essere munito di apposita cartellonistica. Durante il sopralluogo si è riscontrata la mancanza della cartellonistica dell’estintore posto [all’esterno del locale centrale termica], di conseguenza si richiede l’apposita installazione.",
-              "didascalia": "Cartellonistica da installare.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Fornitura e posa nuova cartellonistica.",
-                  "um": "cad"
-                }
               ]
             },
             {
               "id": "74-ds-estintore-noman",
-              "titolo": "Estintore: privo di manutenzione",
-              "testo": "Durante il sopralluogo è stata riscontrata l’assenza di manutenzione sull’estintore posizionato all’interno della centrale termica. Pertanto, si dovrà provvedere alla sua manutenzione e/o sostituzione, se necessario, da parte della ditta manutentrice dei presidi antincendio.\nInoltre, si ricorda che il numero degli estintori non dovrà mai essere inferiore a n°1, posizionato in prossimità del locale centrale termica. Inoltre, l’estintore dovrà possedere capacità estinguente non inferiore a [34 A – 144 B] corredato da apposita cartellonistica di ampiezza sufficiente per consentirne un’immediata individuazione.",
+              "titolo": "Estintori: manutenzione semestrale",
+              "testo": "[Durante il sopralluogo è stata riscontrata l’assenza di manutenzione sull’estintore posizionato all’interno della centrale termica. Pertanto, si dovrà provvedere alla sua manutenzione e/o sostituzione, se necessario, da parte della ditta manutentrice dei presidi antincendio. / Si ricorda che gli estintori devono essere soggetti a manutenzione semestrale con firma e timbro da apporre su appositi cartellini, ai sensi del D.lgs. 81/08. Sarà pertanto necessario provvedere al controllo periodico dei presidi, compilando il cartellino di manutenzione a corredo.]",
               "didascalia": "Estintore presente privo di manutenzione.",
               "lavorazioni": [
                 {
                   "descrizione": "Manutenzione e/o sostituzione dell’estintore a servizio della centrale termica.",
                   "um": "cad"
                 }
-              ],
-              "gruppoEsclusivo": "estintore-centrale"
-            },
-            {
-              "id": "74-ds-cartellino",
-              "titolo": "Estintore: cartellino di manutenzione da compilare",
-              "testo": "Si ricorda, inoltre, che gli estintori devono essere soggetti a manutenzione semestrale con firma e timbro da apporre su appositi cartellini, ai sensi del D.lgs. 81/08. Sarà pertanto necessario provvedere al controllo periodico dei presidi, compilando il cartellino di manutenzione a corredo.",
-              "didascalia": "Cartellino di manutenzione semestrale.",
-              "lavorazioni": []
+              ]
             },
             {
               "id": "74-ds-rilevatore",
@@ -402,9 +445,21 @@
               "lavorazioni": []
             },
             {
+              "id": "74-ds-rilevatore-fumi",
+              "titolo": "Rilevatore di fumi da installare",
+              "testo": "Si provveda all’installazione di rilevatore di fumi nel locale [centrale termica / disimpegno].",
+              "didascalia": "Rilevatore di fumi da installare.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa rilevatore di fumi.",
+                  "um": "cad"
+                }
+              ]
+            },
+            {
               "id": "74-ds-emergenza",
-              "titolo": "Illuminazione di emergenza non funzionante",
-              "testo": "All’interno del disimpegno è stata rilevata la presenza dell’illuminazione di emergenza. Al momento del sopralluogo, però, tale dispositivo non appariva correttamente funzionante (led segnalatore rosso). Si provveda a contattare apposita ditta per la manutenzione ed il ripristino del dispositivo.",
+              "titolo": "Illuminazione di emergenza: verifica",
+              "testo": "All’interno [del disimpegno / del locale] è stata rilevata la presenza dell’illuminazione di emergenza. [Al momento del sopralluogo, però, tale dispositivo non appariva correttamente funzionante (led segnalatore rosso). Si provveda a contattare apposita ditta per la manutenzione ed il ripristino del dispositivo. / Si provveda a trasmettere la documentazione di funzionamento del dispositivo.]",
               "didascalia": "Luce d’emergenza da ripristinare.",
               "lavorazioni": [
                 {
@@ -416,7 +471,7 @@
             {
               "id": "74-ds-contatore-aerato",
               "titolo": "Gas: contatore, alloggiamento aerato",
-              "testo": "Il contatore gas dovrà essere dotato di apposito alloggiamento aerato.",
+              "testo": "Il contatore gas dovrà essere dotato di apposito alloggiamento aerato. [Il contatore dovrà essere accessibile per la verifica, con le chiavi dello sportello in cassetta nell’androne.] [Lo sportello dovrà essere dotato di vetro safe-crash.]",
               "didascalia": "Alloggio contatore gas da rendere aerato.",
               "lavorazioni": [
                 {
@@ -431,67 +486,34 @@
               ]
             },
             {
-              "id": "74-ds-area-libera",
-              "titolo": "Vie libere: area di contatore, sgancio ed estintore",
-              "testo": "È stata riscontrata la presenza dei cassonetti dei rifiuti nelle vicinanze del contatore gas, del pulsante di sgancio e dell’estintore. Tale area deve essere sempre accessibile in caso di emergenza, pertanto dovrà essere libera.",
-              "didascalia": "Area da lasciare libera.",
-              "lavorazioni": []
-            },
-            {
               "id": "74-ds-gas-giallo",
               "titolo": "Gas: linea da colorare di giallo",
-              "testo": "La normativa di riferimento prevede che le tubazioni di adduzione del gas, dal contatore al generatore termico, devono essere contraddistinte con colore giallo. Attualmente tali tubazioni appaiono verniciate [dello stesso colore della facciata condominiale nel tratto esterno al fabbricato]. Si provveda dunque a verniciare l’intera linea di colore giallo, dal contatore al generatore.",
+              "testo": "La normativa di riferimento prevede che le tubazioni di adduzione del gas, dal contatore al generatore termico, devono essere contraddistinte con colore giallo [continuo / a bande di 20 cm poste a distanza massima di 1 m l’una dall’altra]. Attualmente tali tubazioni [appaiono verniciate dello stesso colore della facciata condominiale nel tratto esterno al fabbricato / presentano una verniciatura incompleta]. Si provveda dunque a [verniciare l’intera linea di colore giallo, dal contatore al generatore / completare la verniciatura gialla della linea, così da favorirne il riconoscimento].",
               "didascalia": "Linea gas da colorare di giallo.",
               "lavorazioni": [
                 {
                   "descrizione": "Tinteggiatura linea gas dal contatore al bruciatore in smalto giallo.",
                   "um": "a corpo"
                 }
-              ],
-              "gruppoEsclusivo": "gas-giallo"
+              ]
             },
             {
-              "id": "74-ds-gas-giallo-parz",
-              "titolo": "Gas: verniciatura gialla incompleta",
-              "testo": "È stata riscontrata durante il sopralluogo l’incompleta verniciatura del tubo gas, si provveda al suo restauro così da favorirne il riconoscimento.",
-              "didascalia": "Conduttura del gas da verniciare.",
+              "id": "74-ds-valvola-installare",
+              "titolo": "Gas: valvola di intercettazione da installare",
+              "testo": "Si provveda all’installazione della valvola manuale di intercettazione del gas presso il gruppo di misura, accessibile e segnalata con apposita cartellonistica conforme al D.lgs. 81/08.",
+              "didascalia": "Gruppo di misura del gas.",
               "lavorazioni": [
                 {
-                  "descrizione": "Tinteggiatura linea gas dal contatore al bruciatore in smalto giallo.",
-                  "um": "a corpo"
-                }
-              ],
-              "gruppoEsclusivo": "gas-giallo"
-            },
-            {
-              "id": "74-ds-valvola-cartello",
-              "titolo": "Gas: valvola di intercettazione, cartellonistica da installare",
-              "testo": "Si ricorda che la valvola d’intercettazione del gas deve essere ben segnalata con apposita cartellonistica conforme al D.lgs. 81/08, quindi provvedere alla sua installazione.",
-              "didascalia": "Cartellonistica da installare.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Fornitura e posa nuova cartellonistica.",
+                  "descrizione": "Fornitura e posa valvola manuale di intercettazione gas.",
                   "um": "cad"
                 }
               ],
               "gruppoEsclusivo": "valvola-gas"
             },
             {
-              "id": "74-ds-presidi-cartello",
-              "titolo": "Cartellonistica: presidi e centrale termica",
-              "testo": "Installare apposita cartellonistica indicante i presidi e la centrale termica.",
-              "didascalia": "Presidi e centrale termica.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Fornitura e posa nuova cartellonistica.",
-                  "um": "cad"
-                }
-              ]
-            },
-            {
               "id": "74-ds-sgancio-nuovo",
               "titolo": "Sgancio: pulsante da installare",
-              "testo": "Si provveda all’installazione di adeguato pulsante di sgancio nei pressi della centrale termica corredato da idonea cartellonistica conforme al D.lgs. 81/08.",
+              "testo": "Si provveda all’installazione di adeguato pulsante di sgancio [e dell’interruttore elettrico di emergenza] nei pressi della centrale termica corredato da idonea cartellonistica conforme al D.lgs. 81/08.",
               "didascalia": "Pulsante di sgancio.",
               "lavorazioni": [
                 {
@@ -537,17 +559,34 @@
           "voci": [
             {
               "id": "74-cf-termometro",
-              "titolo": "Canna fumaria: termometro presente",
-              "testo": "Al momento del sopralluogo è stata accertata la presenza del termometro atto a consentire il rilevamento della temperatura dei fumi sul canale, come prescritto dal D.P.R 1391/70.",
-              "didascalia": "Foro e termometro posti sul canale fumi.",
+              "titolo": "Canna fumaria: termometro e camera di raccolta presenti",
+              "testo": "Al momento del sopralluogo è stata verificata la presenza [del termometro atto a consentire il rilevamento della temperatura dei fumi sul canale, come prescritto dal D.P.R. 1391/70] [e] [della camera di raccolta posta alla base del tratto verticale del canale dei fumi].",
+              "didascalia": "Termometro e camera di raccolta.",
               "lavorazioni": []
             },
             {
-              "id": "74-cf-camera",
-              "titolo": "Canna fumaria: camera di raccolta presente",
-              "testo": "È stata verificata la presenza della camera di raccolta posta alla base del tratto verticale del canale dei fumi.",
-              "didascalia": "Camera di raccolta.",
-              "lavorazioni": []
+              "id": "74-cf-termometro-sostituire",
+              "titolo": "Canna fumaria: termometro ammalorato da sostituire",
+              "testo": "Il termometro presente sul canale dei fumi risulta ammalorato: si provveda alla sua sostituzione.",
+              "didascalia": "Termometro ammalorato.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Sostituzione del termometro sul canale dei fumi.",
+                  "um": "cad"
+                }
+              ]
+            },
+            {
+              "id": "74-cf-percorso",
+              "titolo": "Canna fumaria: canale fumi con percorso diverso dal progetto",
+              "testo": "Il canale dei fumi segue un percorso diverso da quello del progetto approvato[, attraversando locali cantinati]: dovrà essere compartimentato con materiali aventi caratteristiche di resistenza al fuoco non inferiori a REI [120], con certificazioni dei materiali e dichiarazione di corretta posa. [Il tratto danneggiato dovrà essere sostituito tramite la gestione calore.]",
+              "didascalia": "Canale fumi.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Compartimentazione del canale fumi con materiali REI [120].",
+                  "um": "a corpo"
+                }
+              ]
             },
             {
               "id": "74-cf-altezza-ok",
@@ -582,39 +621,13 @@
               "titolo": "Cartellonistica: contatore gas",
               "testo": "È stata riscontrata la presenza del contatore gas, corredato da apposita cartellonistica conforme al D.lgs. 81/08.",
               "didascalia": "Contatore gas.",
-              "lavorazioni": [],
-              "gruppoEsclusivo": "cartello-contatore"
-            },
-            {
-              "id": "74-cs-contatore-nuovo",
-              "titolo": "Cartellonistica: contatore gas da installare",
-              "testo": "Si provveda a corredare il contatore gas con apposita cartellonistica conforme al D.lgs. 81/08.",
-              "didascalia": "Contatore gas.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Fornitura e posa nuova cartellonistica.",
-                  "um": "cad"
-                }
-              ],
-              "gruppoEsclusivo": "cartello-contatore"
-            },
-            {
-              "id": "74-cs-interruttore",
-              "titolo": "Cartellonistica: interruttore generale",
-              "testo": "Si provveda a corredare l’interruttore generale con apposita cartellonistica.",
-              "didascalia": "Interruttore generale.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Fornitura e posa nuova cartellonistica.",
-                  "um": "cad"
-                }
-              ]
+              "lavorazioni": []
             },
             {
               "id": "74-cs-integrare",
-              "titolo": "Cartellonistica: integrare sgancio e valvola gas",
-              "testo": "Si provveda ad integrare la cartellonistica di riferimento relativa al pulsante di sgancio elettrico a servizio della centrale termica ed alla valvola di intercettazione manuale del gas.",
-              "didascalia": "Pulsante di sgancio – Valvola di intercettazione manuale del gas.",
+              "titolo": "Cartellonistica D.lgs. 81/08: da installare o integrare",
+              "testo": "Si provveda ad installare o integrare la cartellonistica, conforme al D.lgs. 81/08, relativa a: [contatore gas;] [valvola di intercettazione del gas;] [pulsante di sgancio elettrico;] [interruttore generale;] [estintore posto all’esterno del locale centrale termica;] [presidi e centrale termica.] [Sostituire i cartelli non conformi e rimuovere quelli di dispositivi non più presenti.]",
+              "didascalia": "Cartellonistica da installare.",
               "lavorazioni": [
                 {
                   "descrizione": "Fornitura e posa nuova cartellonistica.",
@@ -829,46 +842,6 @@
               "testo": "La porta dovrà essere apribile nel senso di fuga, pertanto essendo presente un lieve dislivello, sarà necessario installarla immediatamente dopo il gradino presente.",
               "didascalia": "Porta REI da installare.",
               "lavorazioni": []
-            },
-            {
-              "id": "75-fv-pvc-collari",
-              "titolo": "Compartimentazione: PVC nel filtro, collari",
-              "testo": "La porzione del vano scala [A], dove verrà realizzato il filtro, è attraversata da tubazioni in PVC. Sarà necessario proteggere le stesse con collari termo – espandenti nella porzione di attraversamento del sopraluce da realizzare.",
-              "didascalia": "Tubazioni passanti nel filtro.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Fornitura e posa collari termo – espandenti sulle tubazioni attraversanti le murature sul retro dei box ed i filtri.",
-                  "um": "a corpo"
-                }
-              ]
-            },
-            {
-              "id": "75-fv-pvc-cartongesso",
-              "titolo": "Compartimentazione: PVC nel filtro, cartongesso REI",
-              "testo": "Al momento del sopralluogo è stata riscontrata la presenza di un tratto di tubazione in PVC passante all’interno del filtro del vano scala [C]. Sarà necessario provvedere alla compartimentazione dello stesso mediante cartongesso avente caratteristiche di resistenza al fuoco non inferiori a REI [60].",
-              "didascalia": "Tubazione in PVC passante nel filtro scala [C].",
-              "lavorazioni": [
-                {
-                  "descrizione": "Compartimentazione della tubazione in PVC passante nel filtro mediante cartongesso REI [60].",
-                  "um": "a corpo"
-                }
-              ]
-            },
-            {
-              "id": "75-fv-griglia-lma",
-              "titolo": "Aerazione: griglia del locale macchine sul corsello",
-              "testo": "Il locale macchine ascensore è provvisto di una griglia di aerazione sfociante nel corsello. Al fine di garantire la corretta compartimentazione dell’autorimessa sarà necessario provvedere alla sostituzione della stessa con griglia in materiale termo – espandente avente le medesime dimensioni ([95 cm x 50 cm]).",
-              "didascalia": "Aerazione locale macchine ascensore.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Rimozione griglia di aerazione del locale macchine ascensore.",
-                  "um": "a corpo"
-                },
-                {
-                  "descrizione": "Fornitura e posa di griglia termo – espandente per l’aerazione del locale macchine ascensore (dimensioni [0,95 m x 0,50 m]), compresa assistenza muraria.",
-                  "um": "a corpo"
-                }
-              ]
             }
           ]
         },
@@ -878,13 +851,22 @@
           "voci": [
             {
               "id": "75-ar-griglia-ascensore",
-              "titolo": "Aerazione: griglia del locale ascensore sul corsello",
-              "testo": "I locali macchine ascensore sono provvisti di una griglia di aerazione sfociante nel corsello. Al fine di garantire la corretta compartimentazione dell’autorimessa sarà necessario provvedere alla sostituzione della stessa con griglia antincendio avente le medesime dimensioni, ovvero provvedere alla sua completa chiusura con materiale avente resistenza al fuoco non inferiore a REI 120.",
+              "titolo": "Aerazione: griglia del locale macchine sul corsello",
+              "testo": "[Il locale macchine ascensore è provvisto / I locali macchine ascensore sono provvisti] di una griglia di aerazione sfociante nel corsello. Al fine di garantire la corretta compartimentazione dell’autorimessa sarà necessario provvedere alla sostituzione della stessa con griglia [termo – espandente / antincendio] avente le medesime dimensioni ([95 cm x 50 cm]), ovvero alla sua completa chiusura con materiale avente resistenza al fuoco non inferiore a REI 120.",
               "didascalia": "Aerazione sfociante sul corsello.",
               "lavorazioni": [
                 {
+                  "descrizione": "Rimozione griglia di aerazione del locale macchine ascensore.",
+                  "um": "a corpo"
+                },
+                {
+                  "descrizione": "Fornitura e posa di griglia termo – espandente per l’aerazione del locale macchine ascensore (dimensioni [0,95 m x 0,50 m]), compresa assistenza muraria.",
+                  "um": "a corpo"
+                },
+                {
                   "descrizione": "Fornitura e posa griglia antincendio [Scala A], dimensioni [43x26] cm, compresa assistenza muraria.",
-                  "um": "cad"
+                  "um": "cad",
+                  "inclusa": false
                 }
               ],
               "gruppoEsclusivo": "griglie-autorimessa"
@@ -896,6 +878,30 @@
               "didascalia": "Griglie di aerazione.",
               "lavorazioni": [],
               "gruppoEsclusivo": "griglie-autorimessa"
+            },
+            {
+              "id": "75-ar-ventilazione",
+              "titolo": "Aerazione: ventilazione meccanica dual purpose",
+              "testo": "Poiché l’aerazione naturale risulta insufficiente[ (aerazione inferiore a 1/25 della superficie in pianta per i box oltre 40 mq)], quale misura compensativa dovrà essere previsto un impianto di ventilazione meccanica “dual purpose” (ventilazione normale e smaltimento fumi).",
+              "didascalia": "Aerazione dell’autorimessa.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Realizzazione di impianto di ventilazione meccanica “dual purpose”.",
+                  "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "75-ar-aerazioni-cantine",
+              "titolo": "Aerazione: chiusura di aperture sul corsello",
+              "testo": "Al fine di garantire la compartimentazione dell’autorimessa sarà necessario chiudere [le aerazioni dei locali cantinati / le forometrie prospicienti il corsello], rimuovendo [i canali di aerazione non previsti] [e i vetri degli infissi del corsello dei box], con materiali aventi resistenza al fuoco non inferiore a REI [120].",
+              "didascalia": "Aperture sul corsello.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Chiusura di aerazioni e forometrie sul corsello con materiali REI [120].",
+                  "um": "a corpo"
+                }
+              ]
             },
             {
               "id": "75-ar-corrimano",
@@ -911,25 +917,103 @@
             },
             {
               "id": "75-ar-cancello",
-              "titolo": "Vie d’esodo: cancello apribile nel senso di fuga",
-              "testo": "Il cancello situato all'inizio del passo carrabile e destinato anche all'esodo di emergenza dovrà aprirsi nel senso di fuga, in conformità ai requisiti previsti per le vie di esodo.",
+              "titolo": "Vie d’esodo: uscite di emergenza, maniglione e apertura",
+              "testo": "Le uscite di emergenza [sulle porte dei vani scala / in sommità alle rampe scala / sui portoni scorrevoli] dovranno essere dotate di maniglione antipanico e aprirsi nel senso di fuga, in conformità ai requisiti previsti per le vie di esodo; le porte d’esodo non vanno chiuse a chiave. [Il cancello situato all’inizio del passo carrabile e destinato anche all’esodo di emergenza dovrà aprirsi nel senso di fuga.] [Nei portoni scorrevoli deve essere ricavata una porta di almeno 90 cm.] [Il cancelletto chiuso a chiave va rimosso o dotato di maniglione.]",
               "didascalia": "Porta d’esodo rampa carrabile.",
               "lavorazioni": [
                 {
                   "descrizione": "Modifica del senso di apertura del cancello del passo carrabile secondo il verso dell’esodo.",
-                  "um": "a corpo"
+                  "um": "a corpo",
+                  "inclusa": false
+                },
+                {
+                  "descrizione": "Fornitura e posa di maniglione antipanico.",
+                  "um": "cad"
                 }
               ]
             },
             {
               "id": "75-ar-portone",
-              "titolo": "Porta: portone tagliafuoco non più necessario",
-              "testo": "A seguito del progetto, presentato al Comando Provinciale dei VV.F. di [Milano], la presenza del portone tagliafuoco avente classe di resistenza al fuoco pari a REI [120] non risulta più necessaria. Si provveda pertanto alla rimozione del dispositivo.",
+              "titolo": "Portone tagliafuoco non più necessario",
+              "testo": "A seguito del progetto, presentato al Comando Provinciale dei VV.F. di [Milano], la presenza del [portone tagliafuoco / porta] avente classe di resistenza al fuoco pari a REI [120] non risulta più necessaria. Si provveda pertanto alla rimozione del dispositivo[, lasciando il passaggio libero].",
               "didascalia": "Portone tagliafuoco.",
               "lavorazioni": [
                 {
                   "descrizione": "Rimozione del portone tagliafuoco non più necessario.",
                   "um": "cad"
+                }
+              ]
+            },
+            {
+              "id": "75-ar-setto",
+              "titolo": "Porta: setto da innalzare per la nuova porta",
+              "testo": "Per posare la nuova porta tagliafuoco [a singola / a doppia anta] di dimensioni [80+40 x 200] cm sarà necessario innalzare il setto divisorio esistente.",
+              "didascalia": "Setto divisorio.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Innalzamento del setto divisorio per la posa della porta tagliafuoco.",
+                  "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "75-ar-portoni-scorrevoli",
+              "titolo": "Portoni scorrevoli tra comparti",
+              "testo": "I portoni scorrevoli tra i comparti risultano [ammalorati / mancanti]. Dovranno essere [sostituiti / installati] portoni REI [90] collegati all’impianto di allarme (rivelatori termovelocimetrici) con rilascio automatico[; il fusibile termico va sostituito con elettromagnete solo dalla casa produttrice o da ditta autorizzata, per non far decadere l’omologa].",
+              "didascalia": "Portone scorrevole tra comparti.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa portone scorrevole REI [90] con rilascio automatico.",
+                  "um": "cad"
+                }
+              ]
+            },
+            {
+              "id": "75-ar-porte-manutenzione",
+              "titolo": "Porte e portoni tagliafuoco: manutenzione",
+              "testo": "Le porte e i portoni tagliafuoco dovranno essere sottoposti a manutenzione semestrale con targhetta e cartellino[; ripristinare gli elettromagneti, registrare l’autochiusura e rimuovere i fermaporta]. [Quelli in cattivo stato vanno sostituiti con modelli REI 120.]",
+              "didascalia": "Porte e portoni tagliafuoco.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Manutenzione di porte e portoni tagliafuoco.",
+                  "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "75-ar-uscita",
+              "titolo": "Vie d’esodo: uscita mancante o dimensioni insufficienti",
+              "testo": "[Il percorso d’esodo supera i 40 m / L’uscita di emergenza prevista dal progetto non è stata realizzata / Le porte di esodo non rispettano le dimensioni minime di 90 x 200 cm]. Sarà necessario [realizzare una nuova uscita con porta dotata di maniglione antipanico e autochiusura, previe verifiche strutturali del muro da demolire / sostituire le porte con modelli di dimensioni conformi].",
+              "didascalia": "Percorso d’esodo.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Realizzazione di nuova uscita di emergenza.",
+                  "um": "a corpo",
+                  "inclusa": false
+                }
+              ]
+            },
+            {
+              "id": "75-ar-quadri",
+              "titolo": "Compartimentazione: quadri elettrici e cassette contatori",
+              "testo": "I quadri elettrici e le cassette dei contatori presenti dovranno essere inseriti in strutture aventi resistenza al fuoco non inferiore a REI 120.",
+              "didascalia": "Quadri elettrici.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Realizzazione di strutture REI 120 per quadri elettrici e cassette contatori.",
+                  "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "75-ar-distacco",
+              "titolo": "Compartimentazione: autorimessa e edifici soprastanti",
+              "testo": "L’autorimessa dovrà essere compartimentata dagli edifici soprastanti mediante vani di distacco con murature EI [90] e porte EI [120]; le scale protette dovranno avere elementi REI/EI [60] e porte con kit di tenuta ai fumi. [I nuovi tramezzi comportano nuovi punti luce per compensare la luce persa.]",
+              "didascalia": "Vano di distacco.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Realizzazione di vani di distacco con murature EI [90] e porte EI [120].",
+                  "um": "a corpo"
                 }
               ]
             },
@@ -946,14 +1030,110 @@
               ]
             },
             {
+              "id": "75-ar-bande",
+              "titolo": "Vie d’esodo: bande catarifrangenti",
+              "testo": "Sui gradini del percorso d’esodo e sui restringimenti o cambi di direzione delle corsie dovranno essere applicate bande catarifrangenti [giallo/nere / rosso/bianche], come da progetto approvato[; specchi parabolici e semaforo di rampa devono essere sempre efficienti].",
+              "didascalia": "Bande catarifrangenti.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa bande catarifrangenti.",
+                  "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "75-ar-stoccaggio",
+              "titolo": "Vie libere: divieto di stoccaggio",
+              "testo": "Nell’autorimessa è vietato accatastare materiali combustibili e rifiuti. Si provveda a rimuovere [i rifiuti, il perlinato, il linoleum, le pareti in legno e il materiale d’ingombro] e a spostare i bidoni della spazzatura in locale idoneo.",
+              "didascalia": "Materiali da rimuovere.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Rimozione dei materiali depositati nell’autorimessa.",
+                  "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "75-ar-condizionatori",
+              "titolo": "Vie libere: macchine di condizionamento nel corsello",
+              "testo": "Si valuti la rimozione delle macchine di condizionamento presenti nel corsello, per ridurre le sorgenti di innesco.",
+              "didascalia": "Macchine di condizionamento.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Rimozione delle macchine di condizionamento dal corsello.",
+                  "um": "a corpo",
+                  "inclusa": false
+                }
+              ]
+            },
+            {
+              "id": "75-ar-difformita",
+              "titolo": "Difformità lievi dal progetto approvato",
+              "testo": "Sono state riscontrate lievi difformità rispetto al progetto approvato ([porta o locale non previsti / porte tagliafuoco e setti mancanti]). Prima di computare le opere va determinata la destinazione d’uso del locale; verrà valutata la dichiarazione di non aggravio del rischio da allegare alla S.C.I.A., anche per evitare le opere.",
+              "didascalia": "Difformità dal progetto.",
+              "lavorazioni": [],
+              "nonAggravio": true
+            },
+            {
+              "id": "75-ar-pavimento",
+              "titolo": "Pavimentazione sdrucciolevole",
+              "testo": "La pavimentazione dell’autorimessa scoperta risulta sdrucciolevole: dovrà essere sostituita secondo il § 3.8.1[; la parete con infissi verso l’interrato dovrà essere chiusa con materiale REI 120].",
+              "didascalia": "Pavimentazione.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Sostituzione della pavimentazione sdrucciolevole.",
+                  "um": "mq",
+                  "inclusa": false
+                }
+              ]
+            },
+            {
+              "id": "75-ar-intumescente",
+              "titolo": "Pareti in blocchi di calcestruzzo: pittura intumescente",
+              "testo": "Le pareti in blocchi di calcestruzzo da [9] cm dovranno essere riqualificate con pittura intumescente reattiva (EN 1364-1), previa esecuzione di saggi, per portarle alla resistenza al fuoco richiesta.",
+              "didascalia": "Pareti in blocchi.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Applicazione di pittura intumescente reattiva sulle pareti in blocchi.",
+                  "um": "mq",
+                  "inclusa": false
+                }
+              ]
+            },
+            {
+              "id": "75-ar-semaforo",
+              "titolo": "Rampe: impianto semaforico",
+              "testo": "Alla base e in sommità delle rampe a doppio senso, di dimensioni inferiori alla norma, dovranno essere presenti impianti semaforici sempre efficienti.",
+              "didascalia": "Rampa carrabile.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa di impianto semaforico alla base e in sommità della rampa.",
+                  "um": "a corpo",
+                  "inclusa": false
+                }
+              ]
+            },
+            {
+              "id": "75-ar-altezza",
+              "titolo": "Altezza netta inferiore a 2,40 m",
+              "testo": "L’altezza netta dell’autorimessa risulta inferiore a 2,40 m nella zona [valore]: caso particolare da valutare nel progetto antincendio.",
+              "didascalia": "Altezza netta dell’autorimessa.",
+              "lavorazioni": []
+            },
+            {
               "id": "75-ar-pvc-collari",
-              "titolo": "Compartimentazione: PVC cantine e retro box, collari",
-              "testo": "È stata riscontrata la presenza di tubazioni in PVC passanti all’interno dei corridoi delle cantine/retro dei box. Al fine di garantire la corretta compartimentazione dell’autorimessa sarà necessario provvedere alla posa di collari termo – espandenti in corrispondenza degli attraversamenti delle tubazioni in PVC nelle murature dal lato interno dei box.",
+              "titolo": "Compartimentazione: tubazioni in plastica (collari o cartongesso REI)",
+              "testo": "Sono presenti tubazioni in PVC passanti [all’interno dei corridoi delle cantine / dei retro dei box / nel filtro del vano scala]. Al fine di garantire la corretta compartimentazione dell’autorimessa sarà necessario provvedere [alla posa di collari termo – espandenti in corrispondenza degli attraversamenti delle murature / alla compartimentazione del tratto mediante cartongesso avente caratteristiche di resistenza al fuoco non inferiori a REI 60].",
               "didascalia": "Tubazioni in PVC passanti nelle murature.",
               "lavorazioni": [
                 {
                   "descrizione": "Fornitura e posa collari termo – espandenti sulle tubazioni attraversanti le murature sul retro dei box ed i filtri.",
                   "um": "a corpo"
+                },
+                {
+                  "descrizione": "Compartimentazione della tubazione in PVC passante nel filtro mediante cartongesso REI [60].",
+                  "um": "a corpo",
+                  "inclusa": false
                 }
               ]
             },
@@ -995,7 +1175,7 @@
             {
               "id": "75-ds-estintori",
               "titolo": "Estintori: numero e requisiti",
-              "testo": "Al momento del sopralluogo sono stati riscontrati n°[11] estintori.\nTali dispositivi di sicurezza devono possedere capacità estinguente non inferiore a [13 A – 233 B], essere corredati da apposita cartellonistica di ampiezza sufficiente per consentirne un’immediata individuazione e da cartellino relativo alle manutenzioni semestrali obbligatorie ai sensi del D.lgs. 81/08.",
+              "testo": "Il numero degli estintori presenti nell’autorimessa non dovrà mai essere inferiore a n° [8][, come previsto dal progetto approvato]. Al momento del sopralluogo sono stati riscontrati n° [11] estintori.\nTali dispositivi di sicurezza devono possedere capacità estinguente non inferiore a [13 A – 233 B], essere corredati da apposita cartellonistica di ampiezza sufficiente per consentirne un’immediata individuazione e da cartellino relativo alle manutenzioni semestrali obbligatorie ai sensi del D.lgs. 81/08.",
               "didascalia": "Alcuni degli estintori presenti.",
               "lavorazioni": [
                 {
@@ -1006,11 +1186,73 @@
               ]
             },
             {
-              "id": "75-ds-estintori-progetto",
-              "titolo": "Estintori: numero minimo da progetto",
-              "testo": "Il numero degli estintori presenti nell’autorimessa non dovrà mai essere inferiore a n°[8], come previsto dal progetto approvato. Al momento del sopralluogo è stata riscontrata la presenza di n°[19] presidi.",
-              "didascalia": "Alcuni estintori presenti nel corsello box.",
+              "id": "75-ds-estintori-eccesso",
+              "titolo": "Estintori in eccesso o abbandonati",
+              "testo": "Gli estintori non previsti dal progetto approvato, in eccesso o abbandonati, dovranno essere rimossi.",
+              "didascalia": "Estintori in eccesso.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Rimozione degli estintori non previsti dal progetto.",
+                  "um": "cad"
+                }
+              ]
+            },
+            {
+              "id": "75-ds-emergenza",
+              "titolo": "Illuminazione di emergenza: verifica",
+              "testo": "L’illuminazione di emergenza [è presente e soggetta a manutenzione ordinaria / dovrà essere realizzata e certificata (non inferiore a 5 lux sulle vie d’esodo)]. Si provveda a verificarne il funzionamento, sostituire le lampade esaurite e trasmettere la relativa documentazione.",
+              "didascalia": "Illuminazione di emergenza.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Ripristino del dispositivo di illuminazione di emergenza.",
+                  "um": "cad",
+                  "inclusa": false
+                }
+              ]
+            },
+            {
+              "id": "75-ds-attivi",
+              "titolo": "Impianti di protezione attiva: manutenzione",
+              "testo": "Gli impianti di protezione attiva presenti ([sprinkler / ventilazione meccanica / rilevazione fumo, CO e miscele]) devono essere soggetti a manutenzione semestrale da parte di ditta incaricata, con firma sul registro dei presidi[ e cartellonistica agli accessi].",
+              "didascalia": "Impianti di protezione attiva.",
               "lavorazioni": []
+            },
+            {
+              "id": "75-ds-sgancio",
+              "titolo": "Sgancio: pulsante da installare",
+              "testo": "Si provveda all’installazione del pulsante di sgancio generale presso [l’ingresso / le rampe carrabili] dell’autorimessa[, e di un pulsante per ogni comparto (n° 2)], corredato da idonea cartellonistica conforme al D.lgs. 81/08.",
+              "didascalia": "Pulsante di sgancio.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa in opera di pulsante di sgancio in scatola isolante rossa, con grado di protezione IP55, azionabile con la rottura del vetro di protezione.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Segnalazione luminosa a corredo del pulsante di sgancio.",
+                  "um": "cad"
+                },
+                {
+                  "descrizione": "Assistenza muraria per l’installazione ed il tracciamento della linea.",
+                  "um": "a corpo"
+                },
+                {
+                  "descrizione": "Fornitura ed installazione linea in PVC dalla distribuzione principale al pulsante.",
+                  "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "75-ds-pompe",
+              "titolo": "Locale pompe: estintori",
+              "testo": "Nel locale pompe dovrà essere presente un estintore con capacità estinguente non inferiore a [34 A – 144 B][ e un estintore a CO2 se la potenza elettrica supera i 40 kW].",
+              "didascalia": "Locale pompe.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Fornitura e posa estintore nel locale pompe.",
+                  "um": "cad",
+                  "inclusa": false
+                }
+              ]
             }
           ]
         },
@@ -1096,6 +1338,32 @@
               ]
             },
             {
+              "id": "75-ia-dismissione",
+              "titolo": "Idranti non richiesti: dismissione (autorimessa fino a 50 auto)",
+              "testo": "Poiché la capienza dell’autorimessa non supera i 50 autoveicoli [oppure: l’autorimessa si sviluppa su un solo piano interrato] (§ 6.1.0), l’impianto idranti non è richiesto. Si propone la dismissione degli idranti non necessari, con rimozione della cassetta e posa di tappo in ottone.",
+              "didascalia": "Idranti non necessari.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Dismissione degli idranti non necessari.",
+                  "um": "cad",
+                  "inclusa": false
+                }
+              ]
+            },
+            {
+              "id": "75-ia-progetto",
+              "titolo": "Progetto dell’impianto idrico antincendio",
+              "testo": "Dovrà essere redatto il progetto dell’impianto idrico antincendio secondo la norma UNI 10779[, comprensivo di nuova rete, secondo contatore e gruppo di pompaggio].",
+              "didascalia": "Impianto idrico antincendio.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Redazione del progetto dell’impianto idrico antincendio.",
+                  "um": "a corpo",
+                  "inclusa": false
+                }
+              ]
+            },
+            {
               "id": "75-ar-attacco-nuovo",
               "titolo": "Attacco motopompa: da installare",
               "testo": "Dovrà essere installato un attacco autopompa UNI 70, internamente in prossimità dell’entrata del passo carrabile, correlato da apposito cartello d’identificazione, a servizio esclusivo dell’autorimessa, ben visibile e facilmente raggiungibile. Sarà cura del manutentore dell’impianto, accertarsi della presenza del disconnettore e filtro idraulico come da normativa vigente.",
@@ -1155,29 +1423,27 @@
           "voci": [
             {
               "id": "75-cs-integrare",
-              "titolo": "Cartellonistica: vie d’esodo da integrare",
-              "testo": "Si provveda ad integrare la cartellonistica, conforme al D.lgs 81/08, indicante le vie d’esodo ed il relativo percorso per raggiungerle.",
+              "titolo": "Cartellonistica: vie d’esodo",
+              "testo": "Si provveda ad [integrare / installare] la cartellonistica di sicurezza, conforme al D.lgs 81/08, indicante le vie d’esodo ed il relativo percorso per raggiungerle[, bifacciale a bandiera sopra le uscite verso i vani scala].",
               "didascalia": "Corsello box.",
               "lavorazioni": [
                 {
                   "descrizione": "Fornitura e posa nuova cartellonistica.",
                   "um": "cad"
                 }
-              ],
-              "gruppoEsclusivo": "segnaletica-esodo"
+              ]
             },
             {
-              "id": "75-cs-installare",
-              "titolo": "Cartellonistica: vie d’esodo da installare",
-              "testo": "Sarà necessaria l’installazione della segnaletica di sicurezza lungo le vie d’esodo.",
-              "didascalia": "Segnaletica da installare.",
+              "id": "75-cs-norme",
+              "titolo": "Cartellonistica: norme di esercizio dell’autorimessa",
+              "testo": "Si provveda ad installare la cartellonistica con le norme di esercizio e di comportamento all’interno dell’autorimessa [e all’ingresso dell’autorimessa].",
+              "didascalia": "Ingresso autorimessa.",
               "lavorazioni": [
                 {
                   "descrizione": "Fornitura e posa nuova cartellonistica.",
                   "um": "cad"
                 }
-              ],
-              "gruppoEsclusivo": "segnaletica-esodo"
+              ]
             },
             {
               "id": "75-cs-sgancio",
@@ -1221,6 +1487,14 @@
             "Relazione con la tipologia dei materiali;",
             "Requisiti tecnico professionali dell’impresa esecutrice."
           ],
+          "predefinita": false
+        },
+        {
+          "testo": "Dichiarazione di Conformità dell’impianto di sovrappressione e di corretta posa in opera;",
+          "predefinita": false
+        },
+        {
+          "testo": "Dichiarazione di Conformità dell’impianto di rilevazione fumo/calore (RFC) collegato ai portoni REI;",
           "predefinita": false
         },
         {
@@ -1293,26 +1567,9 @@
             },
             {
               "id": "77-vs-aer-no",
-              "titolo": "Aerazione: vano scala, assente (rimozione vetri)",
-              "testo": "Al momento del sopralluogo non è stata rilevata la presenza dell’aerazione permanente in sommità del vano scala. Sarà necessario provvedere alla rimozione degli infissi vetrati presenti fino al raggiungimento di una superfice almeno pari a 1,00 mq, condizione soddisfatta con la rimozione di almeno n°[4] vetri presenti.\nProvvedere inoltre alla fornitura e posa di griglie alettate nella porzione dell’intervento.",
+              "titolo": "Aerazione: vano scala, assente",
+              "testo": "Nello stabile è presente n° [1] vano scala, avente altezza antincendio pari a [valore] m. Al momento del sopralluogo non è stata rilevata la presenza dell’aerazione permanente in sommità del vano scala (≥ 1,00 mq). Sarà necessario provvedere alla rimozione degli infissi vetrati presenti fino al raggiungimento di una superficie almeno pari a 1,00 mq, condizione soddisfatta con la rimozione di almeno n°[4] vetri presenti.\nProvvedere inoltre alla fornitura e posa di griglie alettate nella porzione dell’intervento[, dello stesso colore del telaio].",
               "didascalia": "Apertura di aerazione del vano scala.",
-              "lavorazioni": [
-                {
-                  "descrizione": "Rimozione vetrata vani scala.",
-                  "um": "a corpo"
-                },
-                {
-                  "descrizione": "Fornitura e posa “alette in lamiera” per aerazione vano scala.",
-                  "um": "a corpo"
-                }
-              ],
-              "gruppoEsclusivo": "aerazione-vano-scala"
-            },
-            {
-              "id": "77-vs-aer-altezza",
-              "titolo": "Aerazione: vano scala, assente con altezza antincendio",
-              "testo": "Nello stabile è presente n°[1] vano scala, avente altezza antincendio pari a [valore] m. Durante il sopralluogo non è stata riscontrata l’aerazione permanente presente in sommità del vano scala ≥ 1,00 m², sarà pertanto necessario provvedere alla sostituzione dei vetri della finestra sufficienti fino al raggiungimento di una superficie non inferiore ad 1 mq con protezioni metalliche alettate.",
-              "didascalia": "Aereazione permanente.",
               "lavorazioni": [
                 {
                   "descrizione": "Rimozione vetrata vani scala.",
@@ -1330,6 +1587,40 @@
               "titolo": "Porta: REI al piano copertura non in progetto",
               "testo": "Si segnala la presenza, al piano [copertura], di una porta REI non riportata nel progetto approvato, la cui presenza potrebbe ostacolare il passaggio dei fumi, in caso di incendio, verso le aperture di aerazione permanente indicate dal progetto approvato stesso. Si ritiene opportuno, prima di fornire indicazioni operative in merito a tale porta, attendere l'esito del sopralluogo e il relativo verdetto del Comando dei Vigili del Fuoco.",
               "didascalia": "Porta non riportata nel progetto.",
+              "lavorazioni": []
+            },
+            {
+              "id": "77-vs-porte-promemoria",
+              "titolo": "Porte: il progetto non le prevede (promemoria)",
+              "testo": "Se il progetto approvato non prevede porte tagliafuoco, non si ravvisa la necessità di sostituirle; si segnala tuttavia che gli ispettori VV.F. potrebbero prescriverle in fase di sopralluogo.",
+              "didascalia": "Porte esistenti.",
+              "lavorazioni": []
+            },
+            {
+              "id": "77-vs-rilevatori",
+              "titolo": "Rilevatori in sommità: verifica del funzionamento",
+              "testo": "I rilevatori in sommità collegati agli elettromagneti degli infissi dovranno essere verificati nel funzionamento.",
+              "didascalia": "Rilevatori in sommità.",
+              "lavorazioni": []
+            },
+            {
+              "id": "77-vs-gas-giallo",
+              "titolo": "Tubazione gas a vista da colorare di giallo",
+              "testo": "La tubazione del gas a vista dovrà essere colorata di giallo e identificata nel tratto.",
+              "didascalia": "Tubazione gas a vista.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Tinteggiatura della tubazione gas a vista in smalto giallo.",
+                  "um": "a corpo",
+                  "inclusa": false
+                }
+              ]
+            },
+            {
+              "id": "77-vs-autoscale",
+              "titolo": "Accostamento autoscale VV.F.",
+              "testo": "Il Comando ha prescritto l’accostamento delle autoscale dei VV.F.: la prescrizione dovrà essere rispettata.",
+              "didascalia": "Accesso dei mezzi di soccorso.",
               "lavorazioni": []
             },
             {
@@ -1383,7 +1674,7 @@
             {
               "id": "77-vs-oggetti",
               "titolo": "Vie d’esodo: oggetti lungo le vie",
-              "testo": "È vietato porre qualsiasi genere di materiale lungo le vie d’esodo in modo da non creare intralcio in caso di necessità; pertanto, sarà necessario rimuovere gli oggetti nel vano scala e nei pianerottoli dal piano [copertura] al piano [terra].",
+              "testo": "È vietato porre qualsiasi genere di materiale lungo le vie d’esodo in modo da non creare intralcio in caso di necessità; pertanto, sarà necessario rimuovere gli oggetti [(fioriere, materiali, oggetti vicino ai presidi antincendio)] nel vano scala e nei pianerottoli dal piano [copertura] al piano [terra].",
               "didascalia": "Oggetti da rimuovere.",
               "lavorazioni": [
                 {
@@ -1401,7 +1692,7 @@
             {
               "id": "77-vs-lma-aer-ok",
               "titolo": "Aerazione: locale macchine, presente",
-              "testo": "È stata riscontrata un’apertura d’areazione, all’interno del locale tecnico ascensore, che soddisfa i requisiti necessari (> 1 mq.) per un corretto smaltimento dei fumi in caso di incendio.",
+              "testo": "È stata riscontrata [un’apertura d’areazione, all’interno del locale tecnico ascensore, che soddisfa i requisiti necessari (> 1 mq.) per un corretto smaltimento dei fumi in caso di incendio / un’apertura per l’aerazione naturale permanentemente aperta].",
               "didascalia": "Areazione presente nel locale macchine ascensore.",
               "lavorazioni": [],
               "gruppoEsclusivo": "aerazione-locale-macchine"
@@ -1422,6 +1713,25 @@
                 }
               ],
               "gruppoEsclusivo": "aerazione-locale-macchine"
+            },
+            {
+              "id": "77-lm-foro-solai",
+              "titolo": "Foro comunicante con i solai: chiusura",
+              "testo": "Nel locale macchine ascensore è presente un foro comunicante con i solai: dovrà essere chiuso con materiali aventi resistenza al fuoco non inferiore a REI [30].",
+              "didascalia": "Foro comunicante con i solai.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Chiusura del foro comunicante con i solai con materiali REI [30].",
+                  "um": "a corpo"
+                }
+              ]
+            },
+            {
+              "id": "77-lm-camini",
+              "titolo": "Aerazione: camini dei vani corsa",
+              "testo": "Si provveda a verificare i camini di aerazione dei vani corsa, che devono avere sezione di 0,20 mq e sfociare in atmosfera.",
+              "didascalia": "Camini di aerazione.",
+              "lavorazioni": []
             },
             {
               "id": "77-vs-lma-porta-rei30",
@@ -1463,14 +1773,6 @@
               "didascalia": "Porta accesso locale ascensore.",
               "lavorazioni": [],
               "gruppoEsclusivo": "porta-locale-macchine"
-            },
-            {
-              "id": "77-lm-aer-naturale",
-              "titolo": "Aerazione: locale macchine, naturale permanentemente aperta",
-              "testo": "Al momento del sopralluogo, il locale macchine ascensore risultava dotato di apertura per l’aerazione naturale permanentemente aperta.",
-              "didascalia": "Aereazione permanente, locale ascensore.",
-              "lavorazioni": [],
-              "gruppoEsclusivo": "aerazione-locale-macchine"
             }
           ]
         },
@@ -1522,7 +1824,7 @@
             {
               "id": "77-me-manichette",
               "titolo": "Manichette obsolete o prive di manutenzione e collaudo",
-              "testo": "Al momento del sopralluogo le manichette si presentavano [obsolete,] prive del collaudo e della manutenzione semestrale da parte dell’impresa manutentrice. Si provveda pertanto alla loro sostituzione, ovvero al collaudo delle stesse, contattando la ditta manutentrice dei presidi.",
+              "testo": "Al momento del sopralluogo le manichette si presentavano [obsolete,] prive del collaudo e della manutenzione semestrale da parte dell’impresa manutentrice. Si provveda pertanto alla loro sostituzione, ovvero al collaudo delle stesse, contattando la ditta manutentrice dei presidi. [Le lance in rame non conformi alla UNI 10779 (punto 3.11) vanno sostituite con modelli UNI EN 671-2.]",
               "didascalia": "Manichette scadute e manutenzione semestrale assente.",
               "lavorazioni": [
                 {
@@ -1556,24 +1858,42 @@
               ]
             },
             {
-              "id": "77-me-attacco",
-              "titolo": "Attacco motopompa: cartellonistica da integrare",
-              "testo": "Completa l’impianto antincendio n. 1 attacco di mandata per motopompa dei VV.F., posto [nei pressi dell’entrata del passo carrabile], corredato da idonea cartellonistica conforme D.lgs. 81/08[, da porre fuori dalla cassetta per una più rapida individuazione, e da cartellino di manutenzione semestrale].",
-              "didascalia": "Attacco di mandata per motopompa VV.F.",
+              "id": "77-me-quadri",
+              "titolo": "Idranti: oggetti davanti alle cassette",
+              "testo": "Davanti alle cassette degli idranti sono presenti [quadri / oggetti]: dovranno essere rimossi, perché le cassette siano sempre visibili e accessibili.",
+              "didascalia": "Cassetta idranti.",
               "lavorazioni": [
                 {
-                  "descrizione": "Fornitura e posa cartello per attacco di mandata per motopompa VV.F.",
-                  "um": "cad",
-                  "inclusa": false
+                  "descrizione": "Rimozione di quadri e oggetti davanti alle cassette degli idranti.",
+                  "um": "a corpo"
                 }
-              ],
-              "gruppoEsclusivo": "attacco-motopompa"
+              ]
             },
             {
-              "id": "77-me-attacco-unico",
-              "titolo": "Attacco motopompa: a servizio di più colonne",
-              "testo": "A completare l’impianto idrico antincendio è presente n°1 attacco di mandata per autopompa dei VV.F. di tipo UNI 70, posto a servizio di entrambe le colonne montanti. Corredarlo di cartellonistica conforme al D.lgs. 81/08.",
-              "didascalia": "Attacco di mandata per motopompa.",
+              "id": "77-ia-pressione",
+              "titolo": "Targhetta di manutenzione: pressione da chiarire",
+              "testo": "La targhetta di manutenzione riporta una pressione di [3,8] bar, senza specificare se statica o dinamica. Si richiede alla ditta manutentrice il rapporto di funzionalità dell’impianto.",
+              "didascalia": "Targhetta di manutenzione.",
+              "lavorazioni": []
+            },
+            {
+              "id": "77-ia-progetto",
+              "titolo": "Progetto dell’impianto idrico antincendio",
+              "testo": "Dovrà essere redatto il progetto dell’impianto idrico antincendio secondo la norma UNI 10779[, comprensivo di gruppo di pompaggio].",
+              "didascalia": "Impianto idrico antincendio.",
+              "lavorazioni": [
+                {
+                  "descrizione": "Redazione del progetto dell’impianto idrico antincendio.",
+                  "um": "a corpo",
+                  "inclusa": false
+                }
+              ]
+            },
+            {
+              "id": "77-me-attacco",
+              "titolo": "Attacco motopompa: cartellonistica da integrare",
+              "testo": "Completa l’impianto idrico antincendio n° [1] attacco di mandata per motopompa dei VV.F.[ di tipo UNI 70], posto [nei pressi dell’entrata del passo carrabile][ e a servizio di entrambe le colonne montanti], corredato da idonea cartellonistica conforme al D.lgs. 81/08[, da porre fuori dalla cassetta per una più rapida individuazione, e da cartellino di manutenzione semestrale].",
+              "didascalia": "Attacco di mandata per motopompa VV.F.",
               "lavorazioni": [
                 {
                   "descrizione": "Fornitura e posa cartello per attacco di mandata per motopompa VV.F.",
@@ -1625,7 +1945,7 @@
             {
               "id": "77-cs-vie",
               "titolo": "Cartellonistica: vie d’esodo a ogni piano",
-              "testo": "Si provveda all’installazione dell’apposita cartellonistica indicante i percorsi e le vie d’esodo ad ogni piano del vano scala [dall’ottavo al piano rialzato].",
+              "testo": "Si provveda all’installazione dell’apposita cartellonistica indicante i percorsi e le vie d’esodo ad ogni piano del vano scala [dall’ottavo al piano rialzato][ e nell’atrio condominiale].",
               "didascalia": "Segnaletica via di fuga da installare.",
               "lavorazioni": [
                 {
@@ -1637,7 +1957,7 @@
             {
               "id": "77-cs-presidi",
               "titolo": "Cartellonistica: presidi da corredare",
-              "testo": "Si provveda a corredare i presidi con cartellonistica conforme al D.lgs. 81/08.",
+              "testo": "Si provveda a corredare i presidi (presidi antincendio ad ogni piano, estintori, attacco autopompa) con cartellonistica conforme al D.lgs. 81/08.",
               "didascalia": "",
               "lavorazioni": [
                 {

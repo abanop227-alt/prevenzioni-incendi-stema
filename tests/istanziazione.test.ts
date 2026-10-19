@@ -247,7 +247,7 @@ describe('impianto idrico antincendio: una voce, un esito, i rilievi', () => {
       const altrove = f.sezioni.filter((x) => x.id !== sez).flatMap((x) => x.voci);
       expect(altrove.filter((v) => /idrant|manichett|UNI 10779|motopompa/i.test(v.testo))).toEqual([]);
     }
-    const uni = cat.famiglie.flatMap((f) => f.sezioni.flatMap((x) => x.voci)).filter((v) => v.testo.includes('UNI 10779'));
+    const uni = cat.famiglie.flatMap((f) => f.sezioni.flatMap((x) => x.voci)).filter((v) => v.testo.includes('UNI 10779-2014'));
     expect(uni).toHaveLength(2); // una per tipo (75 e 77), con lo stesso testo
     expect(uni[0].testo).toBe(uni[1].testo);
   });
@@ -272,20 +272,20 @@ describe('impianto idrico antincendio: una voce, un esito, i rilievi', () => {
     expect(['77-ia-descrizione', '77-me-manichette', '77-me-idranti-mancanti'].every((id) => voce(s, id).selezionata)).toBe(true);
   });
 
-  it('i tre attacchi motopompa si escludono a vicenda', () => {
+  it('gli attacchi motopompa si escludono a vicenda', () => {
     let s = sopralluogoCon(['77.1.A']);
-    for (const id of ['77-me-attacco', '77-me-attacco-unico']) {
+    for (const id of ['77-me-attacco', '77-me-attacco-safecrash']) {
       voce(s, id).selezionata = true;
       s = applicaEsclusivita(s, cat, voce(s, id).key);
     }
     expect(voce(s, '77-me-attacco').selezionata).toBe(false);
-    expect(voce(s, '77-me-attacco-unico').selezionata).toBe(true);
+    expect(voce(s, '77-me-attacco-safecrash').selezionata).toBe(true);
   });
 
   it('una sola voce per le porte REI/EI da sostituire in ogni sezione', () => {
     const porte = cat.famiglie.flatMap((f) => f.sezioni.flatMap((x) => x.voci)).filter((v) => v.id.includes('porta-sostituire') || v.id === '77-vs-lma-porta-80');
-    expect(porte.map((v) => v.id).sort()).toEqual(['75-fv-porta-sostituire', '77-lt-porta-sostituire', '77-vs-lma-porta-80']);
-    for (const v of porte) {
+    expect(porte.map((v) => v.id).sort()).toEqual(['74-ct-porta-sostituire', '75-fv-porta-sostituire', '77-lt-porta-sostituire', '77-vs-lma-porta-80']);
+    for (const v of porte.filter((x) => !x.id.startsWith('74'))) {
       expect(v.lavorazioni.map((l) => l.inclusa !== false)).toEqual([true, true, true, false]);
     }
   });
@@ -375,8 +375,35 @@ describe('alternative che si escludono', () => {
     expect(voce(s, '74-ct-pot-ok').selezionata).toBe(false);
     expect(voce(s, '74-ct-pot-diff').selezionata).toBe(true);
     // la voce di aerazione, di un altro gruppo, non viene toccata
-    voce(s, '74-ct-aer-334').selezionata = true;
-    s = applicaEsclusivita(s, cat, voce(s, '74-ct-aer-334').key);
+    voce(s, '74-ct-aer-ok').selezionata = true;
+    s = applicaEsclusivita(s, cat, voce(s, '74-ct-aer-ok').key);
     expect(voce(s, '74-ct-pot-diff').selezionata).toBe(true);
+  });
+});
+
+describe('fusione delle voci simili (ottobre 2026)', () => {
+  it('gli id della libreria sono unici e le voci fuse non esistono più', () => {
+    const ids = cat.famiglie.flatMap((f) => f.sezioni.flatMap((x) => x.voci.map((v) => v.id)));
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const vecchio of ['74-ct-pot-scia', '74-ct-aer-fin', '74-ds-gas-giallo-parz', '74-ds-presidi-cartello', '75-cs-installare', '75-fv-pvc-collari', '77-me-attacco-unico', '77-lm-aer-naturale'])
+      expect(ids, vecchio).not.toContain(vecchio);
+  });
+
+  it('una pratica con una voce eliminata dalla fusione la conserva con il suo testo', () => {
+    let s = sopralluogoCon(['74.1.A']);
+    const base = voce(s, '74-ct-aer-ok');
+    s.voci.push({ ...base, key: '74-ct-aer-fin@74-ct@74.1.A', voceId: '74-ct-aer-fin', selezionata: true, testo: 'Aerazione da finestre (testo già compilato).' });
+    s = sincronizza(s, cat);
+    const vecchia = s.voci.find((v) => v.voceId === '74-ct-aer-fin')!;
+    expect(vecchia.selezionata).toBe(true);
+    expect(vecchia.testo).toBe('Aerazione da finestre (testo già compilato).');
+    expect(sincronizza(s, cat)).toBe(s);
+  });
+
+  it('la cartellonistica da installare è una sola voce con la lavorazione del cartello', () => {
+    const f = cat.famiglie.find((x) => x.id === '74')!;
+    const voci = f.sezioni.flatMap((x) => x.voci).filter((v) => /cartellonistica/i.test(v.titolo) && v.id !== '74-cs-contatore');
+    expect(voci.map((v) => v.id)).toEqual(['74-cs-integrare']);
+    expect(voci[0].lavorazioni[0].descrizione).toMatch(/cartellonistica/i);
   });
 });

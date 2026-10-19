@@ -519,6 +519,8 @@ f75 = {
     C("Dichiarazione di Conformità dell’impianto idrico antincendio (rete idranti) redatto da professionista abilitato:", sotto("impianto idrico", False, False)),
     C("Dichiarazione di Conformità al D.M. 37/08 dell’impianto elettrico:", sotto("impianto elettrico", False, False)),
     C("Dichiarazione di Conformità dell’impianto rilevazione fumi:", sotto("impianto elettrico", False, False), predefinita=False),
+    C("Dichiarazione di Conformità dell’impianto di sovrappressione e di corretta posa in opera;", predefinita=False),
+    C("Dichiarazione di Conformità dell’impianto di rilevazione fumo/calore (RFC) collegato ai portoni REI;", predefinita=False),
     C("Dichiarazione di Conformità e Omologazione degli estintori, idranti presenti, corredati delle verifiche semestrali obbligatorie ai sensi della UNI EN 671-3;"),
     C("Contratto di manutenzione presidi fissi (idranti) e mobili (estintori) con apposita ditta;"),
     C("Dichiarazione di Conformità dei prodotti utilizzati per ripristinare le caratteristiche REI di eventuali pareti o tubazioni (intonaci ignifughi, malte e cartongessi REI, …);"),
@@ -817,6 +819,343 @@ TITOLI = {
   "77-lt-porta-sostituire": "Porta REI/EI: locale tecnico (contatori, autoclave, solaio) da sostituire, con sopraluce",
   "77-lt-solaio-estintori": "Estintori: piano solaio da integrare", "77-lt-solaio-cartelli": "Cartellonistica: divieto di deposito e passaggi ribassati (solaio)",
 }
+# ---------------------------------------------------------------------------------------------
+# Fusione delle voci simili e voci nuove da 3 cataloghi di ROA (ottobre 2026).
+# Le varianti della stessa frase diventano alternative [a / b] dentro una sola voce; il "conforme" e il
+# "da adeguare" restano voci separate (gruppo esclusivo). La voce fusa tiene l'id della prima: le pratiche
+# salvate la ritrovano; le istanze delle voci eliminate restano con il loro testo.
+# ---------------------------------------------------------------------------------------------
+_FAM = {f["id"]: f for f in libreria["famiglie"]}
+_RIMOSSE = set()
+def _sez(fam, sez_id): return next(s for s in _FAM[fam]["sezioni"] if s["id"] == sez_id)
+def _rimuovi(ids):
+  for f in libreria["famiglie"]:
+    for s in f["sezioni"]:
+      s["voci"] = [v for v in s["voci"] if v["id"] not in ids]
+  _RIMOSSE.update(ids)
+def _vecchie(ids):
+  return {i: copy.deepcopy(next(v for f in libreria["famiglie"] for s in f["sezioni"] for v in s["voci"] if v["id"] == i)) for i in ids}
+def _fondi(fam, sez_id, ids, voce):
+  """Sostituisce le voci `ids` con `voce` (nella posizione della prima presente in `sez_id`, altrimenti in coda)."""
+  sez = _sez(fam, sez_id)
+  pos = next((i for i, v in enumerate(sez["voci"]) if v["id"] in ids), len(sez["voci"]))
+  prima = sum(1 for v in sez["voci"][:pos] if v["id"] in ids)
+  _rimuovi([i for i in ids if i != voce["id"]])
+  sez["voci"] = [v for v in sez["voci"] if v["id"] != voce["id"]]
+  sez["voci"].insert(pos - prima, voce)
+def _dopo(fam, sez_id, dopo_id, voci):
+  sez = _sez(fam, sez_id)
+  pos = next((i + 1 for i, v in enumerate(sez["voci"]) if v["id"] == dopo_id), len(sez["voci"]))
+  sez["voci"][pos:pos] = voci
+def _mod(id_, **m):
+  v = _per_id_tmp()[id_]
+  v.update(m)
+def _per_id_tmp(): return {v["id"]: v for f in libreria["famiglie"] for s in f["sezioni"] for v in s["voci"]}
+def _titolo_libero(*ids):
+  for i in ids: TITOLI.pop(i, None)
+
+# ===== Attività 74: fusioni =====
+_fondi("74", "74-ct", ["74-ct-pot-ok", "74-ct-pot-scia", "74-ct-pot-progetto"],
+  V("74-ct-pot-ok", "Potenzialità: conforme al progetto",
+    "[Al momento del sopralluogo / Durante il sopralluogo] è stato possibile verificare la corretta corrispondenza della portata termica della caldaia presente, ovvero pari a [valore] kW, rispetto al progetto approvato dal Comando dei VV.F.",
+    "Portata termica riscontrata."))
+_fondi("74", "74-ct", ["74-ct-aer-ok", "74-ct-aer-fin", "74-ct-aer-porta", "74-ct-aer-334"],
+  V("74-ct-aer-ok", "Aerazione: presente e dimensionata",
+    "Durante il sopralluogo è stata riscontrata l’aerazione permanente del locale centrale termica, correttamente dimensionata come previsto nel progetto approvato: [assicurata da due finestre, entrambe dotate di griglie metalliche e mantenute costantemente aperte / realizzata con porta grigliata avente superficie di griglia superiore ad 1 mq e ventole di aerazione / a filo soletta]. Il punto § 3.3.4 della Normativa stabilisce che le aperture di aerazione devono essere realizzate e collocate in modo da evitare la formazione di sacche di gas: al momento del sopralluogo è stata verificata tale prescrizione.",
+    "Aerazione presente nel locale centrale termica."))
+_fondi("74", "74-ct", ["74-ct-autochiusura", "74-ct-porta-verificare"],
+  V("74-ct-autochiusura", "Porta: autochiusura mancante o da verificare",
+    "[Il locale centrale termica è prospiciente sull’intercapedine antincendio che comunica con le cantine dell’edificio attraverso un disimpegno.] Al momento del sopralluogo [risultava assente il dispositivo di autochiusura della porta in ferro di accesso al locale centrale termica / la porta tagliafuoco rimaneva aperta, non garantendo così la delimitazione del comparto antincendio / le porte tagliafuoco rimanevano aperte, non garantendo così la delimitazione del comparto antincendio]. Al fine di garantire la compartimentazione della centrale termica, [sarà necessario provvedere all’installazione del dispositivo di autochiusura, come previsto dalla normativa vigente / dovrà essere verificata la porta tagliafuoco, affinché possa chiudersi liberamente / dovranno essere verificate le due porte tagliafuoco, affinché possano chiudersi liberamente].",
+    "Porta di accesso alla centrale termica.",
+    [L("Ripristino dispositivi di autochiusura.", "cad"), L("Fornitura e posa di congegno di autochiusura.", "cad", False)]))
+_fondi("74", "74-ct", ["74-ct-collari", "74-ct-forometria"],
+  V("74-ct-forometria", "Compartimentazione: forometrie e tubazioni in plastica",
+    "Al fine di garantire la compartimentazione del locale centrale termica sarà necessario [sigillare la forometria esistente / ripristinare tutti i fori presenti nel locale] con materiali aventi caratteristiche di resistenza al fuoco non inferiori a EI 120. Le tubazioni in materiale plastico [insediate nel muro e nella soletta] dovranno essere dotate di collari intumescenti aventi caratteristiche di resistenza al fuoco non inferiori a EI 120.",
+    "Fori e tubazioni da compartimentare.",
+    [L("Ripristini forometrie esistenti con materiali certificati al fuoco almeno EI 120.", "a corpo"), L("Fornitura e posa collari termoespandenti EI 120.", "cad")]))
+_fondi("74", "74-ds", ["74-ds-gas-giallo", "74-ds-gas-giallo-parz"],
+  V("74-ds-gas-giallo", "Gas: linea da colorare di giallo",
+    "La normativa di riferimento prevede che le tubazioni di adduzione del gas, dal contatore al generatore termico, devono essere contraddistinte con colore giallo [continuo / a bande di 20 cm poste a distanza massima di 1 m l’una dall’altra]. Attualmente tali tubazioni [appaiono verniciate dello stesso colore della facciata condominiale nel tratto esterno al fabbricato / presentano una verniciatura incompleta]. Si provveda dunque a [verniciare l’intera linea di colore giallo, dal contatore al generatore / completare la verniciatura gialla della linea, così da favorirne il riconoscimento].",
+    "Linea gas da colorare di giallo.",
+    [L("Tinteggiatura linea gas dal contatore al bruciatore in smalto giallo.", "a corpo")]))
+_fondi("74", "74-ds", ["74-ds-estintore-ok", "74-ds-estintori-gruppi"],
+  V("74-ds-estintore-ok", "Estintori: numero e requisiti",
+    "Si ricorda che il numero degli estintori non dovrà mai essere inferiore a n° [1] [oppure: al numero dei gruppi della centrale termica], posizionati in prossimità della centrale termica. Gli estintori dovranno possedere capacità estinguente non inferiore a [21 A – 89 BC / 34 A – 144 B], corredati da apposita cartellonistica di ampiezza sufficiente per consentirne un’immediata individuazione e da cartellino per la manutenzione semestrale ai sensi del D.lgs. 81/08. [Al momento del sopralluogo il presidio risultava presente e correttamente manutenuto, nonché segnalato. / Al momento del sopralluogo è stato riscontrato un solo estintore.]",
+    "Estintori a servizio della centrale termica.",
+    [L("Fornitura e posa estintore in acciaio, omologato, a polvere, 6 kg, 34A 233BC, con gancio a muro.", "cad", False), L("Fornitura e posa gancio per estintore.", "cad", False)]))
+_fondi("74", "74-ds", ["74-ds-estintore-noman", "74-ds-cartellino"],
+  V("74-ds-estintore-noman", "Estintori: manutenzione semestrale",
+    "[Durante il sopralluogo è stata riscontrata l’assenza di manutenzione sull’estintore posizionato all’interno della centrale termica. Pertanto, si dovrà provvedere alla sua manutenzione e/o sostituzione, se necessario, da parte della ditta manutentrice dei presidi antincendio. / Si ricorda che gli estintori devono essere soggetti a manutenzione semestrale con firma e timbro da apporre su appositi cartellini, ai sensi del D.lgs. 81/08. Sarà pertanto necessario provvedere al controllo periodico dei presidi, compilando il cartellino di manutenzione a corredo.]",
+    "Estintore presente privo di manutenzione.",
+    [L("Manutenzione e/o sostituzione dell’estintore a servizio della centrale termica.", "cad")]))
+_fondi("74", "74-cs", ["74-cs-integrare", "74-cs-contatore-nuovo", "74-cs-interruttore", "74-ds-valvola-cartello", "74-ds-presidi-cartello", "74-ds-estintore-cartello"],
+  V("74-cs-integrare", "Cartellonistica D.lgs. 81/08: da installare o integrare",
+    "Si provveda ad installare o integrare la cartellonistica, conforme al D.lgs. 81/08, relativa a: [contatore gas;] [valvola di intercettazione del gas;] [pulsante di sgancio elettrico;] [interruttore generale;] [estintore posto all’esterno del locale centrale termica;] [presidi e centrale termica.] [Sostituire i cartelli non conformi e rimuovere quelli di dispositivi non più presenti.]",
+    "Cartellonistica da installare.", [CARTELLONISTICA]))
+_fondi("74", "74-cf", ["74-cf-termometro", "74-cf-camera"],
+  V("74-cf-termometro", "Canna fumaria: termometro e camera di raccolta presenti",
+    "Al momento del sopralluogo è stata verificata la presenza [del termometro atto a consentire il rilevamento della temperatura dei fumi sul canale, come prescritto dal D.P.R. 1391/70] [e] [della camera di raccolta posta alla base del tratto verticale del canale dei fumi].",
+    "Termometro e camera di raccolta."))
+_fondi("74", "74-ct", ["74-ct-materiale", "74-ds-area-libera"],
+  V("74-ct-materiale", "Vie libere: divieto di deposito",
+    "Si ricorda che [all’interno del locale disimpegno / nelle vicinanze del contatore gas, del pulsante di sgancio e dell’estintore] è assolutamente vietato depositare qualsiasi tipo di materiale e/o sostanza, perché l’area deve essere sempre accessibile in caso di emergenza. Si provveda pertanto alla rimozione di tutto il materiale [e dei cassonetti dei rifiuti] rilevato in fase di sopralluogo.",
+    "Materiale presente da rimuovere.", [L("Rimozione del materiale depositato nel locale disimpegno.", "a corpo")]))
+
+# ===== Attività 74: ampliamenti di voci esistenti =====
+_mod("74-ct-cartongesso", testo=_per_id_tmp()["74-ct-cartongesso"]["testo"] + "\n[Le tubazioni fognarie o pluviali non deviabili dovranno essere racchiuse in un cassonetto in cartongesso EI 120, con botola d’ispezione EI 120 e dichiarazione di corretta posa.]")
+_mod("74-ds-contatore-aerato", testo="Il contatore gas dovrà essere dotato di apposito alloggiamento aerato. [Il contatore dovrà essere accessibile per la verifica, con le chiavi dello sportello in cassetta nell’androne.] [Lo sportello dovrà essere dotato di vetro safe-crash.]")
+_mod("74-ct-serbatoio", titolo="Serbatoio a gasolio dismesso: bonifica e rimozione",
+     testo="Si provveda alla rimozione [della maniglia a strappo del vecchio serbatoio a gasolio, ormai rimosso / dei dispositivi di sicurezza del vecchio impianto a gasolio dismesso] e, ove presente il serbatoio, alla sua bonifica, inertizzazione e rimozione (divieto per le caldaie a gasolio in vigore a Milano dall’ottobre 2023).")
+_mod("74-ds-sgancio-nuovo", testo="Si provveda all’installazione di adeguato pulsante di sgancio [e dell’interruttore elettrico di emergenza] nei pressi della centrale termica corredato da idonea cartellonistica conforme al D.lgs. 81/08.")
+_mod("74-ds-emergenza", titolo="Illuminazione di emergenza: verifica",
+     testo="All’interno [del disimpegno / del locale] è stata rilevata la presenza dell’illuminazione di emergenza. [Al momento del sopralluogo, però, tale dispositivo non appariva correttamente funzionante (led segnalatore rosso). Si provveda a contattare apposita ditta per la manutenzione ed il ripristino del dispositivo. / Si provveda a trasmettere la documentazione di funzionamento del dispositivo.]")
+_titolo_libero("74-ct-serbatoio")
+
+# ===== Attività 74: voci nuove =====
+_dopo("74", "74-ct", "74-ct-aer-ok", [
+  V("74-ct-aer-ostruita", "Aerazione: griglie ostruite da liberare",
+    "Durante il sopralluogo le griglie di aerazione del locale risultavano ostruite da [ante / bidoni / plastica / infissi vetrati]. Si provveda alla rimozione di quanto presente, per garantire l’aerazione permanente su parete esterna[, e alla posa di griglie con alette antipioggia o protezione metallica alettata, senza ridurre la superficie netta aerante].",
+    "Griglie di aerazione ostruite.",
+    [L("Rimozione delle ostruzioni dalle griglie di aerazione.", "a corpo"), L("Fornitura e posa di griglie alettate per l’aerazione del locale.", "a corpo", False)])])
+_dopo("74", "74-ct", "74-ct-autochiusura", [
+  V("74-ct-porta-sostituire", "Porta REI: da sostituire",
+    "La porta di accesso al locale centrale termica [in ferro] risulta [ammalorata / priva di certificazione REI / assente (telaio privo di porta)]. Sarà necessario sostituirla con porta avente caratteristiche di resistenza al fuoco non inferiori a REI [120], dimensioni minime [0,80 x 2,00] m, dotata di autochiusura, targhetta identificativa e apertura nel verso dell’esodo.",
+    "Porta di accesso alla centrale termica.", [RIM_PORTE, PORTA_REI]),
+  V("74-ct-porta-regola", "Porta tagliafuoco: posata non a regola d’arte",
+    "La porta tagliafuoco [di accesso al locale / dell’intercapedine] risulta posata non a regola d’arte ([telaio non conforme / anta non allineata]). Sarà necessario riposizionarla o sostituirla, con dichiarazione di corretta posa.",
+    "Porta tagliafuoco posata non a regola d’arte.", [L("Riposizionamento o sostituzione della porta tagliafuoco posata non a regola d’arte.", "cad")])])
+_dopo("74", "74-ct", "74-ct-cartongesso", [
+  V("74-ct-linea-gas", "Compartimentazione: linea gas nelle cantine e nei corridoi",
+    "La tubazione di adduzione del gas attraversa [i locali cantinati comuni / i corridoi delle cantine] fino al gruppo di misura. Come da progetto approvato dovrà essere protetta con alloggiamento (coppelle o controtubo) avente resistenza al fuoco predeterminata non inferiore a REI [30 / 120] (§ 2.3.3.2), con certificazione dei materiali e dichiarazione di corretta posa.",
+    "Tubazione gas nei locali comuni.", [L("Rivestimento con materiale REI [120] della tubazione gas.", "a corpo")]),
+  V("74-ct-soletta", "Compartimentazione: soletta o orizzontamento EI 120",
+    "Per garantire la compartimentazione della centrale termica sarà necessario riqualificare [la soletta in cemento armato / l’orizzontamento] del locale con caratteristiche non inferiori a EI 120, mediante lastre in calcio fibrosilicato o in gesso rivestito ad alte prestazioni, stuccatura dei giunti e finitura. Il tutto dovrà essere documentato con certificati di conformità dei materiali e dichiarazione di corretta posa.",
+    "Soletta della centrale termica.",
+    [L("Riqualificazione antincendio con certificazione REI 120 di soletta in cemento armato, costituita da lastra di calcio fibrosilicato ad alte prestazioni in classe A1. Stuccatura dei giunti, stesura di rete in fibra di vetro, mano di isolante inibente e due mani di pittura per interni lavabile bianca.", "mq")]),
+  V("74-ct-armatura", "Strutture: armatura a vista da risanare",
+    "Sono presenti armature a vista da risanare con trattamento protettivo e malte tissotropiche[; i fori lasciati dai vecchi passaggi dovranno essere chiusi con botole di ispezione EI 120].",
+    "Armatura a vista.",
+    [L("Risanamento delle armature a vista con trattamento protettivo e malte tissotropiche.", "a corpo"), L("Chiusura dei fori con botole EI 120.", "a corpo", False)]),
+  V("74-ct-disimpegno-ok", "Disimpegno: conforme",
+    "Il locale disimpegno ha superficie di almeno 2 mq ([valore] mq) e aerazione permanente di almeno 0,5 mq ([valore] mq).",
+    "Locale disimpegno."),
+  V("74-ct-disimpegno-no", "Disimpegno o intercapedine: mancante o non conforme",
+    "[Il disimpegno risulta mancante / L’intercapedine non è ad uso esclusivo ed è comunicante con altri locali]. Sarà necessario [realizzare setti EI 120 con porte EI 120 (apertura nel verso corretto), spostando il pulsante di sgancio e gli interruttori che interferiscono / chiudere porta e finestre / realizzare una nuova parete EI 120 con porta EI 120].",
+    "Disimpegno o intercapedine.", [L("Realizzazione di setti EI 120 con porta EI 120.", "a corpo")])])
+_dopo("74", "74-ds", "74-ds-gas-giallo", [
+  V("74-ds-valvola-installare", "Gas: valvola di intercettazione da installare",
+    "Si provveda all’installazione della valvola manuale di intercettazione del gas presso il gruppo di misura, accessibile e segnalata con apposita cartellonistica conforme al D.lgs. 81/08.",
+    "Gruppo di misura del gas.", [L("Fornitura e posa valvola manuale di intercettazione gas.", "cad")])])
+_dopo("74", "74-cf", "74-cf-termometro", [
+  V("74-cf-termometro-sostituire", "Canna fumaria: termometro ammalorato da sostituire",
+    "Il termometro presente sul canale dei fumi risulta ammalorato: si provveda alla sua sostituzione.",
+    "Termometro ammalorato.", [L("Sostituzione del termometro sul canale dei fumi.", "cad")]),
+  V("74-cf-percorso", "Canna fumaria: canale fumi con percorso diverso dal progetto",
+    "Il canale dei fumi segue un percorso diverso da quello del progetto approvato[, attraversando locali cantinati]: dovrà essere compartimentato con materiali aventi caratteristiche di resistenza al fuoco non inferiori a REI [120], con certificazioni dei materiali e dichiarazione di corretta posa. [Il tratto danneggiato dovrà essere sostituito tramite la gestione calore.]",
+    "Canale fumi.", [L("Compartimentazione del canale fumi con materiali REI [120].", "a corpo")])])
+# rare
+_dopo("74", "74-ct", "74-ct-nulla-osta", [
+  V("74-ct-difformita-area", "Difformità dell’area intorno alla centrale termica",
+    "L’area intorno alla centrale termica risulta difforme da quanto riportato nel progetto approvato: sarà necessario aggiornare il progetto prima della presentazione della S.C.I.A.",
+    "Area intorno alla centrale termica."),
+  V("74-ct-dismessa", "Centrale termica dismessa o cessata",
+    "La centrale termica risulta [dismessa (teleriscaldamento) / non più in uso]. Verrà presentata al Comando VV.F. la comunicazione di cessata attività[ e, in fase di S.C.I.A., la dichiarazione di non aggravio del rischio]. Occorrono il libretto d’impianto e i documenti dell’amministratore.",
+    "Centrale termica dismessa."),
+  V("74-ct-titolari", "Più centrali con titolari diversi",
+    "Sono presenti più locali o caldaie con titolari diversi: si valuti la presentazione di S.C.I.A. distinte per ciascun titolare.",
+    "Centrali termiche.")])
+_dopo("74", "74-ds", "74-ds-rilevatore", [
+  V("74-ds-rilevatore-fumi", "Rilevatore di fumi da installare",
+    "Si provveda all’installazione di rilevatore di fumi nel locale [centrale termica / disimpegno].",
+    "Rilevatore di fumi da installare.", [L("Fornitura e posa rilevatore di fumi.", "cad")])])
+
+# ===== Attività 75: fusioni =====
+_fondi("75", "75-ds", ["75-ds-estintori", "75-ds-estintori-progetto"],
+  V("75-ds-estintori", "Estintori: numero e requisiti",
+    "Il numero degli estintori presenti nell’autorimessa non dovrà mai essere inferiore a n° [8][, come previsto dal progetto approvato]. Al momento del sopralluogo sono stati riscontrati n° [11] estintori.\nTali dispositivi di sicurezza devono possedere capacità estinguente non inferiore a [13 A – 233 B], essere corredati da apposita cartellonistica di ampiezza sufficiente per consentirne un’immediata individuazione e da cartellino relativo alle manutenzioni semestrali obbligatorie ai sensi del D.lgs. 81/08.",
+    "Alcuni degli estintori presenti.",
+    [L("Fornitura e posa estintore in polvere da 6 KG.", "cad", False)]))
+_fondi("75", "75-ar", ["75-ar-griglia-ascensore", "75-fv-griglia-lma"],
+  V("75-ar-griglia-ascensore", "Aerazione: griglia del locale macchine sul corsello",
+    "[Il locale macchine ascensore è provvisto / I locali macchine ascensore sono provvisti] di una griglia di aerazione sfociante nel corsello. Al fine di garantire la corretta compartimentazione dell’autorimessa sarà necessario provvedere alla sostituzione della stessa con griglia [termo – espandente / antincendio] avente le medesime dimensioni ([95 cm x 50 cm]), ovvero alla sua completa chiusura con materiale avente resistenza al fuoco non inferiore a REI 120.",
+    "Aerazione sfociante sul corsello.",
+    [L("Rimozione griglia di aerazione del locale macchine ascensore.", "a corpo"),
+     L("Fornitura e posa di griglia termo – espandente per l’aerazione del locale macchine ascensore (dimensioni [0,95 m x 0,50 m]), compresa assistenza muraria.", "a corpo"),
+     L("Fornitura e posa griglia antincendio [Scala A], dimensioni [43x26] cm, compresa assistenza muraria.", "cad", False)]))
+_fondi("75", "75-ar", ["75-ar-pvc-collari", "75-fv-pvc-collari", "75-fv-pvc-cartongesso"],
+  V("75-ar-pvc-collari", "Compartimentazione: tubazioni in plastica (collari o cartongesso REI)",
+    "Sono presenti tubazioni in PVC passanti [all’interno dei corridoi delle cantine / dei retro dei box / nel filtro del vano scala]. Al fine di garantire la corretta compartimentazione dell’autorimessa sarà necessario provvedere [alla posa di collari termo – espandenti in corrispondenza degli attraversamenti delle murature / alla compartimentazione del tratto mediante cartongesso avente caratteristiche di resistenza al fuoco non inferiori a REI 60].",
+    "Tubazioni in PVC passanti nelle murature.",
+    [L("Fornitura e posa collari termo – espandenti sulle tubazioni attraversanti le murature sul retro dei box ed i filtri.", "a corpo"),
+     L("Compartimentazione della tubazione in PVC passante nel filtro mediante cartongesso REI [60].", "a corpo", False)]))
+_fondi("75", "75-cs", ["75-cs-integrare", "75-cs-installare"],
+  V("75-cs-integrare", "Cartellonistica: vie d’esodo",
+    "Si provveda ad [integrare / installare] la cartellonistica di sicurezza, conforme al D.lgs 81/08, indicante le vie d’esodo ed il relativo percorso per raggiungerle[, bifacciale a bandiera sopra le uscite verso i vani scala].",
+    "Corsello box.", [CARTELLONISTICA]))
+_fondi("75", "75-ar", ["75-ar-cancello"],
+  V("75-ar-cancello", "Vie d’esodo: uscite di emergenza, maniglione e apertura",
+    "Le uscite di emergenza [sulle porte dei vani scala / in sommità alle rampe scala / sui portoni scorrevoli] dovranno essere dotate di maniglione antipanico e aprirsi nel senso di fuga, in conformità ai requisiti previsti per le vie di esodo; le porte d’esodo non vanno chiuse a chiave. [Il cancello situato all’inizio del passo carrabile e destinato anche all’esodo di emergenza dovrà aprirsi nel senso di fuga.] [Nei portoni scorrevoli deve essere ricavata una porta di almeno 90 cm.] [Il cancelletto chiuso a chiave va rimosso o dotato di maniglione.]",
+    "Porta d’esodo rampa carrabile.",
+    [L("Modifica del senso di apertura del cancello del passo carrabile secondo il verso dell’esodo.", "a corpo", False), L("Fornitura e posa di maniglione antipanico.", "cad")]))
+_mod("75-ar-portone", testo="A seguito del progetto, presentato al Comando Provinciale dei VV.F. di [Milano], la presenza del [portone tagliafuoco / porta] avente classe di resistenza al fuoco pari a REI [120] non risulta più necessaria. Si provveda pertanto alla rimozione del dispositivo[, lasciando il passaggio libero].")
+
+# ===== Attività 75: voci nuove =====
+_dopo("75", "75-ar", "75-ar-griglie", [
+  V("75-ar-ventilazione", "Aerazione: ventilazione meccanica dual purpose",
+    "Poiché l’aerazione naturale risulta insufficiente[ (aerazione inferiore a 1/25 della superficie in pianta per i box oltre 40 mq)], quale misura compensativa dovrà essere previsto un impianto di ventilazione meccanica “dual purpose” (ventilazione normale e smaltimento fumi).",
+    "Aerazione dell’autorimessa.", [L("Realizzazione di impianto di ventilazione meccanica “dual purpose”.", "a corpo")]),
+  V("75-ar-aerazioni-cantine", "Aerazione: chiusura di aperture sul corsello",
+    "Al fine di garantire la compartimentazione dell’autorimessa sarà necessario chiudere [le aerazioni dei locali cantinati / le forometrie prospicienti il corsello], rimuovendo [i canali di aerazione non previsti] [e i vetri degli infissi del corsello dei box], con materiali aventi resistenza al fuoco non inferiore a REI [120].",
+    "Aperture sul corsello.", [L("Chiusura di aerazioni e forometrie sul corsello con materiali REI [120].", "a corpo")])])
+_dopo("75", "75-ar", "75-ar-portone", [
+  V("75-ar-setto", "Porta: setto da innalzare per la nuova porta",
+    "Per posare la nuova porta tagliafuoco [a singola / a doppia anta] di dimensioni [80+40 x 200] cm sarà necessario innalzare il setto divisorio esistente.",
+    "Setto divisorio.", [L("Innalzamento del setto divisorio per la posa della porta tagliafuoco.", "a corpo")]),
+  V("75-ar-portoni-scorrevoli", "Portoni scorrevoli tra comparti",
+    "I portoni scorrevoli tra i comparti risultano [ammalorati / mancanti]. Dovranno essere [sostituiti / installati] portoni REI [90] collegati all’impianto di allarme (rivelatori termovelocimetrici) con rilascio automatico[; il fusibile termico va sostituito con elettromagnete solo dalla casa produttrice o da ditta autorizzata, per non far decadere l’omologa].",
+    "Portone scorrevole tra comparti.", [L("Fornitura e posa portone scorrevole REI [90] con rilascio automatico.", "cad")]),
+  V("75-ar-porte-manutenzione", "Porte e portoni tagliafuoco: manutenzione",
+    "Le porte e i portoni tagliafuoco dovranno essere sottoposti a manutenzione semestrale con targhetta e cartellino[; ripristinare gli elettromagneti, registrare l’autochiusura e rimuovere i fermaporta]. [Quelli in cattivo stato vanno sostituiti con modelli REI 120.]",
+    "Porte e portoni tagliafuoco.", [L("Manutenzione di porte e portoni tagliafuoco.", "a corpo")]),
+  V("75-ar-uscita", "Vie d’esodo: uscita mancante o dimensioni insufficienti",
+    "[Il percorso d’esodo supera i 40 m / L’uscita di emergenza prevista dal progetto non è stata realizzata / Le porte di esodo non rispettano le dimensioni minime di 90 x 200 cm]. Sarà necessario [realizzare una nuova uscita con porta dotata di maniglione antipanico e autochiusura, previe verifiche strutturali del muro da demolire / sostituire le porte con modelli di dimensioni conformi].",
+    "Percorso d’esodo.", [L("Realizzazione di nuova uscita di emergenza.", "a corpo", False)]),
+  V("75-ar-quadri", "Compartimentazione: quadri elettrici e cassette contatori",
+    "I quadri elettrici e le cassette dei contatori presenti dovranno essere inseriti in strutture aventi resistenza al fuoco non inferiore a REI 120.",
+    "Quadri elettrici.", [L("Realizzazione di strutture REI 120 per quadri elettrici e cassette contatori.", "a corpo")]),
+  V("75-ar-distacco", "Compartimentazione: autorimessa e edifici soprastanti",
+    "L’autorimessa dovrà essere compartimentata dagli edifici soprastanti mediante vani di distacco con murature EI [90] e porte EI [120]; le scale protette dovranno avere elementi REI/EI [60] e porte con kit di tenuta ai fumi. [I nuovi tramezzi comportano nuovi punti luce per compensare la luce persa.]",
+    "Vano di distacco.", [L("Realizzazione di vani di distacco con murature EI [90] e porte EI [120].", "a corpo")])])
+_dopo("75", "75-ar", "75-ar-plafoni", [
+  V("75-ar-bande", "Vie d’esodo: bande catarifrangenti",
+    "Sui gradini del percorso d’esodo e sui restringimenti o cambi di direzione delle corsie dovranno essere applicate bande catarifrangenti [giallo/nere / rosso/bianche], come da progetto approvato[; specchi parabolici e semaforo di rampa devono essere sempre efficienti].",
+    "Bande catarifrangenti.", [L("Fornitura e posa bande catarifrangenti.", "a corpo")]),
+  V("75-ar-stoccaggio", "Vie libere: divieto di stoccaggio",
+    "Nell’autorimessa è vietato accatastare materiali combustibili e rifiuti. Si provveda a rimuovere [i rifiuti, il perlinato, il linoleum, le pareti in legno e il materiale d’ingombro] e a spostare i bidoni della spazzatura in locale idoneo.",
+    "Materiali da rimuovere.", [L("Rimozione dei materiali depositati nell’autorimessa.", "a corpo")]),
+  V("75-ar-condizionatori", "Vie libere: macchine di condizionamento nel corsello",
+    "Si valuti la rimozione delle macchine di condizionamento presenti nel corsello, per ridurre le sorgenti di innesco.",
+    "Macchine di condizionamento.", [L("Rimozione delle macchine di condizionamento dal corsello.", "a corpo", False)]),
+  V("75-ar-difformita", "Difformità lievi dal progetto approvato",
+    "Sono state riscontrate lievi difformità rispetto al progetto approvato ([porta o locale non previsti / porte tagliafuoco e setti mancanti]). Prima di computare le opere va determinata la destinazione d’uso del locale; verrà valutata la dichiarazione di non aggravio del rischio da allegare alla S.C.I.A., anche per evitare le opere.",
+    "Difformità dal progetto.", nonAggravio=True),
+  V("75-ar-pavimento", "Pavimentazione sdrucciolevole",
+    "La pavimentazione dell’autorimessa scoperta risulta sdrucciolevole: dovrà essere sostituita secondo il § 3.8.1[; la parete con infissi verso l’interrato dovrà essere chiusa con materiale REI 120].",
+    "Pavimentazione.", [L("Sostituzione della pavimentazione sdrucciolevole.", "mq", False)]),
+  V("75-ar-intumescente", "Pareti in blocchi di calcestruzzo: pittura intumescente",
+    "Le pareti in blocchi di calcestruzzo da [9] cm dovranno essere riqualificate con pittura intumescente reattiva (EN 1364-1), previa esecuzione di saggi, per portarle alla resistenza al fuoco richiesta.",
+    "Pareti in blocchi.", [L("Applicazione di pittura intumescente reattiva sulle pareti in blocchi.", "mq", False)]),
+  V("75-ar-semaforo", "Rampe: impianto semaforico",
+    "Alla base e in sommità delle rampe a doppio senso, di dimensioni inferiori alla norma, dovranno essere presenti impianti semaforici sempre efficienti.",
+    "Rampa carrabile.", [L("Fornitura e posa di impianto semaforico alla base e in sommità della rampa.", "a corpo", False)]),
+  V("75-ar-altezza", "Altezza netta inferiore a 2,40 m",
+    "L’altezza netta dell’autorimessa risulta inferiore a 2,40 m nella zona [valore]: caso particolare da valutare nel progetto antincendio.",
+    "Altezza netta dell’autorimessa.")])
+_dopo("75", "75-ds", "75-ds-estintori", [
+  V("75-ds-estintori-eccesso", "Estintori in eccesso o abbandonati",
+    "Gli estintori non previsti dal progetto approvato, in eccesso o abbandonati, dovranno essere rimossi.",
+    "Estintori in eccesso.", [L("Rimozione degli estintori non previsti dal progetto.", "cad")]),
+  V("75-ds-emergenza", "Illuminazione di emergenza: verifica",
+    "L’illuminazione di emergenza [è presente e soggetta a manutenzione ordinaria / dovrà essere realizzata e certificata (non inferiore a 5 lux sulle vie d’esodo)]. Si provveda a verificarne il funzionamento, sostituire le lampade esaurite e trasmettere la relativa documentazione.",
+    "Illuminazione di emergenza.", [L("Ripristino del dispositivo di illuminazione di emergenza.", "cad", False)]),
+  V("75-ds-attivi", "Impianti di protezione attiva: manutenzione",
+    "Gli impianti di protezione attiva presenti ([sprinkler / ventilazione meccanica / rilevazione fumo, CO e miscele]) devono essere soggetti a manutenzione semestrale da parte di ditta incaricata, con firma sul registro dei presidi[ e cartellonistica agli accessi].",
+    "Impianti di protezione attiva."),
+  V("75-ds-sgancio", "Sgancio: pulsante da installare",
+    "Si provveda all’installazione del pulsante di sgancio generale presso [l’ingresso / le rampe carrabili] dell’autorimessa[, e di un pulsante per ogni comparto (n° 2)], corredato da idonea cartellonistica conforme al D.lgs. 81/08.",
+    "Pulsante di sgancio.",
+    [L("Fornitura e posa in opera di pulsante di sgancio in scatola isolante rossa, con grado di protezione IP55, azionabile con la rottura del vetro di protezione.", "cad"),
+     L("Segnalazione luminosa a corredo del pulsante di sgancio.", "cad"),
+     L("Assistenza muraria per l’installazione ed il tracciamento della linea.", "a corpo"),
+     L("Fornitura ed installazione linea in PVC dalla distribuzione principale al pulsante.", "a corpo")]),
+  V("75-ds-pompe", "Locale pompe: estintori",
+    "Nel locale pompe dovrà essere presente un estintore con capacità estinguente non inferiore a [34 A – 144 B][ e un estintore a CO2 se la potenza elettrica supera i 40 kW].",
+    "Locale pompe.", [L("Fornitura e posa estintore nel locale pompe.", "cad", False)])])
+_dopo("75", "75-ia", "75-ia-safecrash", [
+  V("75-ia-dismissione", "Idranti non richiesti: dismissione (autorimessa fino a 50 auto)",
+    "Poiché la capienza dell’autorimessa non supera i 50 autoveicoli [oppure: l’autorimessa si sviluppa su un solo piano interrato] (§ 6.1.0), l’impianto idranti non è richiesto. Si propone la dismissione degli idranti non necessari, con rimozione della cassetta e posa di tappo in ottone.",
+    "Idranti non necessari.", [L("Dismissione degli idranti non necessari.", "cad", False)]),
+  V("75-ia-progetto", "Progetto dell’impianto idrico antincendio",
+    "Dovrà essere redatto il progetto dell’impianto idrico antincendio secondo la norma UNI 10779[, comprensivo di nuova rete, secondo contatore e gruppo di pompaggio].",
+    "Impianto idrico antincendio.", [L("Redazione del progetto dell’impianto idrico antincendio.", "a corpo", False)])])
+_dopo("75", "75-cs", "75-cs-integrare", [
+  V("75-cs-norme", "Cartellonistica: norme di esercizio dell’autorimessa",
+    "Si provveda ad installare la cartellonistica con le norme di esercizio e di comportamento all’interno dell’autorimessa [e all’ingresso dell’autorimessa].",
+    "Ingresso autorimessa.", [CARTELLONISTICA])])
+
+# ===== Attività 77: fusioni =====
+_fondi("77", "77-vs", ["77-vs-aer-no", "77-vs-aer-altezza"],
+  V("77-vs-aer-no", "Aerazione: vano scala, assente",
+    "Nello stabile è presente n° [1] vano scala, avente altezza antincendio pari a [valore] m. Al momento del sopralluogo non è stata rilevata la presenza dell’aerazione permanente in sommità del vano scala (≥ 1,00 mq). Sarà necessario provvedere alla rimozione degli infissi vetrati presenti fino al raggiungimento di una superficie almeno pari a 1,00 mq, condizione soddisfatta con la rimozione di almeno n°[4] vetri presenti.\nProvvedere inoltre alla fornitura e posa di griglie alettate nella porzione dell’intervento[, dello stesso colore del telaio].",
+    "Apertura di aerazione del vano scala.",
+    [L("Rimozione vetrata vani scala.", "a corpo"), L("Fornitura e posa “alette in lamiera” per aerazione vano scala.", "a corpo")]))
+_fondi("77", "77-lm", ["77-vs-lma-aer-ok", "77-lm-aer-naturale"],
+  V("77-vs-lma-aer-ok", "Aerazione: locale macchine, presente",
+    "È stata riscontrata [un’apertura d’areazione, all’interno del locale tecnico ascensore, che soddisfa i requisiti necessari (> 1 mq.) per un corretto smaltimento dei fumi in caso di incendio / un’apertura per l’aerazione naturale permanentemente aperta].",
+    "Areazione presente nel locale macchine ascensore."))
+_fondi("77", "77-me", ["77-me-attacco", "77-me-attacco-unico"],
+  V("77-me-attacco", "Attacco motopompa: cartellonistica da integrare",
+    "Completa l’impianto idrico antincendio n° [1] attacco di mandata per motopompa dei VV.F.[ di tipo UNI 70], posto [nei pressi dell’entrata del passo carrabile][ e a servizio di entrambe le colonne montanti], corredato da idonea cartellonistica conforme al D.lgs. 81/08[, da porre fuori dalla cassetta per una più rapida individuazione, e da cartellino di manutenzione semestrale].",
+    "Attacco di mandata per motopompa VV.F.",
+    [L("Fornitura e posa cartello per attacco di mandata per motopompa VV.F.", "cad")], gruppoEsclusivo="attacco-motopompa"))
+_mod("77-me-manichette", testo=_per_id_tmp()["77-me-manichette"]["testo"] + " [Le lance in rame non conformi alla UNI 10779 (punto 3.11) vanno sostituite con modelli UNI EN 671-2.]")
+_mod("77-cs-vie", testo="Si provveda all’installazione dell’apposita cartellonistica indicante i percorsi e le vie d’esodo ad ogni piano del vano scala [dall’ottavo al piano rialzato][ e nell’atrio condominiale].")
+_mod("77-cs-presidi", testo="Si provveda a corredare i presidi (presidi antincendio ad ogni piano, estintori, attacco autopompa) con cartellonistica conforme al D.lgs. 81/08.")
+_mod("77-vs-oggetti", testo="È vietato porre qualsiasi genere di materiale lungo le vie d’esodo in modo da non creare intralcio in caso di necessità; pertanto, sarà necessario rimuovere gli oggetti [(fioriere, materiali, oggetti vicino ai presidi antincendio)] nel vano scala e nei pianerottoli dal piano [copertura] al piano [terra].")
+
+# ===== Attività 77: voci nuove =====
+_dopo("77", "77-lm", "77-vs-lma-aer-no", [
+  V("77-lm-foro-solai", "Foro comunicante con i solai: chiusura",
+    "Nel locale macchine ascensore è presente un foro comunicante con i solai: dovrà essere chiuso con materiali aventi resistenza al fuoco non inferiore a REI [30].",
+    "Foro comunicante con i solai.", [L("Chiusura del foro comunicante con i solai con materiali REI [30].", "a corpo")]),
+  V("77-lm-camini", "Aerazione: camini dei vani corsa",
+    "Si provveda a verificare i camini di aerazione dei vani corsa, che devono avere sezione di 0,20 mq e sfociare in atmosfera.",
+    "Camini di aerazione.")])
+_dopo("77", "77-me", "77-me-safecrash-danneggiati", [
+  V("77-me-quadri", "Idranti: oggetti davanti alle cassette",
+    "Davanti alle cassette degli idranti sono presenti [quadri / oggetti]: dovranno essere rimossi, perché le cassette siano sempre visibili e accessibili.",
+    "Cassetta idranti.", [L("Rimozione di quadri e oggetti davanti alle cassette degli idranti.", "a corpo")]),
+  V("77-ia-pressione", "Targhetta di manutenzione: pressione da chiarire",
+    "La targhetta di manutenzione riporta una pressione di [3,8] bar, senza specificare se statica o dinamica. Si richiede alla ditta manutentrice il rapporto di funzionalità dell’impianto.",
+    "Targhetta di manutenzione."),
+  V("77-ia-progetto", "Progetto dell’impianto idrico antincendio",
+    "Dovrà essere redatto il progetto dell’impianto idrico antincendio secondo la norma UNI 10779[, comprensivo di gruppo di pompaggio].",
+    "Impianto idrico antincendio.", [L("Redazione del progetto dell’impianto idrico antincendio.", "a corpo", False)])])
+_dopo("77", "77-vs", "77-vs-porta-copertura", [
+  V("77-vs-porte-promemoria", "Porte: il progetto non le prevede (promemoria)",
+    "Se il progetto approvato non prevede porte tagliafuoco, non si ravvisa la necessità di sostituirle; si segnala tuttavia che gli ispettori VV.F. potrebbero prescriverle in fase di sopralluogo.",
+    "Porte esistenti."),
+  V("77-vs-rilevatori", "Rilevatori in sommità: verifica del funzionamento",
+    "I rilevatori in sommità collegati agli elettromagneti degli infissi dovranno essere verificati nel funzionamento.",
+    "Rilevatori in sommità."),
+  V("77-vs-gas-giallo", "Tubazione gas a vista da colorare di giallo",
+    "La tubazione del gas a vista dovrà essere colorata di giallo e identificata nel tratto.",
+    "Tubazione gas a vista.", [L("Tinteggiatura della tubazione gas a vista in smalto giallo.", "a corpo", False)]),
+  V("77-vs-autoscale", "Accostamento autoscale VV.F.",
+    "Il Comando ha prescritto l’accostamento delle autoscale dei VV.F.: la prescrizione dovrà essere rispettata.",
+    "Accesso dei mezzi di soccorso.")])
+
+# Gruppi esclusivi e titoli: aggiornati alle voci fuse
+ESCLUSIVI.update({
+  "potenzialita": ["74-ct-pot-ok", "74-ct-pot-diff"],
+  "aerazione-centrale": ["74-ct-aer-ok", "74-ct-aer-ostruita"],
+  "porta-centrale": ["74-ct-autochiusura", "74-ct-porta-grigliata", "74-ct-porta-sostituire", "74-ct-porta-regola"],
+  "valvola-gas": ["74-ds-valvola", "74-ds-valvola-installare"],
+  "disimpegno": ["74-ct-disimpegno-ok", "74-ct-disimpegno-no"],
+  "aerazione-vano-scala": ["77-vs-aer-ok", "77-vs-aer-no"],
+  "aerazione-locale-macchine": ["77-vs-lma-aer-ok", "77-vs-lma-aer-no"],
+})
+for _g in ("gas-giallo", "cartello-contatore", "estintore-centrale", "segnaletica-esodo"):
+  ESCLUSIVI.pop(_g, None)
+for _g, _ids in ESCLUSIVI.items():
+  ESCLUSIVI[_g] = [i for i in _ids if i not in _RIMOSSE]
+for _i in list(TITOLI):
+  if _i in _RIMOSSE: TITOLI.pop(_i)
+# le voci fuse hanno il titolo scritto qui sopra, non quello vecchio
+_titolo_libero("74-ct-pot-ok", "74-ct-aer-ok", "74-ct-autochiusura", "74-ct-forometria", "74-ds-gas-giallo", "74-ds-estintore-ok", "74-ds-estintore-noman",
+               "74-cs-integrare", "74-cf-termometro", "74-ct-materiale", "75-ds-estintori", "75-ar-griglia-ascensore", "75-ar-pvc-collari", "75-cs-integrare",
+               "75-ar-cancello", "77-vs-aer-no", "77-vs-lma-aer-ok", "77-me-attacco", "75-ar-portone", "74-ds-emergenza")
+
 _per_id = {v["id"]: (sz["id"], v) for f in libreria["famiglie"] for sz in f["sezioni"] for v in sz["voci"]}
 for _g, _ids in ESCLUSIVI.items():
   assert len({_per_id[i][0] for i in _ids}) == 1, f"{_g}: le voci devono stare nella stessa sezione"
